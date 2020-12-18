@@ -1,11 +1,11 @@
 import { ref } from 'vue';
 
-export interface ISimpleTableData {
+export interface SimpleTableDataI {
   city: string;
   totalOrders: string;
 }
 
-export interface IPaginatedTableData {
+export interface PaginatedTableDataI {
   picture: string;
   name: string;
   role: string;
@@ -14,7 +14,7 @@ export interface IPaginatedTableData {
   statusColor: string;
 }
 
-export interface IWideTableData {
+export interface WideTableDataI {
   name: string;
   email: string;
   title: string;
@@ -24,14 +24,14 @@ export interface IWideTableData {
 }
 
 export function useTableData() {
-  const simpleTableData = ref<ISimpleTableData[]>([
+  const simpleTableData = ref<SimpleTableDataI[]>([
     { city: 'New York', totalOrders: '200,120' },
     { city: 'Manchester', totalOrders: '632,310' },
     { city: 'London', totalOrders: '451,110' },
     { city: 'Madrid', totalOrders: '132,524' },
   ]);
 
-  const paginatedTableData = ref<IPaginatedTableData[]>([
+  const paginatedTableData = ref<PaginatedTableDataI[]>([
     {
       picture:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80',
@@ -70,7 +70,7 @@ export function useTableData() {
     },
   ]);
 
-  const wideTableData = ref<IWideTableData[]>(
+  const wideTableData = ref<WideTableDataI[]>(
     [...Array(10).keys()].map(() => ({
       name: 'John Doe',
       email: 'john@example.com',
