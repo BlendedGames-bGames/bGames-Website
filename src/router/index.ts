@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Forms from "../views/Forms.vue";
@@ -52,10 +52,14 @@ const routes: Array<RouteRecordRaw> = [
     name: "Blank",
     component: Blank,
   },
+  {
+    path: "/:catchAll(.*)",
+    component: NotFound,
+  }
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 });
 
