@@ -48,13 +48,8 @@ const routes: Array<RouteRecordRaw> = [
     component: Modal,
   },
   {
-    path: "/blank",
-    name: "Blank",
-    component: Blank,
-  },
-  {
     path: "/:catchAll(.*)",
-    component: NotFound,
+    component: Blank,
   }
 ];
 
