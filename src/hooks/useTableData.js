@@ -1,37 +1,15 @@
 import { ref } from 'vue';
 
-export interface SimpleTableDataI {
-  city: string;
-  totalOrders: string;
-}
-
-export interface PaginatedTableDataI {
-  picture: string;
-  name: string;
-  role: string;
-  created: string;
-  status: string;
-  statusColor: string;
-}
-
-export interface WideTableDataI {
-  name: string;
-  email: string;
-  title: string;
-  title2: string;
-  status: string;
-  role: string;
-}
 
 export function useTableData() {
-  const simpleTableData = ref<SimpleTableDataI[]>([
+  const simpleTableData = ref([
     { city: 'New York', totalOrders: '200,120' },
     { city: 'Manchester', totalOrders: '632,310' },
     { city: 'London', totalOrders: '451,110' },
     { city: 'Madrid', totalOrders: '132,524' },
   ]);
 
-  const paginatedTableData = ref<PaginatedTableDataI[]>([
+  const paginatedTableData = ref([
     {
       picture:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80',
@@ -70,7 +48,7 @@ export function useTableData() {
     },
   ]);
 
-  const wideTableData = ref<WideTableDataI[]>(
+  const wideTableData = ref(
     [...Array(10).keys()].map(() => ({
       name: 'John Doe',
       email: 'john@example.com',

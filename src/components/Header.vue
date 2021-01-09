@@ -105,12 +105,12 @@
   </header>
 </template>
 
-<script lang="ts">
+<script >
 import { defineComponent, ref } from "vue";
 import { useSidebar } from "../hooks/useSidebar";
 
 export default defineComponent({
-  setup(_, { emit }) {
+  setup() {
     const dropdownOpen = ref(false);
     const { isOpen } = useSidebar();
 

@@ -85,19 +85,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent, ref } from 'vue';
-
-interface User {
-  username: string;
-  email: string;
-  password: string;
-  confirm: string;
-}
 
 export default defineComponent({
   setup() {
-    const user = ref<User>({
+    const user = ref({
       username: '',
       email: '',
       password: '',

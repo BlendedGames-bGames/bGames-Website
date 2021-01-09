@@ -14,8 +14,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script>
+import { defineComponent } from "vue";
 
 import Sidebar from "./Sidebar.vue";
 import Header from "./Header.vue";

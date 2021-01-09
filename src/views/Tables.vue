@@ -329,7 +329,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from "vue";
 
 import { useTableData } from "../hooks/useTableData";
