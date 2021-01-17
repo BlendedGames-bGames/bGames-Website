@@ -677,11 +677,6 @@
   resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.2.tgz#a811b8c18e2babab7d542b3365887ae2e4d9de47"
   integrity sha512-7EJYyKTL7tFR8+gDbB6Wwz/arpGa0Mywk1TJbNzKzHtzbwVmY4HR9WqS5VV7dsBUKQmPNr192jHr/VpBluj/hg==
 
-"@types/socket.io-client@1.4.34":
-  version "1.4.34"
-  resolved "https://registry.yarnpkg.com/@types/socket.io-client/-/socket.io-client-1.4.34.tgz#8ca5f5732a9ad92b79aba71083cda5e5821e3ed9"
-  integrity sha512-Lzia5OTQFJZJ5R4HsEEldywiiqT9+W2rDbyHJiiTGqOcju89sCsQ8aUXDljY6Ls33wKZZGC0bfMhr/VpOyjtXg==
-
 "@types/source-list-map@*":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
@@ -10519,13 +10514,6 @@ vue-router@^4.0.0-0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-4.0.1.tgz#309240e50524b1e7d4e82e27f0a0fa25fe3d1d71"
   integrity sha512-2C2nRxA2nCusgJyUpvcbd9Bnc9kACp/VLUCK4drXtgeRXHjQliZJcgjjP268vkGvvEKun9jjp8Ic1PpzUgbYKg==
-
-vue-socket.io-extended@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/vue-socket.io-extended/-/vue-socket.io-extended-4.0.5.tgz#ad3e7ede1d2d3f538f714af0ae1329574cc6668f"
-  integrity sha512-7OUA76lpqHqVWD6+Qpc9UnEGBL4HzswDnaJSSOtd0TGwOLj+E2L59ExwLhHUuXB7QlLheFU/RzGJQ708YysABA==
-  dependencies:
-    "@types/socket.io-client" "1.4.34"
 
 vue-style-loader@^4.1.0, vue-style-loader@^4.1.2:
   version "4.1.2"
