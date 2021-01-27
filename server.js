@@ -1,8 +1,19 @@
-const express = require('express');
-const serveStatic = require("serve-static")
-const path = require('path');
-app = express();
-app.use(serveStatic(path.join(__dirname, 'dist')));
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-    console.log(`listening on port ${port} ...... `)});
+
+const http = require('http')
+const fs = require('fs')
+const httpPort = 8080
+
+http.createServer((req, res) => {
+  let fileToRead = 'index.html'
+
+  if (req.url !== '/' && fs.existsSync(`./${req.url}`)) {
+    fileToRead = `./${req.url}`
+  }
+
+  fs.readFile(fileToRead, 'utf-8', (err, content) => {
+    if (err) {
+      console.log(`Unable to open ${fileToRead} file.`)
+    }
+    res.end(content)
+  })
+}).listen(httpPort)
