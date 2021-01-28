@@ -1,14 +1,14 @@
 <template>
   <div >
     <div  v-if="userCred" class="main-view has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
-
         <nav-bar />
         <aside-menu :menu="menu" />
-        <div class="main-body">
-            <router-view />
+             <div class="main-body">
+
+                <router-view />
+            </div>
 
 
-        </div>
         <footer-bar />
 
     </div>

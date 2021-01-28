@@ -6,7 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     /* User */
-    userCred: true,
+    userCred: false,
     userName: null,
     userEmail: null,
     userAvatar: null,
@@ -21,7 +21,9 @@ export default new Vuex.Store({
     /* Aside */
     isAsideVisible: true,
     isAsideMobileExpanded: false,
-  
+
+    /* */
+    loginForm:true
   },
   getters:{
 
@@ -31,7 +33,9 @@ export default new Vuex.Store({
     basic (state, payload) {
       state[payload.key] = payload.value
     },
-
+    loginToggle (state) {
+      state.loginForm = !state.loginForm
+    },
     /* User */
     user (state, payload) {
       if (payload.name) {

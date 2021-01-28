@@ -2,8 +2,13 @@
   .main-view {
     &.has-aside-left {
       &.has-aside-expanded {
-        nav.navbar, .main-body {
-          padding-left: $aside-width;
+        nav.navbar, .main-body{
+          padding-left: $aside-width ;
+
+        }
+        .main-body{
+          padding-top: $aside-width - $aside-width/1.5;
+
         }
       }
       nav.navbar, .main-body {
