@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Dashboard from '../views/Dashboard.vue'
+import Login from '../views/Login.vue'
+import store from '../store/index'
 
 Vue.use(VueRouter)
 
@@ -9,11 +11,21 @@ const routes = [
     // Document title tag
     // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
+      title: 'Login'
+    },
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
       title: 'Dashboard'
     },
-    path: '/',
-    name: 'home',
-    component: Home
+    path: '/dashboard',
+    name: 'dashboard',
+    component: Dashboard
   },
   {
     meta: {
@@ -74,4 +86,17 @@ const router = new VueRouter({
   }
 })
 
+router.beforeEach((to, from, next) => {
+  var hasPermission = store.state.userCred
+  console.log(to)
+  console.log(hasPermission)
+  if (!hasPermission && to.path !== '/login') {
+    next( '/login' )
+  }
+  else{
+    next()
+
+    }
+  })
+  
 export default router

@@ -69,7 +69,7 @@ import CardComponent from '@/components/CardComponent'
 import LineChart from '@/components/Charts/LineChart'
 import ClientsTableSample from '@/components/ClientsTableSample'
 export default {
-  name: 'Home',
+  name: 'Dashboard',
   components: {
     ClientsTableSample,
     LineChart,

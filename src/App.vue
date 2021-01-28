@@ -1,14 +1,28 @@
 <template>
-  <div id="app">
-    <nav-bar />
-    <aside-menu :menu="menu" />
-    <router-view />
-    <footer-bar />
+  <div >
+    <div  v-if="userCred" class="main-view has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
+
+        <nav-bar />
+        <aside-menu :menu="menu" />
+        <div class="main-body">
+            <router-view />
+
+
+        </div>
+        <footer-bar />
+
+    </div>
+    <div v-else>
+
+        <router-view />
+
+    </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import { mapState } from 'vuex'
 import NavBar from '@/components/NavBar'
 import AsideMenu from '@/components/AsideMenu'
 import FooterBar from '@/components/FooterBar'
@@ -26,7 +40,7 @@ export default {
         'General',
         [
           {
-            to: '/',
+            to: '/dashboard',
             icon: 'desktop-mac',
             label: 'Dashboard'
           }
@@ -79,7 +93,10 @@ export default {
           }
         ]
       ]
-    }
+    },
+    ...mapState({
+        userCred: 'userCred'
+    })
   },
   created () {
     this.$store.commit('user', {

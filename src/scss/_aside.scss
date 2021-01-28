@@ -1,12 +1,12 @@
 @include desktop {
-  html {
+  .main-view {
     &.has-aside-left {
       &.has-aside-expanded {
-        nav.navbar, body {
+        nav.navbar, .main-body {
           padding-left: $aside-width;
         }
       }
-      nav.navbar, body {
+      nav.navbar, .main-body {
         @include transition(padding-left);
       }
       aside.is-placed-left {

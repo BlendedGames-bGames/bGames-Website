@@ -6,9 +6,11 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     /* User */
+    userCred: true,
     userName: null,
     userEmail: null,
     userAvatar: null,
+
 
     /* NavBar */
     isNavBarVisible: true,
@@ -18,7 +20,11 @@ export default new Vuex.Store({
 
     /* Aside */
     isAsideVisible: true,
-    isAsideMobileExpanded: false
+    isAsideMobileExpanded: false,
+  
+  },
+  getters:{
+
   },
   mutations: {
     /* A fit-them-all commit */
@@ -61,6 +67,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
-
+    hasPermission(context) {
+      if(context.state('userCred')) return true
+      else return false
+    }
   }
 })
