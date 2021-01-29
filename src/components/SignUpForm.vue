@@ -92,6 +92,7 @@ export default {
         }
         else{
           message = 'Un usuario con ese email ya existe, intente con otro email'
+          this.userCreatedAlreadyToggle()
         }
         this.$buefy.snackbar.open(
           {
@@ -100,7 +101,6 @@ export default {
           },
           300
         )
-        this.userCreatedAlreadyToggle()
         this.formReset()
       })
     },
