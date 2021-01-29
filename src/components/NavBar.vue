@@ -47,7 +47,7 @@
               <span>Messages</span>
             </a>
             <hr class="navbar-divider" />
-            <a class="navbar-item" @click="logout">
+            <a class="navbar-item" @click="logoutButton">
               <b-icon icon="logout" custom-size="default" />
               <span>Log Out</span>
             </a>
@@ -77,7 +77,7 @@
               <span>Messages</span>
             </a>
             <hr class="navbar-divider" />
-            <a class="navbar-item" @click="logout">
+            <a class="navbar-item" @click="logoutButton">
               <b-icon icon="logout" custom-size="default" ></b-icon>
               <span>Log Out</span>
             </a>
@@ -94,7 +94,7 @@
         <a
           class="navbar-item is-desktop-icon-only"
           title="Log out"
-          @click="logout"
+          @click="logoutButton"
         >
           <b-icon icon="logout" custom-size="default" />
           <span>Log out</span>
@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import NavBarMenu from '@/components/NavBarMenu'
 import UserAvatar from '@/components/UserAvatar'
 import firebase from 'firebase/app'
@@ -136,7 +136,7 @@ export default {
       this.isMenuNavBarActive = false
     })
   },
-  created () {
+  beforeCreate () {
     firebase.auth().onAuthStateChanged(user => {
         this.loggedIn = !!user;
     });
@@ -145,26 +145,17 @@ export default {
      ...mapMutations([
         'isAuthenticatedToggle'
     ]),
+    ...mapActions('user', {
+        logout: 'logout'
+    }),
     menuToggleMobile () {
       this.$store.commit('asideMobileStateToggle')
     },
     menuNavBarToggle () {
       this.isMenuNavBarActive = !this.isMenuNavBarActive
     },
-    async logout () {
-      try {
-        const data = await firebase.auth().signOut();
-        console.log(data)
-        this.isAuthenticatedToggle()
-        this.$router.replace({name:'login'})
-        
-      } catch (error) {
-          console.log(error)
-      }
-
-
-
-
+    async logoutButton () {
+      this.logout()
       this.$buefy.snackbar.open({
         message: 'Logging out',
         queue: false

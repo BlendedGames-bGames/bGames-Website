@@ -34,7 +34,7 @@
                         </b-field>
                         <hr />
                         <div class="control is-flex is-flex-direction-row is-justify-content-center">
-                            <b-button size="is-medium" native-type="submit" type="is-link" @click="register"
+                            <b-button size="is-medium" native-type="submit" type="is-link" @click="registerButton"
                                 >Sign Up</b-button
                             >
                         </div>
@@ -42,7 +42,7 @@
                 <hr />
             
                 <div class="columns is-flex is-flex-direction-row is-justify-content-center">
-                        <a v-on:click="clicked">Ya tienes una cuenta? Autenticate!</a>
+                        <a v-on:click="backToLogin">Ya tienes una cuenta? Autenticate!</a>
                 </div>           
         </card-component>
 
@@ -53,7 +53,7 @@
 <script>
 import CardComponent from '@/components/CardComponent'
 import HeroBar from './HeroBar'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 import firebase from 'firebase/app'
 import "firebase/auth"
 export default {
@@ -72,6 +72,13 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+        'loginToggle', 
+    ]),
+    ...mapActions('user', {
+        register: 'register'
+    }),
+
     submit () {
       this.isLoading = true
       setTimeout(() => {
@@ -85,21 +92,13 @@ export default {
         )
       })
     },
-    register(){
-         try {
-              console.log(this.form.email,this.form.password)
-              const user = firebase.auth().createUserWithEmailAndPassword(this.form.email,this.form.password)
-              console.log(user)
-      } catch (error) {
-        console.log(error)
-      }
+    registerButton () {
+      this.register({email:this.form.email, password: this.form.password})
     },
-    clicked (e) {
+    backToLogin(){
       this.loginToggle()
-    },
-     ...mapMutations([
-        'loginToggle', 
-    ]),
+    }
+     
   }
 }
 </script>

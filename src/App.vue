@@ -1,6 +1,6 @@
 <template>
   <div >
-    <div  v-if="isAuthenticated" class="main-view has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
+    <div  v-if="loggedIn" class="main-view has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
         <nav-bar />
         <aside-menu :menu="menu" />
              <div class="main-body">
@@ -22,7 +22,7 @@
 
 <script>
 // @ is an alias to /src
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import NavBar from '@/components/NavBar'
 import AsideMenu from '@/components/AsideMenu'
 import FooterBar from '@/components/FooterBar'
@@ -34,9 +34,10 @@ export default {
     AsideMenu,
     NavBar
   },
-  computed: {
-    menu () {
-      return [
+  data () {
+    return {
+      isLoading: false,
+      menu:[
         'General',
         [
           {
@@ -93,10 +94,13 @@ export default {
           }
         ]
       ]
-    },
-    ...mapState({
-        isAuthenticated : 'isAuthenticated'      
-    })
+    }
+  },
+  
+  computed: {
+      ...mapGetters('user', {
+          loggedIn: 'loggedIn',
+    }),
   },
   created () {
     this.$store.commit('user', {

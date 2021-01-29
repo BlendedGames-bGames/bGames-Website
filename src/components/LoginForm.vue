@@ -29,18 +29,18 @@
                         </b-field>
                         <hr />
                         <div class="control is-flex is-flex-direction-row is-justify-content-center">
-                            <b-button size="is-medium" native-type="submit" type="is-link" @click="login"
+                            <b-button size="is-medium" native-type="submit" type="is-link" @click="login('EmailAndPass')"
                                 >Login</b-button
                             >
                         </div>
                 </form>
                 <hr />
                 <div >
-                        <b-button size="is-large" type="is-danger"
+                        <b-button size="is-large" type="is-danger" @click="login('Google')"
                             icon-left="google"  style="margin-bottom:1em" expanded> 
                             Login con Google
                         </b-button>
-                        <b-button size="is-large"  type="is-info" expanded
+                        <b-button size="is-large"  type="is-info" expanded @click="login('Facebook')"
                             icon-left="facebook" >
                             Login con Facebook
                         </b-button>
@@ -55,7 +55,7 @@
                 <div class="columns is-flex is-flex-direction-row is-justify-content-center">
 
                     <b-button size="is-medium"  
-                                icon-left="account"   v-on:click="register">
+                                icon-left="account"   v-on:click="registerToggle">
                                 Sign up
                             
                     </b-button>
@@ -68,9 +68,7 @@
 
 <script>
 import CardComponent from '@/components/CardComponent'
-import { mapMutations } from 'vuex'
-import firebase from 'firebase/app'
-import "firebase/auth"
+import { mapMutations, mapActions } from 'vuex'
 export default {
   name: 'LoginForm',
   components: {
@@ -86,6 +84,14 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+        'loginToggle', 
+    ]),
+    ...mapActions('user', {
+        loginProvider: 'loginProvider',
+        loginEmailAndPassword: 'loginEmailAndPassword'
+    }),
+
     submit () {
       this.isLoading = true
       setTimeout(() => {
@@ -99,25 +105,21 @@ export default {
         )
       })
     },
-    async login(){
-      try {
-            console.log(this.form.email,this.form.password)
-            const val = firebase.auth().signInWithEmailAndPassword(this.form.email,this.form.password)
-            console.log(val)
-            this.isAuthenticatedToggle()
-            this.$router.replace({name:'dashboard'})
-
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    register () {
+    registerToggle () {
       this.loginToggle()
     },
-     ...mapMutations([
-        'loginToggle', 
-        'isAuthenticatedToggle'
-    ]),
+    async login(provider){
+      if(provider !== 'EmailAndPass'){
+          this.loginProvider({provider:provider})
+      }
+      else{
+          this.loginEmailAndPassword({email:this.form.email, password: this.form.password})
+      }
+      console.log(this.loggedIn)
+     
+      
+    }
+     
   }
 }
 </script>
