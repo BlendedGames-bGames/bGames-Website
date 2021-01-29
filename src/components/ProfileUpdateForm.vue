@@ -49,7 +49,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userName', 'userEmail'])
+    ...mapState('user', ['userProfile'])
   },
   watch: {
     userName (newValue) {
@@ -60,8 +60,8 @@ export default {
     }
   },
   mounted () {
-    this.form.name = this.userName
-    this.form.email = this.userEmail
+    this.form.name = this.userProfile.name
+    this.form.email = this.userProfile.email
   },
   methods: {
     submit () {

@@ -19,10 +19,19 @@ const getters = {
 
 const mutations = {
   USER_DETAILS(state, userProfile) {
-    state.loggedIn = true;    
+    state.loggedIn = true;  
+    const searchTerm = '@'
+    let name;
+    if(userProfile.displayName == undefined){      
+      let searchIndex = userProfile.email.lastIndexOf(searchTerm)
+      name = userProfile.email.slice(0,searchIndex)
+    }
+    else{
+      name = userProfile.displayName
+    }  
     state.userProfile = {
-      name: userProfile.displayName,
-      picture: userProfile.photoURL
+      name: name,
+      email: userProfile.email
     };
   },
   LOGOUT(state) {

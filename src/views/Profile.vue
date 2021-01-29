@@ -14,11 +14,11 @@
           <user-avatar class="image has-max-width is-aligned-center" />
           <hr />
           <b-field label="Name">
-            <b-input :value="userName" custom-class="is-static" readonly />
+            <b-input :value="userProfile.name" custom-class="is-static" readonly />
           </b-field>
           <hr />
           <b-field label="E-mail">
-            <b-input :value="userEmail" custom-class="is-static" readonly />
+            <b-input :value="userProfile.email" custom-class="is-static" readonly />
           </b-field>
         </card-component>
       </tiles>
@@ -51,7 +51,8 @@ export default {
     titleStack () {
       return ['Admin', 'Profile']
     },
-    ...mapState(['userName', 'userEmail'])
+        ...mapState('user', ['userProfile'])
+
   }
 }
 </script>
