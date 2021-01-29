@@ -60,9 +60,9 @@ const actions = {
       
       if(user.additionalUserInfo.isNewUser){
         let profile = {
-          "name": user.additionalUserInfo.name,
-          "email": user.additionalUserInfo.email,
-          "external_type": user.providerId,
+          "name": user.additionalUserInfo.profile.name,
+          "email": user.additionalUserInfo.profile.email,
+          "external_type": user.additionalUserInfo.providerId,
           "external_id":user.user.uid
         }
         try {
