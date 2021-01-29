@@ -2,16 +2,26 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
 import Login from '../views/Login.vue'
+import firebase from 'firebase/app'
 import store from '../store/index'
 
+import "firebase/auth"
 Vue.use(VueRouter)
 
 const routes = [
   {
+    
+    path: '/',
+    redirect: {name:'login'}
+  },
+
+  {
     // Document title tag
     // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
-      title: 'Login'
+      title: 'Login',
+      requiresAuth: false
+
     },
     path: '/login',
     name: 'login',
@@ -21,7 +31,9 @@ const routes = [
     // Document title tag
     // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
-      title: 'Dashboard'
+      title: 'Dashboard',
+      requiresAuth: true
+
     },
     path: '/dashboard',
     name: 'dashboard',
@@ -29,7 +41,9 @@ const routes = [
   },
   {
     meta: {
-      title: 'Tables'
+      title: 'Tables',
+      requiresAuth: true
+
     },
     path: '/tables',
     name: 'tables',
@@ -40,7 +54,8 @@ const routes = [
   },
   {
     meta: {
-      title: 'Forms'
+      title: 'Forms',
+      requiresAuth: true
     },
     path: '/forms',
     name: 'forms',
@@ -48,7 +63,9 @@ const routes = [
   },
   {
     meta: {
-      title: 'Profile'
+      title: 'Profile',
+      requiresAuth: true
+
     },
     path: '/profile',
     name: 'profile',
@@ -56,7 +73,9 @@ const routes = [
   },
   {
     meta: {
-      title: 'New Client'
+      title: 'New Client',
+      requiresAuth: true
+
     },
     path: '/client/new',
     name: 'client.new',
@@ -64,7 +83,9 @@ const routes = [
   },
   {
     meta: {
-      title: 'Edit Client'
+      title: 'Edit Client',
+      requiresAuth: true
+
     },
     path: '/client/:id',
     name: 'client.edit',
@@ -87,16 +108,17 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  var hasPermission = store.state.userCred
-  console.log(to)
-  console.log(hasPermission)
-  if (!hasPermission && to.path !== '/login') {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const isAuthenticated = firebase.auth().currentUser
+  console.log(requiresAuth, isAuthenticated)
+  console.log(!isAuthenticated)
+  if (requiresAuth && !isAuthenticated && isAuthenticated !== null) {
     next( '/login' )
   }
   else{
+  
     next()
-
-    }
-  })
+  }
+})
   
 export default router

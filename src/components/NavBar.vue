@@ -47,7 +47,7 @@
               <span>Messages</span>
             </a>
             <hr class="navbar-divider" />
-            <a class="navbar-item">
+            <a class="navbar-item" @click="logout">
               <b-icon icon="logout" custom-size="default" />
               <span>Log Out</span>
             </a>
@@ -77,8 +77,8 @@
               <span>Messages</span>
             </a>
             <hr class="navbar-divider" />
-            <a class="navbar-item">
-              <b-icon icon="logout" custom-size="default"></b-icon>
+            <a class="navbar-item" @click="logout">
+              <b-icon icon="logout" custom-size="default" ></b-icon>
               <span>Log Out</span>
             </a>
           </div>
@@ -105,10 +105,11 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import NavBarMenu from '@/components/NavBarMenu'
 import UserAvatar from '@/components/UserAvatar'
-
+import firebase from 'firebase/app'
+import "firebase/auth"
 export default {
   name: 'NavBar',
   components: {
@@ -117,7 +118,8 @@ export default {
   },
   data () {
     return {
-      isMenuNavBarActive: false
+      isMenuNavBarActive: false,
+      loggedIn: false
     }
   },
   computed: {
@@ -134,16 +136,37 @@ export default {
       this.isMenuNavBarActive = false
     })
   },
+  created () {
+    firebase.auth().onAuthStateChanged(user => {
+        this.loggedIn = !!user;
+    });
+  },
   methods: {
+     ...mapMutations([
+        'isAuthenticatedToggle'
+    ]),
     menuToggleMobile () {
       this.$store.commit('asideMobileStateToggle')
     },
     menuNavBarToggle () {
       this.isMenuNavBarActive = !this.isMenuNavBarActive
     },
-    logout () {
+    async logout () {
+      try {
+        const data = await firebase.auth().signOut();
+        console.log(data)
+        this.isAuthenticatedToggle()
+        this.$router.replace({name:'login'})
+        
+      } catch (error) {
+          console.log(error)
+      }
+
+
+
+
       this.$buefy.snackbar.open({
-        message: 'Log out clicked',
+        message: 'Logging out',
         queue: false
       })
     }

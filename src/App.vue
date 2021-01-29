@@ -1,6 +1,6 @@
 <template>
   <div >
-    <div  v-if="userCred" class="main-view has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
+    <div  v-if="isAuthenticated" class="main-view has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
         <nav-bar />
         <aside-menu :menu="menu" />
              <div class="main-body">
@@ -95,7 +95,7 @@ export default {
       ]
     },
     ...mapState({
-        userCred: 'userCred'
+        isAuthenticated : 'isAuthenticated'      
     })
   },
   created () {

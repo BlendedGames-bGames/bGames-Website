@@ -7,14 +7,14 @@
                 </hero-bar>
                 <form @submit.prevent="submit">
                         <b-field   horizontal
-                                label="Username" style="margin-bottom: 2em"
+                                label="Email" style="margin-bottom: 2em"
                         >
                         <b-field>
                             <b-input
-                            v-model="form.username"
+                            v-model="form.email"
                             icon="account"
-                            placeholder="Username"
-                            name="username"
+                            placeholder="email"
+                            name="email"
                             required
                             />
                         </b-field>
@@ -34,7 +34,7 @@
                         </b-field>
                         <hr />
                         <div class="control is-flex is-flex-direction-row is-justify-content-center">
-                            <b-button size="is-medium" native-type="submit" type="is-link"
+                            <b-button size="is-medium" native-type="submit" type="is-link" @click="register"
                                 >Sign Up</b-button
                             >
                         </div>
@@ -54,7 +54,8 @@
 import CardComponent from '@/components/CardComponent'
 import HeroBar from './HeroBar'
 import { mapMutations } from 'vuex'
-
+import firebase from 'firebase/app'
+import "firebase/auth"
 export default {
   name: 'SignUpForm',
   components: {
@@ -65,7 +66,7 @@ export default {
     return {
       isLoading: false,
       form: {
-        username: null,
+        email: null,
         password: null
       }
     }
@@ -77,12 +78,21 @@ export default {
         this.isLoading = false
         this.$buefy.snackbar.open(
           {
-            message: 'Updated',
+            message: 'Usuario creado',
             queue: false
           },
           500
         )
       })
+    },
+    register(){
+         try {
+              console.log(this.form.email,this.form.password)
+              const user = firebase.auth().createUserWithEmailAndPassword(this.form.email,this.form.password)
+              console.log(user)
+      } catch (error) {
+        console.log(error)
+      }
     },
     clicked (e) {
       this.loginToggle()

@@ -10,6 +10,7 @@ export default new Vuex.Store({
     userName: null,
     userEmail: null,
     userAvatar: null,
+    isAuthenticated: false,
 
 
     /* NavBar */
@@ -47,8 +48,14 @@ export default new Vuex.Store({
       if (payload.avatar) {
         state.userAvatar = payload.avatar
       }
+      
     },
-
+    isAuthenticatedToggle(state){
+   
+        state.isAuthenticated = !state.isAuthenticated
+        window.localStorage.setItem('loggedIn', state.isAuthenticated)      
+      
+    },
     /* Aside Mobile */
     asideMobileStateToggle (state, payload = null) {
       const htmlClassName = 'has-aside-mobile-expanded'

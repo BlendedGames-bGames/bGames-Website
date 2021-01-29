@@ -2,14 +2,14 @@
         <card-component title="" icon="" class="column is-two-thirds is-offset-2" >
                 <form @submit.prevent="submit">
                         <b-field   horizontal
-                                label="Username" style="margin-bottom: 2em"
+                                label="Email" style="margin-bottom: 2em"
                         >
                         <b-field>
                             <b-input
-                            v-model="form.username"
+                            v-model="form.email"
                             icon="account"
-                            placeholder="Username"
-                            name="username"
+                            placeholder="email"
+                            name="email"
                             required
                             />
                         </b-field>
@@ -29,7 +29,7 @@
                         </b-field>
                         <hr />
                         <div class="control is-flex is-flex-direction-row is-justify-content-center">
-                            <b-button size="is-medium" native-type="submit" type="is-link"
+                            <b-button size="is-medium" native-type="submit" type="is-link" @click="login"
                                 >Login</b-button
                             >
                         </div>
@@ -55,7 +55,7 @@
                 <div class="columns is-flex is-flex-direction-row is-justify-content-center">
 
                     <b-button size="is-medium"  
-                                icon-left="account"   v-on:click="clicked">
+                                icon-left="account"   v-on:click="register">
                                 Sign up
                             
                     </b-button>
@@ -69,7 +69,8 @@
 <script>
 import CardComponent from '@/components/CardComponent'
 import { mapMutations } from 'vuex'
-
+import firebase from 'firebase/app'
+import "firebase/auth"
 export default {
   name: 'LoginForm',
   components: {
@@ -79,7 +80,7 @@ export default {
     return {
       isLoading: false,
       form: {
-        username: null,
+        email: null,
         password: null
       }
     }
@@ -98,11 +99,24 @@ export default {
         )
       })
     },
-    clicked () {
+    async login(){
+      try {
+            console.log(this.form.email,this.form.password)
+            const val = firebase.auth().signInWithEmailAndPassword(this.form.email,this.form.password)
+            console.log(val)
+            this.isAuthenticatedToggle()
+            this.$router.replace({name:'dashboard'})
+
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    register () {
       this.loginToggle()
     },
      ...mapMutations([
         'loginToggle', 
+        'isAuthenticatedToggle'
     ]),
   }
 }
