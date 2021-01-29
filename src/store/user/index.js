@@ -3,12 +3,15 @@ import router from '../../router/index';
 
 const state = {
   userProfile: {},
-  loggedIn: false
+  loggedIn: false,
+  userCreatedAlready:false
 };
 
 const getters = {
   userProfile: ({userProfile}) => userProfile,
-  loggedIn: ({loggedIn}) => loggedIn
+  loggedIn: ({loggedIn}) => loggedIn,
+  userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready
+
 };
 
 const mutations = {
@@ -22,6 +25,9 @@ const mutations = {
   LOGOUT(state) {
     state.loggedIn = false;
     state.userProfile = {};
+  },
+  USER_CREATED_ALREADY_TOGGLE(state) {
+    state.userCreatedAlready = !state.userCreatedAlready;
   }
 };
 
@@ -59,7 +65,7 @@ const actions = {
 
     try {
         console.log(profile)
-        const val = firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
+        await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
         router.replace({name:'dashboard'})
 
 
@@ -79,14 +85,18 @@ const actions = {
   },
   async register({ commit, state }, profile) {
     try {
-        const user = firebase.auth().createUserWithEmailAndPassword(profile.email,profile.password)
+        await firebase.auth().createUserWithEmailAndPassword(profile.email,profile.password)
         router.replace({name:'dashboard'})
-
-        console.log(user)
     } catch (error) {
         console.log(error)
+        commit('USER_CREATED_ALREADY_TOGGLE')
+
     }
   },
+  userCreatedAlreadyToggle({ commit, state }, payload) {
+    commit('USER_CREATED_ALREADY_TOGGLE')
+
+   }
 
 };
 

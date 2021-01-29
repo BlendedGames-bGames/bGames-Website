@@ -5,7 +5,7 @@
                 <hero-bar :has-right-visible="true" >
                             Registro
                 </hero-bar>
-                <form @submit.prevent="submit">
+                <form @submit.prevent>
                         <b-field   horizontal
                                 label="Email" style="margin-bottom: 2em"
                         >
@@ -53,7 +53,7 @@
 <script>
 import CardComponent from '@/components/CardComponent'
 import HeroBar from './HeroBar'
-import { mapMutations, mapActions } from 'vuex'
+import { mapMutations, mapActions, mapGetters } from 'vuex'
 import firebase from 'firebase/app'
 import "firebase/auth"
 export default {
@@ -76,29 +76,48 @@ export default {
         'loginToggle', 
     ]),
     ...mapActions('user', {
-        register: 'register'
+        register: 'register',
+        userCreatedAlreadyToggle: 'userCreatedAlreadyToggle'
     }),
 
-    submit () {
+    async registerButton () {
+      await this.register({email:this.form.email, password: this.form.password})
       this.isLoading = true
       setTimeout(() => {
         this.isLoading = false
+        var message;
+        console.log(this.userCreatedAlready)
+        if(!this.userCreatedAlready){
+          message = 'Usuario creado exitosamente'
+        }
+        else{
+          message = 'Un usuario con ese email ya existe, intente con otro email'
+        }
         this.$buefy.snackbar.open(
           {
-            message: 'Usuario creado',
+            message: message,
             queue: false
           },
-          500
+          300
         )
+        this.userCreatedAlreadyToggle()
+        this.formReset()
       })
-    },
-    registerButton () {
-      this.register({email:this.form.email, password: this.form.password})
     },
     backToLogin(){
       this.loginToggle()
+    },
+    formReset(){
+      this.form.email = ''
+      this.form.password = ''
     }
+    
      
+  },
+  computed: {
+      ...mapGetters('user', {
+          userCreatedAlready: 'userCreatedAlready'
+    }),
   }
 }
 </script>
