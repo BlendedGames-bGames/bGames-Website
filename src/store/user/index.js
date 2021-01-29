@@ -1,10 +1,13 @@
 import firebase from '@/firebase';
+import Axios from 'axios';
 import router from '../../router/index';
 
 const state = {
   userProfile: {},
   loggedIn: false,
-  userCreatedAlready:false
+  userCreatedAlready:false,
+  userURL: 'http://144.126.216.255',
+  userPort: '3010'
 };
 
 const getters = {
@@ -37,6 +40,7 @@ const actions = {
     if (state.loggedIn)
       return;
 
+    
     let provider;
     switch (profile.provider) {
       case 'Google':
@@ -51,8 +55,32 @@ const actions = {
         break;
     }    
     try {
-      await firebase.auth().signInWithPopup(provider);
-      router.replace({name:'dashboard'})      
+      const user = await firebase.auth().signInWithPopup(provider);
+      console.log(user)
+      
+      if(user.additionalUserInfo.isNewUser){
+        let profile = {
+          "name": user.additionalUserInfo.name,
+          "email": user.additionalUserInfo.email,
+          "external_type": user.providerId,
+          "external_id":user.user.uid
+        }
+        try {
+          const MEDIUM_POST_URL = state.userURL+':'+state.userPort+'/player'
+          await Axios.post(MEDIUM_POST_URL, profile);
+          router.replace({name:'dashboard'})      
+
+
+        } catch (error) {
+          console.log(error)
+        }
+
+        
+      }
+      else{
+        router.replace({name:'dashboard'})      
+
+      }
 
     } catch(error) {
       console.log(error);
@@ -66,9 +94,8 @@ const actions = {
     try {
         console.log(profile)
         await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
-        router.replace({name:'dashboard'})
-
-
+        router.replace({name:'dashboard'})      
+          
     } catch (error) {
             console.log(error)
     }
@@ -85,8 +112,38 @@ const actions = {
   },
   async register({ commit, state }, profile) {
     try {
-        await firebase.auth().createUserWithEmailAndPassword(profile.email,profile.password)
+        const user = await firebase.auth().createUserWithEmailAndPassword(profile.email,profile.password)
+        console.log(user)
         router.replace({name:'dashboard'})
+
+         if(user.additionalUserInfo.isNewUser){
+          //Name of the user (before the @)
+          const searchTerm = '@'
+          const searchIndex = user.user.email.lastIndexOf(searchTerm)
+          const name = user.user.email.slice(0,searchIndex)
+          let profile = {
+            "name": name,
+            "email": user.user.email,
+            "password": user.additionalUserInfo.providerId,
+            "external_type": 'firebase.com',
+            "external_id":user.user.uid
+          }
+          try {
+            const MEDIUM_POST_URL = state.userURL+':'+state.userPort+'/player'
+            await Axios.post(MEDIUM_POST_URL, profile);
+            router.replace({name:'dashboard'})      
+  
+  
+          } catch (error) {
+            console.log(error)
+          }
+  
+          
+        }
+        else{
+           router.replace({name:'dashboard'})
+        }
+        
     } catch (error) {
         console.log(error)
         commit('USER_CREATED_ALREADY_TOGGLE')
