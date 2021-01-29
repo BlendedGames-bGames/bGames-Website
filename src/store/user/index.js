@@ -1,5 +1,5 @@
 import firebase from '@/firebase';
-import router from '/mnt/wsl/microservices/bGames-Website/src/router';
+import router from '../../router/index';
 
 const state = {
   userProfile: {},
