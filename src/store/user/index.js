@@ -77,7 +77,7 @@ const actions = {
         try {
           const MEDIUM_POST_URL = state.userURL+':'+state.userPort+'/player'
           await Axios.post(MEDIUM_POST_URL, profile);
-          router.replace({name:'dashboard'})      
+          router.replace({name:'dimension'})      
 
 
         } catch (error) {
@@ -87,7 +87,7 @@ const actions = {
         
       }
       else{
-        router.replace({name:'dashboard'})      
+        router.replace({name:'dimension'})      
 
       }
 
@@ -103,7 +103,7 @@ const actions = {
     try {
         console.log(profile)
         await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
-        router.replace({name:'dashboard'})      
+        router.replace({name:'dimension'})      
           
     } catch (error) {
             console.log(error)
@@ -123,7 +123,6 @@ const actions = {
     try {
         const user = await firebase.auth().createUserWithEmailAndPassword(profile.email,profile.password)
         console.log(user)
-        router.replace({name:'dashboard'})
 
          if(user.additionalUserInfo.isNewUser){
           //Name of the user (before the @)
@@ -140,7 +139,7 @@ const actions = {
           try {
             const MEDIUM_POST_URL = state.userURL+':'+state.userPort+'/player'
             await Axios.post(MEDIUM_POST_URL, profile);
-            router.replace({name:'dashboard'})      
+            router.replace({name:'dimension'})      
   
   
           } catch (error) {
@@ -150,7 +149,7 @@ const actions = {
           
         }
         else{
-           router.replace({name:'dashboard'})
+           router.replace({name:'login'})
         }
         
     } catch (error) {

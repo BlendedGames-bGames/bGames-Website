@@ -17,11 +17,11 @@ firebase.auth().onAuthStateChanged(function(user) {
       console.log("sdasaddsaads")
       console.log(window.localStorage.getItem('previousRoute'))
       if(window.localStorage.getItem('previousRoute') !== '/login'){
-        router.push({ path: window.localStorage.getItem('previousRoute') })
+        router.replace({ path: window.localStorage.getItem('previousRoute') })
 
       }
       else{
-        router.push({ path: '/dashboard'})
+        router.replace({ path: '/dimensions'})
 
       }
     }

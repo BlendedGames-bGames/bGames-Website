@@ -38,6 +38,42 @@ export default {
     return {
       isLoading: false,
       menu:[
+         'Dashboard',
+        [
+          {
+            to: '/dimensions',
+            icon: 'desktop-mac',
+            label: 'Estadisticas generales'
+          }
+        ],
+        'Contribuciones',
+        [         
+          {
+            to: '/dimensions_sensors',
+            icon: 'desktop-mac',
+            label: 'Dimensiones'
+          },
+           {
+            to: '/sensors_dimensions',
+            icon: 'desktop-mac',
+            label: 'Sensores y puntos de datos'
+          }
+        ],
+        'Administracion',
+        [
+          {
+            to: '/data_points',
+            label: 'Puntos de datos',
+            icon: 'table',
+          },
+          {
+            to: '/sensor_asociation',
+            label: 'Asociacion a sensores',
+            icon: 'square-edit-outline'
+          }
+        ]
+      ]
+      /*menu:[
         'Estadisticas',
         [
           {
@@ -77,7 +113,7 @@ export default {
             icon: 'help-circle'
           }
         ]
-      ]
+      ]*/
     }
   },
   

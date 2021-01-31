@@ -1,7 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
+
+
 import Login from '../views/Login.vue'
+import Dimension from '../views/Dimension.vue'
+import SensorContribution from '../views/SensorContribution.vue'
+import DimensionContribution from '../views/DimensionContribution.vue'
+import DataEndpoint from '../views/DataEndpoint.vue'
+import SensorAsociation from '../views/SensorAsociation.vue'
+
 import firebase from 'firebase/app'
 import store from '../store/index'
 
@@ -31,45 +39,61 @@ const routes = [
     // Document title tag
     // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
-      title: 'Dashboard',
+      title: 'Dimensiones',
       requiresAuth: true
 
     },
-    path: '/dashboard',
+    path: '/dimensions',
+    name: 'dimension',
+    component: Dimension
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'Contribucion de sensores',
+      requiresAuth: true
+
+    },
+    path: '/sensors_dimensions',
     name: 'dashboard',
-    component: Dashboard
+    component: SensorContribution
   },
   {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
-      title: 'Tables',
+      title: 'Contribuidores a dimensiones',
       requiresAuth: true
 
     },
-    path: '/tables',
-    name: 'tables',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "tables" */ '../views/Tables.vue')
+    path: '/dimensions_sensors',
+    name: 'dashboard',
+    component: DimensionContribution
   },
   {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
-      title: 'Forms',
-      requiresAuth: true
-    },
-    path: '/forms',
-    name: 'forms',
-    component: () => import(/* webpackChunkName: "forms" */ '../views/Forms.vue')
-  },
-  {
-    meta: {
-      title: 'Profile',
+      title: 'Puntos de datos',
       requiresAuth: true
 
     },
-    path: '/profile',
-    name: 'profile',
-    component: () => import(/* webpackChunkName: "profile" */ '../views/Profile.vue')
+    path: '/data_points',
+    name: 'dashboard',
+    component: DataEndpoint
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'Asociacion a sensores',
+      requiresAuth: true
+
+    },
+    path: '/sensor_asociation',
+    name: 'dashboard',
+    component: SensorAsociation
   },
   {
     meta: {
@@ -117,10 +141,11 @@ router.beforeEach((to, from, next) => {
   window.localStorage.setItem('previousRoute',to.fullPath)
 
   if (requiresAuth && !isAuthenticated && isAuthenticated !== null) {
+  
+
     next( '/login' )
   }
   else{
-  
     next()
   }
 })
