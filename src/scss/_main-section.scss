@@ -1,3 +1,9 @@
 section.section.is-main-section {
   padding-top: $default-padding;
 }
+@include touch{
+  .main-body{
+    padding-top: $default-padding *1.5;
+
+  }
+}

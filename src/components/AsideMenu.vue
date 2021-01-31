@@ -1,5 +1,5 @@
 <template>
-  <aside v-show="isAsideVisible" class="aside is-placed-left is-expanded">
+  <aside v-show="isAsideVisible" class="aside is-placed-left is-expanded" >
     <aside-tools :is-main-menu="true">
       <span slot="label"> <b>Admin</b> One </span>
     </aside-tools>
