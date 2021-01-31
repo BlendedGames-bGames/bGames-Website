@@ -38,46 +38,30 @@ export default {
     return {
       isLoading: false,
       menu:[
-        'General',
+        'Estadisticas',
         [
           {
             to: '/dashboard',
             icon: 'desktop-mac',
-            label: 'Dashboard'
+            label: 'Dimensiones'
+          },
+          {
+            to: '/dashboard',
+            icon: 'desktop-mac',
+            label: 'Sensores'
           }
         ],
-        'Examples',
+        'Configuracion',
         [
           {
             to: '/tables',
-            label: 'Tables',
+            label: 'Administracion sensores',
             icon: 'table',
-            updateMark: true
           },
           {
             to: '/forms',
-            label: 'Forms',
+            label: 'Asociacion de sensores',
             icon: 'square-edit-outline'
-          },
-          {
-            to: '/profile',
-            label: 'Profile',
-            icon: 'account-circle'
-          },
-          {
-            label: 'Submenus',
-            subLabel: 'Submenus Example',
-            icon: 'view-list',
-            menu: [
-              {
-                href: '#void',
-                label: 'Sub-item One'
-              },
-              {
-                href: '#void',
-                label: 'Sub-item Two'
-              }
-            ]
           }
         ],
         'About',
@@ -103,11 +87,7 @@ export default {
     }),
   },
   created () {
-    this.$store.commit('user', {
-      name: 'John Doe',
-      email: 'john@example.com',
-      avatar: 'https://avatars.dicebear.com/v2/gridy/John-Doe.svg'
-    })
+   
   }
 }
 </script>

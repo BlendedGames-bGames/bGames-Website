@@ -112,6 +112,10 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = firebase.auth().currentUser
   console.log(requiresAuth, isAuthenticated)
   console.log(!isAuthenticated)
+  console.log(to)
+  window.localStorage.setItem('previousAuthentication',isAuthenticated)
+  window.localStorage.setItem('previousRoute',to.fullPath)
+
   if (requiresAuth && !isAuthenticated && isAuthenticated !== null) {
     next( '/login' )
   }
