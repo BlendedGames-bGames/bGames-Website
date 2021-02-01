@@ -13,7 +13,70 @@ export const baseChartOptions = {
   },
   responsive: true
 }
+export const barChartOptions = {
+  ...baseChartOptions,
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        },
+        gridLines: {
+          display: true
+        }
+      }],
+      xAxes: [{
+        ticks: {
+          beginAtZero: true
+        },
+        gridLines: {
+          display: false
+        }
+      }]
+    },
+    legend: {
+      display: false
+    },
+    tooltips: {
+      enabled: true,
+      callbacks: {
+        label: function(tooltipItems, data) {
+          return '$' + tooltipItems.yLabel;
+        }
+      }
+    },
+    responsive: true,
+    maintainAspectRatio: false
+}
+export const radarChartOptions = {
+  ...baseChartOptions,
+  scales: {
+    angleLines: {
+        display: false
+    },
+    suggestedMin: 0,
+    suggestedMax: 100
+  },
+  tooltips: {
+    enabled: true,
+    callbacks: {
+      label: function(tooltipItems, data) {
+        console.log(tooltipItems)
+        console.log(data)
 
+        return tooltipItems.label;
+      },
+      title: function(tooltipItems, data) {
+        console.log(tooltipItems)
+        console.log(data)
+
+        return data.labels[tooltipItems[0].index];
+      }
+    }
+  },
+
+  responsive: true,
+  maintainAspectRatio: false
+}
 export const chartOptionsMain = {
   ...baseChartOptions,
   tooltips: {

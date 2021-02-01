@@ -54,6 +54,17 @@
           :data-url="`${$router.options.base}data-sources/clients.json`"
         />
       </card-component>
+       <div v-if="defaultChart.chartData2" class="chart-area">
+          <bar-chart
+            ref="bigChart2"
+            style="height: 100%;"
+            chart-id="big-bar-chart"
+            :chart-data="defaultChart.chartData2"
+            :extra-options="defaultChart.extraOptions2"
+          >
+          </bar-chart>
+        </div>
+
     </section>
   </div>
 </template>
@@ -67,6 +78,8 @@ import Tiles from '@/components/Tiles'
 import CardWidget from '@/components/CardWidget'
 import CardComponent from '@/components/CardComponent'
 import LineChart from '@/components/Charts/LineChart'
+import BarChart from '@/components/Charts/BarChart'
+
 import ClientsTableSample from '@/components/ClientsTableSample'
 export default {
   name: 'Dashboard',
@@ -77,13 +90,16 @@ export default {
     CardWidget,
     Tiles,
     HeroBar,
-    TitleBar
+    TitleBar,
+    BarChart
   },
   data () {
     return {
       defaultChart: {
         chartData: null,
-        extraOptions: chartConfig.chartOptionsMain
+        chartData2: null,
+        extraOptions: chartConfig.chartOptionsMain,
+        extraOptions2: chartConfig.barChartOptions
       }
     }
   },
@@ -94,6 +110,7 @@ export default {
   },
   mounted () {
     this.fillChartData()
+    this.fillChartData2()
 
     this.$buefy.snackbar.open({
       message: 'Welcome back',
@@ -160,6 +177,18 @@ export default {
           }
         ],
         labels: ['01', '02', '03', '04', '05', '06', '07', '08', '09']
+      }
+    },
+    fillChartData2 () {
+      this.defaultChart.chartData2 = {
+        datasets: [ {
+            barPercentage: 0.5,
+            barThickness: 6,
+            maxBarThickness: 8,
+            minBarLength: 2,
+            data: [10, 20, 30, 40, 50, 60, 70]
+        }]
+         
       }
     }
   }

@@ -14,6 +14,25 @@
       >
         <b-icon :icon="headerIcon" custom-size="default" />
       </a>
+      <div class="card-header-icon"> 
+          <b-select
+                v-if="select"
+                v-model="selectedOption"
+                :placeholder="placeholder"
+                @input="selectedOptionClick"
+                required
+              >
+                <option
+                  v-for="(option, index) in selectOptions"
+                  :key="index"
+                  :value="option"
+                >
+                  {{ option }}
+                </option>
+          </b-select>
+
+      </div>
+   
     </header>
     <div class="card-content">
       <slot />
@@ -36,11 +55,35 @@ export default {
     headerIcon: {
       type: String,
       default: null
+    },
+    placeholder: {
+      type: String,
+      default: 'Select an option'
+    },
+    select: {
+      type: Boolean,
+      default: false
+    },
+    selectOptions: {
+      type: Array,
+      default: () => []
+    }
+  },
+   data () {
+    return {
+      isLoading: false,
+      selectedOption:null
+      
     }
   },
   methods: {
     headerIconClick () {
       this.$emit('header-icon-click')
+    },
+    selectedOptionClick (){
+      console.log('asdasasddas')
+      this.$emit('selected-option-click', this.selectedOption )
+
     }
   }
 }

@@ -4,35 +4,51 @@
     <hero-bar :has-right-visible="false">
       Estadisticas generales
     </hero-bar>
-    <section class="section is-main-section">
-      <tiles>
-        <card-widget
-          class="tile is-child"
-          type="is-primary"
-          icon="account-multiple"
-          :number="512"
-          label="Clients"
-        />
-        <card-widget
-          class="tile is-child"
-          type="is-info"
-          icon="cart-outline"
-          :number="7770"
-          prefix="$"
-          label="Sales"
-        />
-        <card-widget
-          class="tile is-child"
-          type="is-success"
-          icon="chart-timeline-variant"
-          :number="256"
-          suffix="%"
-          label="Performance"
-        />
-      </tiles>
+    <section class="section is-main-section">       
+      <div class="columns">
+          <div v-if="defaultChart.chartData3" class="chart-area column is-5">
+            <card-component
+              title="Dimensiones"
+              icon="finance"
+            >
+                <radar-chart
+                  ref="bigChart3"
+                  chart-id="big-radar-chart"
+                  :chart-data="defaultChart.chartData3"
+                  :extra-options="defaultChart.extraOptions3"
+                >
+                </radar-chart>
+          
+            </card-component>
+
+            
+          </div>
+          <div v-if="defaultChart.chartData2" class="chart-area  column is-7">
+             <card-component
+              title="Sub-atributos"
+              icon="finance"
+              select
+              placeholder="Selecciona una dimension"
+              :selectOptions="departments"
+              @selected-option-click="selectedOptionBarChartClick"
+            >
+            <bar-chart
+              ref="bigChart2"
+              style="height: 100%;"
+              chart-id="big-bar-chart"
+              :chart-data="defaultChart.chartData2"
+              :extra-options="defaultChart.extraOptions2"
+            >
+            </bar-chart>
+             </card-component>
+            
+          </div>
+
+      </div>
+      
 
       <card-component
-        title="Performance"
+        title="Evolucion de dimensiones en el tiempo "
         icon="finance"
         header-icon="reload"
         @header-icon-click="fillChartData"
@@ -48,12 +64,26 @@
           </line-chart>
         </div>
       </card-component>
-
-      <card-component title="Clients" class="has-table has-mobile-sort-spaced">
-        <clients-table-sample
-          :data-url="`${$router.options.base}data-sources/clients.json`"
-        />
+        <card-component
+        title="Evolucion de sub-atributos en el tiempo "
+        icon="finance"
+        select
+        placeholder="Selecciona una dimension"
+        :selectOptions="departments"
+        @selected-option-click="selectedOptionLineChartClick"
+      >
+        <div v-if="defaultChart.chartData" class="chart-area">
+          <line-chart
+            ref="bigChart"
+            style="height: 100%;"
+            chart-id="big-line-chart"
+            :chart-data="defaultChart.chartData"
+            :extra-options="defaultChart.extraOptions"
+          >
+          </line-chart>
+        </div>
       </card-component>
+
     </section>
   </div>
 </template>
@@ -68,6 +98,9 @@ import CardWidget from '@/components/CardWidget'
 import CardComponent from '@/components/CardComponent'
 import LineChart from '@/components/Charts/LineChart'
 import ClientsTableSample from '@/components/ClientsTableSample'
+import BarChart from '@/components/Charts/BarChart'
+import RadarChart from '@/components/Charts/RadarChart'
+
 export default {
   name: 'Dashboard',
   components: {
@@ -77,13 +110,21 @@ export default {
     CardWidget,
     Tiles,
     HeroBar,
-    TitleBar
+    TitleBar,
+    BarChart,
+    RadarChart
   },
   data () {
     return {
+      department: null,
+      departments: ['Business Development', 'Marketing', 'Sales'],
       defaultChart: {
         chartData: null,
-        extraOptions: chartConfig.chartOptionsMain
+        chartData2: null,
+        chartData3: null,
+        extraOptions: chartConfig.chartOptionsMain,
+        extraOptions2: chartConfig.barChartOptions,
+        extraOptions3: chartConfig.radarChartOptions
       }
     }
   },
@@ -94,6 +135,8 @@ export default {
   },
   mounted () {
     this.fillChartData()
+    this.fillChartData2()
+    this.fillChartData3()
 
     this.$buefy.snackbar.open({
       message: 'Welcome back',
@@ -101,6 +144,13 @@ export default {
     })
   },
   methods: {
+    selectedOptionBarChartClick(selectedOption){
+      console.log(selectedOption)
+    },
+    selectedOptionLineChartClick(selectedOption){
+      console.log(selectedOption)
+
+    },
     randomChartData (n) {
       const data = []
 
@@ -160,6 +210,34 @@ export default {
           }
         ],
         labels: ['01', '02', '03', '04', '05', '06', '07', '08', '09']
+      }
+    },
+    fillChartData2 () {
+      this.defaultChart.chartData2 = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            datasets: [
+              {
+                label: 'Data One',
+                backgroundColor: '#f87979',
+                pointBackgroundColor: 'white',
+                borderWidth: 1,
+                pointBorderColor: '#249EBF',
+                data: [40, 20, 30, 50, 90, 10, 20, 40, 50, 70, 90, 100]
+              }
+            ]
+      }
+    },
+    fillChartData3 () {
+      this.defaultChart.chartData3 = {
+            labels: ['Running', 'Swimming', 'Eating', 'Cycling'],
+            datasets: [{
+                label: 'Data One',
+                pointBackgroundColor: 'white',
+                borderWidth: 1,
+                backgroundColor: chartConfig.chartColors.default.info,
+                pointBorderColor: '#249EBF',
+                  data: [12, 10, 4, 2]
+            }]
       }
     }
   }
