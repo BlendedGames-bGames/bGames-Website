@@ -5,55 +5,50 @@
       Contribudores a dimensiones y puntos de datos
     </hero-bar>
     <section class="section is-main-section">
-      <tiles>
-        <card-widget
-          class="tile is-child"
-          type="is-primary"
-          icon="account-multiple"
-          :number="512"
-          label="Clients"
-        />
-        <card-widget
-          class="tile is-child"
-          type="is-info"
-          icon="cart-outline"
-          :number="7770"
-          prefix="$"
-          label="Sales"
-        />
-        <card-widget
-          class="tile is-child"
-          type="is-success"
-          icon="chart-timeline-variant"
-          :number="256"
-          suffix="%"
-          label="Performance"
-        />
-      </tiles>
-
-      <card-component
-        title="Performance"
-        icon="finance"
-        header-icon="reload"
-        @header-icon-click="fillChartData"
-      >
-        <div v-if="defaultChart.chartData" class="chart-area">
-          <line-chart
-            ref="bigChart"
-            style="height: 100%;"
-            chart-id="big-line-chart"
-            :chart-data="defaultChart.chartData"
-            :extra-options="defaultChart.extraOptions"
+          <card-component
           >
-          </line-chart>
-        </div>
-      </card-component>
+                <div class="columns is-flex">
 
-      <card-component title="Clients" class="has-table has-mobile-sort-spaced">
-        <clients-table-sample
-          :data-url="`${$router.options.base}data-sources/clients.json`"
-        />
-      </card-component>
+                    <div class="column is-3">     
+                      <select-component label="Dimension" 
+                                        placeholder="Seleciona una dimension"  
+                                        :selectOptions="departments" 
+                                        @selected-option-click="selectedOptionDimension1"
+                      /> 
+                     
+                      <select-component label="Dimension" 
+                                        placeholder="Seleciona una dimension"  
+                                        :selectOptions="departments" 
+                                        @selected-option-click="selectedOptionDimension2"
+                      >
+                          <b-field  vertical
+                                    label="Subatributo" style="margin-bottom: 1em">
+                            <b-select
+                                v-model="selectedOption"
+                                placeholder="Selecciona un subatributo"
+                                @input="selectedOptionClick"
+                                required
+                              >
+                                <option
+                                  v-for="(option, index) in departments"
+                                  :key="index"
+                                  :value="option"
+                                >
+                                  {{ option }}
+                                </option>
+                            </b-select>  
+                          </b-field>
+                      </select-component>
+
+                             
+                    </div>
+                    <div class="column is-9">
+                          <apexchart type="treemap" :options="chartOptions" :series="series"></apexchart>
+
+                    </div>
+                </div>
+
+          </card-component>
     </section>
   </div>
 </template>
@@ -68,23 +63,85 @@ import CardWidget from '@/components/CardWidget'
 import CardComponent from '@/components/CardComponent'
 import LineChart from '@/components/Charts/LineChart'
 import ClientsTableSample from '@/components/ClientsTableSample'
+import VueApexCharts from 'vue-apexcharts'
+import SelectComponent from '../components/SelectComponent.vue'
+
 export default {
   name: 'DimensionContribution',
   components: {
     ClientsTableSample,
     LineChart,
-    CardComponent,
     CardWidget,
     Tiles,
     HeroBar,
-    TitleBar
+    TitleBar,
+    apexchart: VueApexCharts,
+    SelectComponent,
+    CardComponent
+
   },
   data () {
     return {
-      defaultChart: {
-        chartData: null,
-        extraOptions: chartConfig.chartOptionsMain
-      }
+      selectedOption: null,
+      departments: ['Business Development', 'Marketing', 'Sales'],
+      series: [
+            {
+              name: 'Desktops',
+              data: [
+                {
+                  x: 'ABC',
+                  y: 10
+                },
+                {
+                  x: 'DEF',
+                  y: 60
+                },
+                {
+                  x: 'XYZ',
+                  y: 41
+                }
+              ]
+            },
+            {
+              name: 'Mobile',
+              data: [
+                {
+                  x: 'ABCD',
+                  y: 10
+                },
+                {
+                  x: 'DEFG',
+                  y: 20
+                },
+                {
+                  x: 'WXYZ',
+                  y: 51
+                },
+                {
+                  x: 'PQR',
+                  y: 30
+                },
+                {
+                  x: 'MNO',
+                  y: 20
+                },
+                {
+                  x: 'CDE',
+                  y: 30
+                }
+              ]
+            }
+          ],
+          chartOptions: {
+            legend: {
+              show: true
+            },
+            chart: {
+              height: '70%',
+              type: 'treemap'
+            }
+          },
+
     }
   },
   computed: {
@@ -93,7 +150,6 @@ export default {
     }
   },
   mounted () {
-    this.fillChartData()
 
     this.$buefy.snackbar.open({
       message: 'Welcome back',
@@ -101,6 +157,12 @@ export default {
     })
   },
   methods: {
+    selectedOptionDimension1(selectedOption){
+      console.log(selectedOption)
+    },
+    selectedOptionDimension2(selectedOption2){
+      console.log(selectedOption2)
+    },
     randomChartData (n) {
       const data = []
 
@@ -111,56 +173,7 @@ export default {
       return data
     },
     fillChartData () {
-      this.defaultChart.chartData = {
-        datasets: [
-          {
-            fill: false,
-            borderColor: chartConfig.chartColors.default.primary,
-            borderWidth: 2,
-            borderDash: [],
-            borderDashOffset: 0.0,
-            pointBackgroundColor: chartConfig.chartColors.default.primary,
-            pointBorderColor: 'rgba(255,255,255,0)',
-            pointHoverBackgroundColor: chartConfig.chartColors.default.primary,
-            pointBorderWidth: 20,
-            pointHoverRadius: 4,
-            pointHoverBorderWidth: 15,
-            pointRadius: 4,
-            data: this.randomChartData(9)
-          },
-          {
-            fill: false,
-            borderColor: chartConfig.chartColors.default.info,
-            borderWidth: 2,
-            borderDash: [],
-            borderDashOffset: 0.0,
-            pointBackgroundColor: chartConfig.chartColors.default.info,
-            pointBorderColor: 'rgba(255,255,255,0)',
-            pointHoverBackgroundColor: chartConfig.chartColors.default.info,
-            pointBorderWidth: 20,
-            pointHoverRadius: 4,
-            pointHoverBorderWidth: 15,
-            pointRadius: 4,
-            data: this.randomChartData(9)
-          },
-          {
-            fill: false,
-            borderColor: chartConfig.chartColors.default.danger,
-            borderWidth: 2,
-            borderDash: [],
-            borderDashOffset: 0.0,
-            pointBackgroundColor: chartConfig.chartColors.default.danger,
-            pointBorderColor: 'rgba(255,255,255,0)',
-            pointHoverBackgroundColor: chartConfig.chartColors.default.danger,
-            pointBorderWidth: 20,
-            pointHoverRadius: 4,
-            pointHoverBorderWidth: 15,
-            pointRadius: 4,
-            data: this.randomChartData(9)
-          }
-        ],
-        labels: ['01', '02', '03', '04', '05', '06', '07', '08', '09']
-      }
+      
     }
   }
 }

@@ -41,7 +41,7 @@ export default {
          'Dashboard',
         [
           {
-            to: '/dimensions',
+            to: '/statistics',
             icon: 'desktop-mac',
             label: 'Estadisticas generales'
           }
@@ -56,7 +56,7 @@ export default {
            {
             to: '/sensors_dimensions',
             icon: 'desktop-mac',
-            label: 'Sensores y puntos de datos'
+            label: 'Sensores y Puntos de datos'
           }
         ],
         'Administracion',

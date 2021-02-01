@@ -9,10 +9,8 @@ import axios from 'axios'
 /*Firebase */
 import './auth'
 
-import firebase from 'firebase/app'
-
-
-
+/*ApexCharts (Treemap) */
+import VueApexCharts from 'vue-apexcharts'
 
 /* Router & Store */
 import router from './router'
@@ -40,7 +38,9 @@ Vue.config.productionTip = true
 
 Vue.use(Buefy)
 
+Vue.use(VueApexCharts)
 
+Vue.component('apexchart', VueApexCharts)
 
 new Vue({
   router,

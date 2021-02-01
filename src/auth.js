@@ -21,7 +21,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 
       }
       else{
-        router.replace({ path: '/dimensions'})
+        router.replace({ path: '/statistics'})
 
       }
     }

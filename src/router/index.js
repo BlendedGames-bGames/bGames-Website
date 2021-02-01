@@ -4,7 +4,7 @@ import Dashboard from '../views/Dashboard.vue'
 
 
 import Login from '../views/Login.vue'
-import Dimension from '../views/Dimension.vue'
+import Statistics from '../views/Statistics.vue'
 import SensorContribution from '../views/SensorContribution.vue'
 import DimensionContribution from '../views/DimensionContribution.vue'
 import DataEndpoint from '../views/DataEndpoint.vue'
@@ -39,25 +39,13 @@ const routes = [
     // Document title tag
     // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
-      title: 'Dimensiones',
+      title: 'Estadisticas Generales',
       requiresAuth: true
 
     },
-    path: '/dimensions',
-    name: 'dimension',
-    component: Dimension
-  },
-  {
-    // Document title tag
-    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
-    meta: {
-      title: 'Contribucion de sensores',
-      requiresAuth: true
-
-    },
-    path: '/sensors_dimensions',
-    name: 'dashboard',
-    component: SensorContribution
+    path: '/statistics',
+    name: 'statistics',
+    component: Statistics
   },
   {
     // Document title tag
@@ -71,6 +59,18 @@ const routes = [
     name: 'dashboard',
     component: DimensionContribution
   },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'Contribucion de sensores',
+      requiresAuth: true
+
+    },
+    path: '/sensors_dimensions',
+    name: 'dashboard',
+    component: SensorContribution
+  },  
   {
     // Document title tag
     // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook

@@ -6,24 +6,19 @@
     </hero-bar>
     <section class="section is-main-section">       
       <div class="columns">
-          <div v-if="defaultChart.chartData3" class="chart-area column is-5">
+          <div v-if="defaultChart.chartData3" class="chart-area column is-6">
             <card-component
               title="Dimensiones"
               icon="finance"
             >
-                <radar-chart
-                  ref="bigChart3"
-                  chart-id="big-radar-chart"
-                  :chart-data="defaultChart.chartData3"
-                  :extra-options="defaultChart.extraOptions3"
-                >
-                </radar-chart>
+                       <apexchart type="radar"  height="auto" width='100%' :options="chartOptions" :series="series"></apexchart>
+
           
             </card-component>
 
             
           </div>
-          <div v-if="defaultChart.chartData2" class="chart-area  column is-7">
+          <div v-if="defaultChart.chartData2" class="chart-area  column is-6">
              <card-component
               title="Sub-atributos"
               icon="finance"
@@ -32,15 +27,9 @@
               :selectOptions="departments"
               @selected-option-click="selectedOptionBarChartClick"
             >
-            <bar-chart
-              ref="bigChart2"
-              style="height: 100%;"
-              chart-id="big-bar-chart"
-              :chart-data="defaultChart.chartData2"
-              :extra-options="defaultChart.extraOptions2"
-            >
-            </bar-chart>
-             </card-component>
+              <apexchart type="bar" height="auto" width='100%' :options="options" :series="series2"></apexchart>
+
+            </card-component>
             
           </div>
 
@@ -100,9 +89,10 @@ import LineChart from '@/components/Charts/LineChart'
 import ClientsTableSample from '@/components/ClientsTableSample'
 import BarChart from '@/components/Charts/BarChart'
 import RadarChart from '@/components/Charts/RadarChart'
+import VueApexCharts from 'vue-apexcharts'
 
 export default {
-  name: 'Dashboard',
+  name: 'Statistics',
   components: {
     ClientsTableSample,
     LineChart,
@@ -112,7 +102,8 @@ export default {
     HeroBar,
     TitleBar,
     BarChart,
-    RadarChart
+    RadarChart,
+    apexchart: VueApexCharts
   },
   data () {
     return {
@@ -125,7 +116,33 @@ export default {
         extraOptions: chartConfig.chartOptionsMain,
         extraOptions2: chartConfig.barChartOptions,
         extraOptions3: chartConfig.radarChartOptions
-      }
+      },
+       series: [{
+            name: 'Series 1',
+            data: [80, 50, 30, 40, 100, 20],
+          }],
+          chartOptions: {
+            chart: {
+              height: 350,
+              type: 'radar',
+            },
+            xaxis: {
+              categories: ['January', 'February', 'March', 'April', 'May', 'June']
+            }
+          },
+      options: {
+        chart: {
+          id: 'vuechart-example'
+        },
+        xaxis: {
+          categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+        }
+      },
+      series2: [{
+        name: 'series-2',
+        data: [30, 40, 45, 50, 49, 60, 70, 91]
+      }]
+      
     }
   },
   computed: {

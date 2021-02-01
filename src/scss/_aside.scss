@@ -3,7 +3,8 @@
     &.has-aside-left {
       &.has-aside-expanded {
         nav.navbar, .main-body{
-          padding-left: $aside-width* 1.1 ;
+          padding-left: $aside-width* 1.3 ;
+          padding-right: $aside-width ;
 
         }
         .main-body{
@@ -21,7 +22,7 @@
   }
 
   aside.aside.is-expanded {
-    width: $aside-width *1.1;
+    width: $aside-width *1.2;
 
     .menu-list {
       @include icon-with-update-mark($aside-icon-width);
