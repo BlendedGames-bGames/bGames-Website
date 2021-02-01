@@ -157,6 +157,9 @@ export default {
     })
   },
   methods: {
+    selectedOptionClick(){
+
+    },
     selectedOptionDimension1(selectedOption){
       console.log(selectedOption)
     },
