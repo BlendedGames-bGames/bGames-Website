@@ -23,7 +23,7 @@
                                         @selected-option-click="selectedOptionDimension2"
                       >
                           <b-field  vertical
-                                    label="Subatributo" style="margin-bottom: 1em">
+                                    label="Punto de dato" style="margin-bottom: 1em">
                             <b-select
                                 v-model="selectedOption"
                                 placeholder="Selecciona un punto de datos en particular"
