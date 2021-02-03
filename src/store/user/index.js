@@ -1,22 +1,29 @@
 import firebase from '@/firebase';
 import Axios from 'axios';
 import router from '../../router/index';
+import sensor from '../sensor';
 import { baseURL, userPort } from '../urls'
 const state = {
   userProfile: {},
   loggedIn: false,
   userCreatedAlready:false,
-  userURL: baseURL+ userPort
+  userURL: baseURL+ userPort,
+  id_player:0
 };
 
 const getters = {
   userProfile: ({userProfile}) => userProfile,
   loggedIn: ({loggedIn}) => loggedIn,
-  userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready
+  userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready,
+  id_player: ({id_player}) => id_player
 
 };
 
 const mutations = {
+  SET_ID_PLAYER(state,payload) {
+    console.log(payload)
+    state.id_player = payload
+  },
   USER_DETAILS(state, userProfile) {
     state.loggedIn = true;  
     const searchTerm = '@'
@@ -43,7 +50,10 @@ const mutations = {
 };
 
 const actions = {
-  async loginProvider({ commit, state }, profile) {
+  async setIdPlayer({ commit }, id) {
+    commit('SET_ID_PLAYER',id)
+  },
+  async loginProvider({ dispatch, state,rootState }, profile) {
 
     if (state.loggedIn)
       return;
@@ -76,7 +86,6 @@ const actions = {
         try {
           const MEDIUM_POST_URL = state.userURL+'/player'
           await Axios.post(MEDIUM_POST_URL, profile);
-          router.replace({name:'dimension'})      
 
 
         } catch (error) {
@@ -85,24 +94,43 @@ const actions = {
 
         
       }
-      else{
-        router.replace({name:'dimension'})      
+      const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+user.additionalUserInfo.profile.email
+      const userData = await Axios.get(MEDIUM_GET_URL);
+      console.log(userData)
+      await dispatch('setIdPlayer', userData.data.id_players)
+      //setSensorsAndTemplatesAndEndpoints
+      await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
+      
+      rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
+        console.log(sensor)
+      });
+      router.replace({name:'statistics'})      
 
-      }
 
     } catch(error) {
       console.log(error);
     }
   },
-  async loginEmailAndPassword({ commit, state }, profile) {
+  async loginEmailAndPassword({ commit, state, rootState }, profile) {
 
     if (state.loggedIn)
       return;
 
     try {
         console.log(profile)
-        await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
-        router.replace({name:'dimension'})      
+        const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
+        const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+user.additionalUserInfo.profile.email
+        const userData = await Axios.get(MEDIUM_GET_URL);
+        console.log(userData)
+        await dispatch('setIdPlayer', userData.data.id_players)
+        //setSensorsAndTemplatesAndEndpoints
+        await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
+        
+        rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
+          console.log(sensor)
+        });
+        
+        router.replace({name:'statistics'})      
           
     } catch (error) {
             console.log(error)
@@ -137,9 +165,20 @@ const actions = {
           }
           try {
             const MEDIUM_POST_URL = state.userURL+'/player'
-            await Axios.post(MEDIUM_POST_URL, profile);
-            router.replace({name:'dimension'})      
-  
+            const user = await Axios.post(MEDIUM_POST_URL, profile);
+            const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+user.additionalUserInfo.profile.email
+            const userData = await Axios.get(MEDIUM_GET_URL);
+            await dispatch('setIdPlayer', userData.data.id_players)
+            //setSensorsAndTemplatesAndEndpoints
+            dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
+            rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
+              console.log(sensor)
+            });
+
+            router.replace({name:'statistics'})      
+        
+            
+            
   
           } catch (error) {
             console.log(error)
