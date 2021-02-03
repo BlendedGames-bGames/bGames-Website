@@ -144,6 +144,8 @@ const actions = {
         try {
           const MEDIUM_POST_URL = state.userURL+'/player'
           await Axios.post(MEDIUM_POST_URL, profile);
+          await dispatch('attribute/createPlayerLevelRelations')
+
 
 
         } catch (error) {
@@ -173,7 +175,6 @@ const actions = {
         const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
         await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
         await dispatch('settingDimensionsLevelsAndSubattributes')
-
 
         
         router.replace({name:'statistics'})      
@@ -213,6 +214,7 @@ const actions = {
             const MEDIUM_POST_URL = state.userURL+'/player'
             const user = await Axios.post(MEDIUM_POST_URL, profile);
             await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
+            await dispatch('attribute/createPlayerLevelRelations')
             await dispatch('settingDimensionsLevelsAndSubattributes')
 
 

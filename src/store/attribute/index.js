@@ -1,13 +1,17 @@
 import Vue from 'vue';
 import Axios from 'axios';
-import { baseURL, getPort } from '../urls'
+import { baseURL, getPort, postPort } from '../urls'
 const state = {
   dimensionsAndSubattributes: [],
-  getURL: baseURL+ getPort
+  id_dimensions: [],
+  getURL: baseURL+ getPort,
+  postURL: baseURL+ postPort
+
 };
 
 const getters = {
-    dimensionsAndSubattributes: ({dimensionsAndSubattributes}) => dimensionsAndSubattributes
+    dimensionsAndSubattributes: ({dimensionsAndSubattributes}) => dimensionsAndSubattributes,
+    id_dimensions: ({id_dimensions}) => id_dimensions
 
 };
 
@@ -15,6 +19,7 @@ const mutations = {
   SET_DIMENSIONS(state, dimensions) {
    dimensions.forEach(dimension => {
        state.dimensionsAndSubattributes.push(dimension)
+       state.id_dimensions.push(dimension.id_attributes)
    });
   },
   SET_SUBATTRIBUTES(state, payload) {
@@ -31,7 +36,18 @@ const mutations = {
 
 const actions = {
   
+  async createPlayerLevelRelations({ dispatch,commit, state, rootState }, profile) {
 
+    try {
+        const MEDIUM_POST_URL = state.postURL+'/player_all_attributes/'+rootState.user.id_player
+        const reply = await Axios.post(MEDIUM_POST_URL, state.id_dimensions);
+       
+
+    } catch (error) {
+        console.log(error)
+    }
+
+  },
   async setDimensionsAndSubattributes({ dispatch,commit, state }, profile) {
 
     try {
