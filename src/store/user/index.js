@@ -1,13 +1,12 @@
 import firebase from '@/firebase';
 import Axios from 'axios';
 import router from '../../router/index';
-
+import { baseURL, userPort } from '../urls'
 const state = {
   userProfile: {},
   loggedIn: false,
   userCreatedAlready:false,
-  userURL: 'http://144.126.216.255',
-  userPort: '3010'
+  userURL: baseURL+ userPort
 };
 
 const getters = {
@@ -75,7 +74,7 @@ const actions = {
           "external_id":user.user.uid
         }
         try {
-          const MEDIUM_POST_URL = state.userURL+':'+state.userPort+'/player'
+          const MEDIUM_POST_URL = state.userURL+'/player'
           await Axios.post(MEDIUM_POST_URL, profile);
           router.replace({name:'dimension'})      
 
@@ -137,7 +136,7 @@ const actions = {
             "external_id":user.user.uid
           }
           try {
-            const MEDIUM_POST_URL = state.userURL+':'+state.userPort+'/player'
+            const MEDIUM_POST_URL = state.userURL+'/player'
             await Axios.post(MEDIUM_POST_URL, profile);
             router.replace({name:'dimension'})      
   

@@ -22,7 +22,7 @@
 
 <script>
 // @ is an alias to /src
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import NavBar from '@/components/NavBar'
 import AsideMenu from '@/components/AsideMenu'
 import FooterBar from '@/components/FooterBar'
@@ -121,8 +121,23 @@ export default {
       ...mapGetters('user', {
           loggedIn: 'loggedIn',
     }),
+     ...mapGetters('attribute', {
+          dimensionsAndSubattributes: 'dimensionsAndSubattributes',
+    }),
   },
-  created () {
+  methods: {
+   
+    ...mapActions('attribute', {
+        setDimensionsAndSubattributes: 'setDimensionsAndSubattributes',
+    }),
+     
+  },
+  async created () {
+    await this.setDimensionsAndSubattributes()
+    console.log('Estas son las dimensiones disponibles')
+    this.dimensionsAndSubattributes.forEach(dimension => {
+      console.log(dimension)
+    });
    
   }
 }
