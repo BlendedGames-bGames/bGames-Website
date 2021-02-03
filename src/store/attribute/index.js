@@ -30,6 +30,8 @@ const mutations = {
 };
 
 const actions = {
+  
+
   async setDimensionsAndSubattributes({ dispatch,commit, state }, profile) {
 
     try {

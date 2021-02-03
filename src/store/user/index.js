@@ -1,21 +1,25 @@
 import firebase from '@/firebase';
 import Axios from 'axios';
 import router from '../../router/index';
-import sensor from '../sensor';
-import { baseURL, userPort } from '../urls'
+import Vue from 'vue';
+import { baseURL, userPort,getPort } from '../urls'
 const state = {
   userProfile: {},
   loggedIn: false,
   userCreatedAlready:false,
   userURL: baseURL+ userPort,
-  id_player:0
+  getURL: baseURL+ getPort,
+
+  id_player:0,
+  userLevels: []
 };
 
 const getters = {
   userProfile: ({userProfile}) => userProfile,
   loggedIn: ({loggedIn}) => loggedIn,
   userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready,
-  id_player: ({id_player}) => id_player
+  id_player: ({id_player}) => id_player,
+  userLevels: ({userLevels}) => userLevels
 
 };
 
@@ -46,10 +50,64 @@ const mutations = {
   },
   USER_CREATED_ALREADY_TOGGLE(state) {
     state.userCreatedAlready = !state.userCreatedAlready;
+  },
+  SET_USER_LEVELS(state,levels) {
+    levels.forEach(level => {
+      state.userLevels.push(level)
+    });  
+  },
+  SET_SUBATTRIBUTES_LEVELS(state,payload) {
+    let index_dimn
+    state.userLevels.forEach((dimensionLevel,index) => {
+    
+        if(dimensionLevel.id_attributes === payload.id){
+            index_dimn = index
+        }
+    });
+    Vue.set(state.userLevels[index_dimn], 'subattribute_levels',payload.subattributes)
   }
 };
 
 const actions = {
+  async settingSensorsAndEndpoints({ dispatch, commit, state, rootState  }, email){
+    const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+email
+    const userData = await Axios.get(MEDIUM_GET_URL);
+    await dispatch('setIdPlayer', userData.data.id_players)
+    //setSensorsAndTemplatesAndEndpoints
+    await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
+    rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
+      console.log(sensor)
+    });
+  },
+  async settingSubattributesLevels({ dispatch, commit, state }){
+
+    state.userLevels.forEach(userLevel => {
+      dispatch('settingSingleSubattributeLevel',{id:userLevel.id_attributes} )
+
+    });
+  }, 
+  async settingSingleSubattributeLevel({ commit, state }, payload){
+
+    try {
+      const MEDIUM_GET_URL = state.getURL+'/id_player/'+state.id_player.toString()+/attributes/+payload.id.toString()+'/subattributes_levels/'
+      const reply = await Axios.get(MEDIUM_GET_URL);
+      console.log(payload.id)
+
+      commit('SET_SUBATTRIBUTES_LEVELS', {subattributes: reply.data, id:payload.id})
+
+    } catch (error) {
+        console.log(error)
+    }
+  }, 
+  async settingDimensionsLevelsAndSubattributes({ dispatch, commit, state }){
+      const MEDIUM_GET_URL = state.getURL+'/player_all_attributes/'+state.id_player.toString()
+      const userData = await Axios.get(MEDIUM_GET_URL);
+      commit('SET_USER_LEVELS', userData.data)
+      await dispatch('settingSubattributesLevels', null)
+      state.userLevels.forEach(level => {
+        console.log(level)
+      });
+  },  
   async setIdPlayer({ commit }, id) {
     commit('SET_ID_PLAYER',id)
   },
@@ -94,16 +152,10 @@ const actions = {
 
         
       }
-      const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+user.additionalUserInfo.profile.email
-      const userData = await Axios.get(MEDIUM_GET_URL);
-      console.log(userData)
-      await dispatch('setIdPlayer', userData.data.id_players)
-      //setSensorsAndTemplatesAndEndpoints
-      await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
+      await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
+      await dispatch('settingDimensionsLevelsAndSubattributes')
+
       
-      rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
-        console.log(sensor)
-      });
       router.replace({name:'statistics'})      
 
 
@@ -119,16 +171,10 @@ const actions = {
     try {
         console.log(profile)
         const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
-        const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+user.additionalUserInfo.profile.email
-        const userData = await Axios.get(MEDIUM_GET_URL);
-        console.log(userData)
-        await dispatch('setIdPlayer', userData.data.id_players)
-        //setSensorsAndTemplatesAndEndpoints
-        await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
-        
-        rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
-          console.log(sensor)
-        });
+        await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
+        await dispatch('settingDimensionsLevelsAndSubattributes')
+
+
         
         router.replace({name:'statistics'})      
           
@@ -166,19 +212,11 @@ const actions = {
           try {
             const MEDIUM_POST_URL = state.userURL+'/player'
             const user = await Axios.post(MEDIUM_POST_URL, profile);
-            const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+user.additionalUserInfo.profile.email
-            const userData = await Axios.get(MEDIUM_GET_URL);
-            await dispatch('setIdPlayer', userData.data.id_players)
-            //setSensorsAndTemplatesAndEndpoints
-            dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
-            rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
-              console.log(sensor)
-            });
+            await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
+            await dispatch('settingDimensionsLevelsAndSubattributes')
+
 
             router.replace({name:'statistics'})      
-        
-            
-            
   
           } catch (error) {
             console.log(error)
