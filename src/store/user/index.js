@@ -69,6 +69,17 @@ const mutations = {
   USER_CREATED_ALREADY_TOGGLE(state) {
     state.userCreatedAlready = !state.userCreatedAlready;
   },
+  SET_RT_USER_LEVELS(state,payload){
+    payload.id_attributes.forEach( (id_attribute,index) => {
+      state.userLevels.forEach((level,index2) => {
+        if(level.id_attributes === id_attribute){
+          state.userLevels[index2].data = payload.data[index]
+          state.userDimensionLevels[index2] = payload.data[index]
+        }
+      });
+    })
+
+  },
   SET_USER_LEVELS(state,levels) {
     levels.forEach(level => {
       state.userLevels.push(level)
@@ -90,6 +101,10 @@ const mutations = {
 const actions = {
   async resetVariables({ dispatch, commit, state, rootState  }, email){
     commit('RESET_VARIABLES')
+   
+  },
+  async setRealTimeDimensionLevels({ dispatch, commit, state, rootState  }, payload){
+    commit('SET_RT_USER_LEVELS',payload)
    
   },
   async settingData({ dispatch, commit, state, rootState  }, email){

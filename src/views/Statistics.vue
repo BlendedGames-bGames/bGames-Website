@@ -11,7 +11,7 @@
               title="Dimensiones"
               icon="finance"
             >
-              <apexchart type="radar"  height="auto" width='100%' :options="chartOptions" :series="series"></apexchart>
+              <apexchart type="radar" :id="radarChartId" height="auto" width='100%' :options="chartOptions" :series="series"></apexchart>
 
           
             </card-component>
@@ -89,7 +89,8 @@ import LineChart from '@/components/Charts/LineChart'
 import ClientsTableSample from '@/components/ClientsTableSample'
 import VueApexCharts from 'vue-apexcharts'
 import { mapGetters, mapActions } from 'vuex'
-import Vue from 'vue'
+import io from 'socket.io-client';
+import {baseURL, postPort} from '../store/urls'
 export default {
   name: 'Statistics',
   components: {
@@ -104,7 +105,9 @@ export default {
   },
   data () {
     return {
+      radarChartId:0,
       department: null,
+      socket: io(baseURL+postPort),
       departments: ['Business Development', 'Marketing', 'Sales'],
       defaultChart: {
         chartData: null,
@@ -216,6 +219,7 @@ export default {
     }),
     ...mapGetters('attribute', {
           name_dimensions: 'name_dimensions',
+          id_dimensions: 'id_dimensions',
     }),
   },
   mounted () {
@@ -223,13 +227,49 @@ export default {
     this.fillChartData()
     this.fillChartData2()
     this.fillChartRadar()
+    this.listen();
+
     this.$buefy.snackbar.open({
       message: 'Welcome back',
       queue: false
     })
   },
   methods: {
-   
+    ...mapActions('user',{
+      setRealTimeDimensionLevels: 'setRealTimeDimensionLevels'
+    }),
+    settingNewData(attribute){
+      let realData = this.series[0].data
+      attribute.id_attributes.forEach( (id_attribute,index) => {
+          this.id_dimensions.forEach((level,index2) => {
+            if(level === id_attribute){
+              realData[index2] = attribute.data[index]
+            }
+          });
+      })
+      this.series = [{
+        data:realData
+      }]
+      this.radarChartId++
+      console.log( this.series[0].data)
+    },
+    joinServer: function () {
+			this.socket.on('loggedIn', data => {
+				this.messages = data.messages;
+				this.users = data.users;
+				this.socket.emit('newuser', this.username);
+			});
+			this.listen();
+		},
+		listen: function () {		
+      this.socket.on('player_attribute', attribute => {
+        console.log('aqui')
+        console.log(attribute)
+        this.settingNewData(attribute)
+        this.setRealTimeDimensionLevels(attribute)
+      });
+      
+		},
     selectedOptionBarChartClick(selectedOption){
       console.log(selectedOption)
     },
