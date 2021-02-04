@@ -92,6 +92,14 @@ const actions = {
     commit('RESET_VARIABLES')
    
   },
+  async SettingData({ dispatch, commit, state, rootState  }, email){
+    await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
+      
+    await dispatch('settingSensorsAndEndpoints',email)
+    await dispatch('settingDimensionsLevelsAndSubattributes')
+    commit('TOGGLE_DATA_READY')
+    router.replace({name:'statistics'})      
+  },
   
   async settingSensorsAndEndpoints({ dispatch, commit, state, rootState  }, email){
     const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+email
@@ -114,9 +122,7 @@ const actions = {
       const MEDIUM_GET_URL = state.getURL+'/id_player/'+state.id_player.toString()+/attributes/+payload.id.toString()+'/subattributes_levels/'
       const reply = await Axios.get(MEDIUM_GET_URL);
       console.log(payload.id)
-
       commit('SET_SUBATTRIBUTES_LEVELS', {subattributes: reply.data, id:payload.id})
-
     } catch (error) {
         console.log(error)
     }
@@ -129,26 +135,20 @@ const actions = {
       state.userLevels.forEach(level => {
         console.log(level)
       });
-
-
   },  
   async setIdPlayer({ commit }, id) {
     commit('SET_ID_PLAYER',id)
   },
   async loginProvider({ dispatch, state,commit,rootState }, profile) {
-
-    
-    
+    if (state.loggedIn) return;  
     let provider;
     switch (profile.provider) {
       case 'Google':
         provider = new firebase.auth.GoogleAuthProvider();
-
         break;
       case 'Facebook':
         provider = new firebase.auth.FacebookAuthProvider();
-        break;
-      
+        break;      
       default:
         break;
     }    
@@ -168,25 +168,12 @@ const actions = {
           await Axios.post(MEDIUM_POST_URL, profile);
           await dispatch('attribute/createPlayerLevelRelations',null,{root:true})
 
-
-
         } catch (error) {
           console.log(error)
         }
-
-        
       }
-      await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
-      
-      await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
-      await dispatch('settingDimensionsLevelsAndSubattributes')
-      commit('TOGGLE_DATA_READY')
-      router.replace({name:'statistics'})      
-
-
-      
-
-
+      dispatch('settingData',user.additionalUserInfo.profile.email)
+     
     } catch(error) {
       console.log(error);
     }
@@ -199,15 +186,8 @@ const actions = {
     try {
         console.log(profile)
         const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
-        await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
-      
-        await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
-        await dispatch('settingDimensionsLevelsAndSubattributes')
-        commit('TOGGLE_DATA_READY')
-        router.replace({name:'statistics'})     
+        dispatch('settingData',user.additionalUserInfo.profile.email)
 
-        
-          
     } catch (error) {
             console.log(error)
     }
@@ -244,19 +224,10 @@ const actions = {
           try {
             const MEDIUM_POST_URL = state.userURL+'/player'
             const user = await Axios.post(MEDIUM_POST_URL, profile);
-            await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
-      
-            await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
-            await dispatch('settingDimensionsLevelsAndSubattributes')
-            commit('TOGGLE_DATA_READY')
-            router.replace({name:'statistics'})     
-
-  
+            dispatch('settingData',user.user.email)
           } catch (error) {
             console.log(error)
           }
-  
-          
         }
         else{
            router.replace({name:'login'})
@@ -264,8 +235,7 @@ const actions = {
         
     } catch (error) {
         console.log(error)
-        commit('USER_CREATED_ALREADY_TOGGLE')
-
+        dispatch('userCreatedAlreadyToggle')
     }
   },
   userCreatedAlreadyToggle({ commit, state }, payload) {
