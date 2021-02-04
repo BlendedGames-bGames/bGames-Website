@@ -18,16 +18,16 @@
 
             
           </div>
-          <div v-if="chartBarLoading" class="chart-area  column is-6">
+          <div  class="chart-area  column is-6">
              <card-component
               title="Sub-atributos"
               icon="finance"
               select
               placeholder="Selecciona una dimension"
-              :selectOptions="departments"
+              :selectOptions="name_dimensions"
               @selected-option-click="selectedOptionBarChartClick"
             >
-              <apexchart type="bar" height="auto" width='100%' :options="options" :series="series2"></apexchart>
+              <apexchart type="bar" v-if="chartBarLoading"  height="auto" width='100%' :options="options" :series="series2"></apexchart>
 
             </card-component>
             
@@ -134,13 +134,13 @@ export default {
             }
       },
       series2: [{
-            /*data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]*/
+            //data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]
             data:[]
       }],
       options: {
         chart: {
           type: 'bar',
-          height: 380
+          height: '100%'
         },
         plotOptions: {
           bar: {
@@ -153,8 +153,7 @@ export default {
           }
         },
         colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B', '#2b908f', '#f9a3a4', '#90ee7e',
-          '#f48024', '#69d2e7'
-        ],
+          '#f48024', '#69d2e7'],
         dataLabels: {
           enabled: true,
           textAnchor: 'start',
@@ -174,9 +173,7 @@ export default {
           colors: ['#fff']
         },
         xaxis: {
-          /*categories: ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy', 'France', 'Japan',
-            'United States', 'China', 'India'
-          ],*/
+          //categories: ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy', 'France', 'Japan', 'United States', 'China', 'India' ],
           categories: []
         },
         yaxis: {
@@ -215,6 +212,7 @@ export default {
     },
     ...mapGetters('user', {
           userDimensionLevels: 'userDimensionLevels',
+          userLevels: 'userLevels'
 
     }),
     ...mapGetters('attribute', {
@@ -250,8 +248,6 @@ export default {
       this.series = [{
         data:realData
       }]
-      this.radarChartId++
-      console.log( this.series[0].data)
     },
     joinServer: function () {
 			this.socket.on('loggedIn', data => {
@@ -272,6 +268,7 @@ export default {
 		},
     selectedOptionBarChartClick(selectedOption){
       console.log(selectedOption)
+      this.fillChartBar(selectedOption)
     },
     selectedOptionLineChartClick(selectedOption){
       console.log(selectedOption)
@@ -292,9 +289,90 @@ export default {
       this.series[0].data = this.userDimensionLevels
       this.chartOptions.xaxis.categories = this.name_dimensions
       this.chartRadarLoading = true
-
-
-
+    },
+    async fillChartBar(selectedOption){
+      this.chartBarLoading = false
+      let chosenSubattributes;
+      for (const dimension of this.userLevels) {
+        if(dimension.name === selectedOption){
+          chosenSubattributes = dimension.subattribute_levels
+          break
+        }        
+      }
+      let name_subattributes = []
+      let data_subattributes = []
+      for (const subattribute of chosenSubattributes) {
+        name_subattributes.push(subattribute.name_subattributes)
+        data_subattributes.push(subattribute.total)
+      }
+      console.log(data_subattributes)
+      console.log(typeof(data_subattributes[0]))
+      console.log(name_subattributes)
+      this.series2 = [{ data:data_subattributes }],
+      this.options = {
+        chart: {
+          type: 'bar',
+          height: '100%'
+        },
+        plotOptions: {
+          bar: {
+            barHeight: '100%',
+            distributed: true,
+            horizontal: true,
+            dataLabels: {
+              position: 'bottom'
+            },
+          }
+        },
+        colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B', '#2b908f', '#f9a3a4', '#90ee7e',
+          '#f48024', '#69d2e7'],
+        dataLabels: {
+          enabled: true,
+          textAnchor: 'start',
+          style: {
+            colors: ['#fff']
+          },
+          formatter: function (val, opt) {
+            return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val
+          },
+          offsetX: 0,
+          dropShadow: {
+            enabled: true
+          }
+        },
+        stroke: {
+          width: 1,
+          colors: ['#fff']
+        },
+        xaxis: {
+          //categories: ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy', 'France', 'Japan', 'United States', 'China', 'India' ],
+          categories: name_subattributes
+        },
+        yaxis: {
+          labels: {
+            show: false
+          }
+        },
+        title: {
+            text: `Composicion de la dimension ${selectedOption} en subatributos`,
+            align: 'center',
+            floating: true
+        },
+        tooltip: {
+          theme: 'dark',
+          x: {
+            show: false
+          },
+          y: {
+            title: {
+              formatter: function () {
+                return ''
+              }
+            }
+          }
+        }
+      }
+      this.chartBarLoading = true
     },
     fillChartData () {
       this.defaultChart.chartData = {
