@@ -68,7 +68,7 @@
 
 <script>
 import CardComponent from '@/components/CardComponent'
-import { mapMutations, mapActions } from 'vuex'
+import { mapMutations, mapActions,mapGetters } from 'vuex'
 export default {
   name: 'LoginForm',
   components: {
@@ -82,6 +82,11 @@ export default {
         password: null
       }
     }
+  },
+  computed:{
+    ...mapGetters('user',{
+      loggedIn: 'loggedIn'
+    })
   },
   methods: {
     ...mapMutations([

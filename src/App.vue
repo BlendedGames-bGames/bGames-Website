@@ -1,6 +1,6 @@
 <template>
   <div >
-    <div  v-if="loggedIn" class="main-view has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
+    <div  v-if="loggedIn && dataReady" class="main-view has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
         <nav-bar />
         <aside-menu :menu="menu" />
              <div class="main-body">
@@ -120,25 +120,8 @@ export default {
   computed: {
       ...mapGetters('user', {
           loggedIn: 'loggedIn',
-    }),
-     ...mapGetters('attribute', {
-          dimensionsAndSubattributes: 'dimensionsAndSubattributes',
-    }),
-  },
-  methods: {
-   
-    ...mapActions('attribute', {
-        setDimensionsAndSubattributes: 'setDimensionsAndSubattributes',
-    }),
-     
-  },
-  async created () {
-    await this.setDimensionsAndSubattributes()
-    console.log('Estas son las dimensiones disponibles')
-    this.dimensionsAndSubattributes.forEach(dimension => {
-      console.log(dimension)
-    });
-   
+          dataReady: 'dataReady'
+    })
   }
 }
 </script>

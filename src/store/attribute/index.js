@@ -4,6 +4,8 @@ import { baseURL, getPort, postPort } from '../urls'
 const state = {
   dimensionsAndSubattributes: [],
   id_dimensions: [],
+  name_dimensions: [],
+
   getURL: baseURL+ getPort,
   postURL: baseURL+ postPort
 
@@ -11,15 +13,24 @@ const state = {
 
 const getters = {
     dimensionsAndSubattributes: ({dimensionsAndSubattributes}) => dimensionsAndSubattributes,
-    id_dimensions: ({id_dimensions}) => id_dimensions
+    id_dimensions: ({id_dimensions}) => id_dimensions,
+    name_dimensions: ({name_dimensions}) => name_dimensions
+
 
 };
 
 const mutations = {
+  RESET_VARIABLES(state){
+    state.dimensionsAndSubattributes.splice(0)
+    state.id_dimensions.splice(0)
+    state.name_dimensions.splice(0)
+
+  },
   SET_DIMENSIONS(state, dimensions) {
    dimensions.forEach(dimension => {
        state.dimensionsAndSubattributes.push(dimension)
        state.id_dimensions.push(dimension.id_attributes)
+       state.name_dimensions.push(dimension.name)
    });
   },
   SET_SUBATTRIBUTES(state, payload) {
@@ -61,12 +72,10 @@ const actions = {
     }
 
   },
-  
-
   async setSubattributes({ dispatch, commit, state }, profile) {
-    state.dimensionsAndSubattributes.forEach(dimension => {
-        dispatch('setSingleSubattribute',{id:dimension.id_attributes} )
-    });
+    for (const dimension of state.dimensionsAndSubattributes) {      
+      await dispatch('setSingleSubattribute',{id:dimension.id_attributes} )   
+    }
   },
   async setSingleSubattribute({ commit, state }, payload) {
     try {

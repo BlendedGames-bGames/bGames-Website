@@ -78,7 +78,6 @@ import Tiles from '@/components/Tiles'
 import CardWidget from '@/components/CardWidget'
 import CardComponent from '@/components/CardComponent'
 import LineChart from '@/components/Charts/LineChart'
-import BarChart from '@/components/Charts/BarChart'
 
 import ClientsTableSample from '@/components/ClientsTableSample'
 export default {
@@ -90,8 +89,7 @@ export default {
     CardWidget,
     Tiles,
     HeroBar,
-    TitleBar,
-    BarChart
+    TitleBar
   },
   data () {
     return {

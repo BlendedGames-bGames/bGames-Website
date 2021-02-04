@@ -20,10 +20,6 @@ firebase.auth().onAuthStateChanged(function(user) {
         router.replace({ path: window.localStorage.getItem('previousRoute') })
 
       }
-      else{
-        router.replace({ path: '/statistics'})
-
-      }
     }
     
   } else {

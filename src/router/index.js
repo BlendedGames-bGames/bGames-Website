@@ -56,7 +56,7 @@ const routes = [
 
     },
     path: '/dimensions_sensors',
-    name: 'dashboard',
+    name: 'dimensions_sensors',
     component: DimensionContribution
   },
   {
@@ -68,7 +68,7 @@ const routes = [
 
     },
     path: '/sensors_dimensions',
-    name: 'dashboard',
+    name: 'sensors_dimensions',
     component: SensorContribution
   },  
   {
@@ -80,7 +80,7 @@ const routes = [
 
     },
     path: '/data_points',
-    name: 'dashboard',
+    name: 'data_points',
     component: DataEndpoint
   },
   {
@@ -92,7 +92,7 @@ const routes = [
 
     },
     path: '/sensor_asociation',
-    name: 'dashboard',
+    name: 'sensor_asociation',
     component: SensorAsociation
   },
   {

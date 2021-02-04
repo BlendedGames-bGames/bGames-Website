@@ -9,21 +9,39 @@ const state = {
   userCreatedAlready:false,
   userURL: baseURL+ userPort,
   getURL: baseURL+ getPort,
-
   id_player:0,
-  userLevels: []
+  userLevels: [],
+  userDimensionLevels: [],
+  dataReady:false
 };
 
 const getters = {
+
   userProfile: ({userProfile}) => userProfile,
+  dataReady: ({dataReady}) => dataReady,
+
   loggedIn: ({loggedIn}) => loggedIn,
   userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready,
   id_player: ({id_player}) => id_player,
-  userLevels: ({userLevels}) => userLevels
+  userLevels: ({userLevels}) => userLevels,
+  userDimensionLevels: ({userDimensionLevels}) => userDimensionLevels
+
 
 };
 
 const mutations = {
+  TOGGLE_DATA_READY(state){
+    state.dataReady = !state.dataReady
+
+  },
+  RESET_VARIABLES(state){
+    state.id_player = 0
+    state.userLevels.splice(0)
+    state.userDimensionLevels.splice(0)
+    state.userProfile = {}
+    state.dataReady = false
+    state.loggedIn = false
+  },
   SET_ID_PLAYER(state,payload) {
     console.log(payload)
     state.id_player = payload
@@ -54,6 +72,7 @@ const mutations = {
   SET_USER_LEVELS(state,levels) {
     levels.forEach(level => {
       state.userLevels.push(level)
+      state.userDimensionLevels.push(level.data)
     });  
   },
   SET_SUBATTRIBUTES_LEVELS(state,payload) {
@@ -69,6 +88,11 @@ const mutations = {
 };
 
 const actions = {
+  async resetVariables({ dispatch, commit, state, rootState  }, email){
+    commit('RESET_VARIABLES')
+   
+  },
+  
   async settingSensorsAndEndpoints({ dispatch, commit, state, rootState  }, email){
     const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+email
     const userData = await Axios.get(MEDIUM_GET_URL);
@@ -80,11 +104,9 @@ const actions = {
     });
   },
   async settingSubattributesLevels({ dispatch, commit, state }){
-
-    state.userLevels.forEach(userLevel => {
-      dispatch('settingSingleSubattributeLevel',{id:userLevel.id_attributes} )
-
-    });
+    for (const level of state.userLevels) {      
+      await dispatch('settingSingleSubattributeLevel', {id:level.id_attributes} )      
+    }
   }, 
   async settingSingleSubattributeLevel({ commit, state }, payload){
 
@@ -107,15 +129,15 @@ const actions = {
       state.userLevels.forEach(level => {
         console.log(level)
       });
+
+
   },  
   async setIdPlayer({ commit }, id) {
     commit('SET_ID_PLAYER',id)
   },
-  async loginProvider({ dispatch, state,rootState }, profile) {
+  async loginProvider({ dispatch, state,commit,rootState }, profile) {
 
-    if (state.loggedIn)
-      return;
-
+    
     
     let provider;
     switch (profile.provider) {
@@ -144,7 +166,7 @@ const actions = {
         try {
           const MEDIUM_POST_URL = state.userURL+'/player'
           await Axios.post(MEDIUM_POST_URL, profile);
-          await dispatch('attribute/createPlayerLevelRelations')
+          await dispatch('attribute/createPlayerLevelRelations',null,{root:true})
 
 
 
@@ -154,11 +176,15 @@ const actions = {
 
         
       }
+      await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
+      
       await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
       await dispatch('settingDimensionsLevelsAndSubattributes')
+      commit('TOGGLE_DATA_READY')
+      router.replace({name:'statistics'})      
+
 
       
-      router.replace({name:'statistics'})      
 
 
     } catch(error) {
@@ -173,20 +199,25 @@ const actions = {
     try {
         console.log(profile)
         const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
+        await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
+      
         await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
         await dispatch('settingDimensionsLevelsAndSubattributes')
+        commit('TOGGLE_DATA_READY')
+        router.replace({name:'statistics'})     
 
         
-        router.replace({name:'statistics'})      
           
     } catch (error) {
             console.log(error)
     }
   },
 
-  async logout() {
+  async logout({ dispatch, state,rootState }, profile) {
     try {
       await firebase.auth().signOut();
+      await dispatch('resetAllVariables',null,{root:true})
+      console.log('paso por aqui')
       router.replace({name:'login'})
 
     } catch(error) {
@@ -213,12 +244,13 @@ const actions = {
           try {
             const MEDIUM_POST_URL = state.userURL+'/player'
             const user = await Axios.post(MEDIUM_POST_URL, profile);
+            await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
+      
             await dispatch('settingSensorsAndEndpoints',user.additionalUserInfo.profile.email)
-            await dispatch('attribute/createPlayerLevelRelations')
             await dispatch('settingDimensionsLevelsAndSubattributes')
+            commit('TOGGLE_DATA_READY')
+            router.replace({name:'statistics'})     
 
-
-            router.replace({name:'statistics'})      
   
           } catch (error) {
             console.log(error)

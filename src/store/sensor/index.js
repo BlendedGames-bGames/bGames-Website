@@ -15,6 +15,10 @@ const getters = {
 };
 
 const mutations = {
+  RESET_VARIABLES(state){
+    state.sensorTemplates.splice(0)
+    state.sensorsAndEndpoints.splice(0)
+  },
   SET_SENSOR_TEMPLATES(state, sensorTemplates) {
     console.log()
     sensorTemplates.forEach(sensorTemplate => {
@@ -72,9 +76,10 @@ const actions = {
   
 
   async setEndpoints({ dispatch, commit, state }, profile) {
-    state.sensorsAndEndpoints.forEach(sensor => {
-        dispatch('setSingleEndpoints',{id:sensor.id_online_sensor} )
-    });
+    for (const sensor of state.sensorsAndEndpoints) {      
+      await dispatch('setSingleEndpoints', {id:sensor.id_online_sensor})      
+    }
+    
   },
   async setSingleEndpoints({ commit, state, rootState }, payload) {
     try {

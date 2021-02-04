@@ -5,20 +5,20 @@
       Estadisticas generales
     </hero-bar>
     <section class="section is-main-section">       
-      <div class="columns">
-          <div v-if="defaultChart.chartData3" class="chart-area column is-6">
+      <div class="columns" >
+          <div v-if="chartRadarLoading" class="chart-area column is-6">
             <card-component
               title="Dimensiones"
               icon="finance"
             >
-                       <apexchart type="radar"  height="auto" width='100%' :options="chartOptions" :series="series"></apexchart>
+              <apexchart type="radar"  height="auto" width='100%' :options="chartOptions" :series="series"></apexchart>
 
           
             </card-component>
 
             
           </div>
-          <div v-if="defaultChart.chartData2" class="chart-area  column is-6">
+          <div v-if="chartBarLoading" class="chart-area  column is-6">
              <card-component
               title="Sub-atributos"
               icon="finance"
@@ -87,10 +87,9 @@ import CardWidget from '@/components/CardWidget'
 import CardComponent from '@/components/CardComponent'
 import LineChart from '@/components/Charts/LineChart'
 import ClientsTableSample from '@/components/ClientsTableSample'
-import BarChart from '@/components/Charts/BarChart'
-import RadarChart from '@/components/Charts/RadarChart'
 import VueApexCharts from 'vue-apexcharts'
-
+import { mapGetters, mapActions } from 'vuex'
+import Vue from 'vue'
 export default {
   name: 'Statistics',
   components: {
@@ -101,8 +100,6 @@ export default {
     Tiles,
     HeroBar,
     TitleBar,
-    BarChart,
-    RadarChart,
     apexchart: VueApexCharts
   },
   data () {
@@ -112,55 +109,127 @@ export default {
       defaultChart: {
         chartData: null,
         chartData2: null,
-        chartData3: null,
         extraOptions: chartConfig.chartOptionsMain,
         extraOptions2: chartConfig.barChartOptions,
-        extraOptions3: chartConfig.radarChartOptions
       },
-       series: [{
-            name: 'Series 1',
-            data: [80, 50, 30, 40, 100, 20],
-          }],
-          chartOptions: {
-            chart: {
-              height: 350,
+      chartRadarLoading:false,
+      chartBarLoading:false,
+
+      series: [{
+            name: '',
+            /*data: [80, 50, 30, 40, 100, 20],*/
+            data: []
+      }],
+      chartOptions: {
+          chart: {
+              height: '100%',
               type: 'radar',
             },
             xaxis: {
-              categories: ['January', 'February', 'March', 'April', 'May', 'June']
+              /*categories: ['January', 'February', 'March', 'April', 'May', 'June']*/
+              categories: []
             }
-          },
-      options: {
-        chart: {
-          id: 'vuechart-example'
-        },
-        xaxis: {
-          categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-        }
       },
       series2: [{
-        name: 'series-2',
-        data: [30, 40, 45, 50, 49, 60, 70, 91]
-      }]
-      
+            /*data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]*/
+            data:[]
+      }],
+      options: {
+        chart: {
+          type: 'bar',
+          height: 380
+        },
+        plotOptions: {
+          bar: {
+            barHeight: '100%',
+            distributed: true,
+            horizontal: true,
+            dataLabels: {
+              position: 'bottom'
+            },
+          }
+        },
+        colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B', '#2b908f', '#f9a3a4', '#90ee7e',
+          '#f48024', '#69d2e7'
+        ],
+        dataLabels: {
+          enabled: true,
+          textAnchor: 'start',
+          style: {
+            colors: ['#fff']
+          },
+          formatter: function (val, opt) {
+            return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val
+          },
+          offsetX: 0,
+          dropShadow: {
+            enabled: true
+          }
+        },
+        stroke: {
+          width: 1,
+          colors: ['#fff']
+        },
+        xaxis: {
+          /*categories: ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy', 'France', 'Japan',
+            'United States', 'China', 'India'
+          ],*/
+          categories: []
+        },
+        yaxis: {
+          labels: {
+            show: false
+          }
+        },
+        title: {
+            text: 'Custom DataLabels',
+            align: 'center',
+            floating: true
+        },
+        subtitle: {
+            text: 'Category Names as DataLabels inside bars',
+            align: 'center',
+        },
+        tooltip: {
+          theme: 'dark',
+          x: {
+            show: false
+          },
+          y: {
+            title: {
+              formatter: function () {
+                return ''
+              }
+            }
+          }
+        }
+      }
     }
   },
   computed: {
     titleStack () {
       return ['Admin', 'Dashboard']
-    }
+    },
+    ...mapGetters('user', {
+          userDimensionLevels: 'userDimensionLevels',
+
+    }),
+    ...mapGetters('attribute', {
+          name_dimensions: 'name_dimensions',
+    }),
   },
   mounted () {
+    console.log('hola')
     this.fillChartData()
     this.fillChartData2()
-    this.fillChartData3()
-
+    this.fillChartRadar()
     this.$buefy.snackbar.open({
       message: 'Welcome back',
       queue: false
     })
   },
   methods: {
+   
     selectedOptionBarChartClick(selectedOption){
       console.log(selectedOption)
     },
@@ -176,6 +245,16 @@ export default {
       }
 
       return data
+    },
+    async fillChartRadar(){
+      console.log(this.userDimensionLevels)
+      console.log(this.name_dimensions)
+      this.series[0].data = this.userDimensionLevels
+      this.chartOptions.xaxis.categories = this.name_dimensions
+      this.chartRadarLoading = true
+
+
+
     },
     fillChartData () {
       this.defaultChart.chartData = {
@@ -244,19 +323,7 @@ export default {
             ]
       }
     },
-    fillChartData3 () {
-      this.defaultChart.chartData3 = {
-            labels: ['Running', 'Swimming', 'Eating', 'Cycling'],
-            datasets: [{
-                label: 'Data One',
-                pointBackgroundColor: 'white',
-                borderWidth: 1,
-                backgroundColor: chartConfig.chartColors.default.info,
-                pointBorderColor: '#249EBF',
-                  data: [12, 10, 4, 2]
-            }]
-      }
-    }
+ 
   }
 }
 </script>

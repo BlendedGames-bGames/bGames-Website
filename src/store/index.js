@@ -86,6 +86,12 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    resetAllVariables({ dispatch, commit, state, rootState }) {
+      dispatch('user/resetVariables')
+      commit('sensor/RESET_VARIABLES')
+      commit('attribute/RESET_VARIABLES')
+
+    },
     hasPermission(context) {
       if(context.state('userCred')) return true
       else return false
