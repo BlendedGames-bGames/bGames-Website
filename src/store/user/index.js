@@ -92,7 +92,7 @@ const actions = {
     commit('RESET_VARIABLES')
    
   },
-  async SettingData({ dispatch, commit, state, rootState  }, email){
+  async settingData({ dispatch, commit, state, rootState  }, email){
     await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
       
     await dispatch('settingSensorsAndEndpoints',email)
