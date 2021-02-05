@@ -2,7 +2,8 @@ import firebase from '@/firebase';
 import Axios from 'axios';
 import router from '../../router/index';
 import Vue from 'vue';
-import { baseURL, userPort,getPort } from '../urls'
+import io from 'socket.io-client';
+import { baseURL, userPort, getPort, postPort} from '../urls'
 const state = {
   userProfile: {},
   loggedIn: false,
@@ -12,13 +13,15 @@ const state = {
   id_player:0,
   userLevels: [],
   userDimensionLevels: [],
-  dataReady:false
+  dataReady:false,
+  dimensionSocket: null
 };
 
 const getters = {
 
   userProfile: ({userProfile}) => userProfile,
   dataReady: ({dataReady}) => dataReady,
+  dimensionSocket: ({dimensionSocket}) => dimensionSocket,
 
   loggedIn: ({loggedIn}) => loggedIn,
   userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready,
@@ -62,6 +65,17 @@ const mutations = {
       email: userProfile.email
     };
   },
+  SETUP_DIMENSION_SOCKET(state) {
+    state.dimensionSocket = io(baseURL+postPort+'/dimensions')
+    state.dimensionSocket.on('welcome', (msg) => {
+      console.log(msg)
+    });
+    state.dimensionSocket.emit('joinRoom',state.id_player.toString());			
+    state.dimensionSocket.on('success', (msg) => {
+      console.log(msg)
+    });
+
+  },
   LOGOUT(state) {
     state.loggedIn = false;
     state.userProfile = {};
@@ -78,7 +92,23 @@ const mutations = {
         }
       });
     })
-
+  },
+  SET_RT_USER_SUBATT_LEVELS(state,payload){
+    console.log(payload.id_subattributes)
+    console.log(payload.data)
+    console.log(state.userLevels)
+    payload.id_subattributes.forEach( (id_subattribute,index) => {
+      state.userLevels.forEach((level,index2) => {
+        level.subattribute_levels.forEach((dimension_subattributes,index3) => {
+          if(dimension_subattributes.id_subattributes === id_subattribute){
+            state.userLevels[index2].subattribute_levels[index3].total += payload.data[index]
+          }
+        });
+      });
+    })
+    console.log(payload.id_subattributes)
+    console.log(payload.data)
+    console.log(state.userLevels)
   },
   SET_USER_LEVELS(state,levels) {
     levels.forEach(level => {
@@ -107,12 +137,18 @@ const actions = {
     commit('SET_RT_USER_LEVELS',payload)
    
   },
+  async setRealTimeSubattributeLevels({ dispatch, commit, state, rootState  }, payload){
+    commit('SET_RT_USER_SUBATT_LEVELS',payload)
+   
+  },
   async settingData({ dispatch, commit, state, rootState  }, email){
     await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
       
     await dispatch('settingSensorsAndEndpoints',email)
     await dispatch('settingDimensionsLevelsAndSubattributes')
+    await dispatch('setupDimensionSocket')
     commit('TOGGLE_DATA_READY')
+
     router.replace({name:'statistics'})      
   },
   
@@ -151,11 +187,14 @@ const actions = {
         console.log(level)
       });
   },  
+  async setupDimensionSocket({ commit }) {
+    commit('SETUP_DIMENSION_SOCKET')
+
+  },
   async setIdPlayer({ commit }, id) {
     commit('SET_ID_PLAYER',id)
   },
   async loginProvider({ dispatch, state,commit,rootState }, profile) {
-    if (state.loggedIn) return;  
     let provider;
     switch (profile.provider) {
       case 'Google':
@@ -188,7 +227,7 @@ const actions = {
         }
       }
       dispatch('settingData',user.additionalUserInfo.profile.email)
-     
+    
     } catch(error) {
       console.log(error);
     }

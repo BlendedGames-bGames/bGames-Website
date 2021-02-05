@@ -89,7 +89,6 @@ import LineChart from '@/components/Charts/LineChart'
 import ClientsTableSample from '@/components/ClientsTableSample'
 import VueApexCharts from 'vue-apexcharts'
 import { mapGetters, mapActions } from 'vuex'
-import io from 'socket.io-client';
 import {baseURL, postPort} from '../store/urls'
 export default {
   name: 'Statistics',
@@ -107,8 +106,8 @@ export default {
     return {
       radarChartId:0,
       department: null,
-      socket: io(baseURL+postPort),
-      departments: ['Business Development', 'Marketing', 'Sales'],
+      departments: ['Depto1','Depto2'],
+      id_actualChosenDimensionBar: null,
       defaultChart: {
         chartData: null,
         chartData2: null,
@@ -212,7 +211,9 @@ export default {
     },
     ...mapGetters('user', {
           userDimensionLevels: 'userDimensionLevels',
-          userLevels: 'userLevels'
+          userLevels: 'userLevels',
+          id_player: 'id_player',
+          dimensionSocket: 'dimensionSocket'
 
     }),
     ...mapGetters('attribute', {
@@ -234,9 +235,10 @@ export default {
   },
   methods: {
     ...mapActions('user',{
-      setRealTimeDimensionLevels: 'setRealTimeDimensionLevels'
+      setRealTimeDimensionLevels: 'setRealTimeDimensionLevels',
+      setRealTimeSubattributeLevels: 'setRealTimeSubattributeLevels'
     }),
-    settingNewData(attribute){
+    settingNewDimensions(attribute){
       let realData = this.series[0].data
       attribute.id_attributes.forEach( (id_attribute,index) => {
           this.id_dimensions.forEach((level,index2) => {
@@ -249,22 +251,57 @@ export default {
         data:realData
       }]
     },
-    joinServer: function () {
-			this.socket.on('loggedIn', data => {
-				this.messages = data.messages;
-				this.users = data.users;
-				this.socket.emit('newuser', this.username);
-			});
-			this.listen();
-		},
+    settingNewSubattributes(subattribute){
+      let changedDimensions = []
+      console.log(this.id_actualChosenDimensionBar)
+      subattribute.id_subattributes.forEach( (id_subattribute,index) => {
+          this.userLevels.forEach((level,index2) => {
+            level.subattribute_levels.forEach((dimension_subattributes,index) => {
+              if(dimension_subattributes.id_subattributes === id_subattribute){
+                changedDimensions.push(dimension_subattributes.id_attributes)
+              }
+            });
+            
+          });
+      })
+      if(changedDimensions.includes(this.id_actualChosenDimensionBar)){
+        //Se actualizo uno o mas subatributo que estan en pantalla en el chart de barras
+        let boolArray = []
+        for (const possibleDimension of changedDimensions) {
+          if(possibleDimension === this.id_actualChosenDimensionBar){
+            boolArray.push(1)
+          }
+          else{
+            boolArray.push(0)
+          }
+        }
+        let actualSubattributes = this.series2[0].data
+        console.log(actualSubattributes)
+        console.log(boolArray)
+        console.log(subattribute.data)
+        boolArray.forEach((bool,index) => {
+          if(bool){
+            actualSubattributes[index] += subattribute.data[index]
+          }
+        });
+        this.series2 = [{ data:actualSubattributes }]
+      }
+    },
 		listen: function () {		
-      this.socket.on('player_attribute', attribute => {
+      /*Input: attribute = {id_attributes: [], data: []}, ids de dimensiones y los datos nuevos actualizados desde el post att microservicio*/
+      this.dimensionSocket.on('player_attribute', attribute => {
         console.log('aqui')
         console.log(attribute)
-        this.settingNewData(attribute)
+        this.settingNewDimensions(attribute)
         this.setRealTimeDimensionLevels(attribute)
       });
-      
+      /*Input: subattribute = {id_subattributes: [], data: []}, ids de subatributos y los datos nuevos actualizados desde el post att microservicio*/
+      this.dimensionSocket.on('player_adquired_subattribute', subattribute => {
+        console.log('aqui')
+        console.log(subattribute)
+        this.settingNewSubattributes(subattribute)
+        this.setRealTimeSubattributeLevels(subattribute)
+      });
 		},
     selectedOptionBarChartClick(selectedOption){
       console.log(selectedOption)
@@ -296,6 +333,7 @@ export default {
       for (const dimension of this.userLevels) {
         if(dimension.name === selectedOption){
           chosenSubattributes = dimension.subattribute_levels
+          this.id_actualChosenDimensionBar = dimension.id_attributes
           break
         }        
       }
