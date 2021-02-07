@@ -44,7 +44,7 @@
                              
                     </div>
                     <div class="column is-9">
-                          <apexchart v-if="treeMapShow" type="treemap" :options="chartOptions" :series="series"></apexchart>
+                          <apexchart v-if="treeMapShow" height="350"  type="treemap" :options="chartOptions" :series="series"></apexchart>
 
                     </div>
                 </div>
@@ -143,6 +143,7 @@ export default {
           chartOptions: {
             legend: {
               show: true,
+              showForSingleSeries:true,
                formatter: function(seriesName, opts) {
                   console.log()
                   let total = opts.w.globals.series[opts.seriesIndex].reduce((a, b) => a + b, 0)
@@ -185,6 +186,7 @@ export default {
   },
   methods: {
     async treemapQueryDimension(option){
+      this.treeMapShow = false
       let id_dimension;
       this.dimensionsAndSubattributes.forEach((dimension,index) => {
         if(dimension.name === option){
@@ -202,6 +204,11 @@ export default {
     },
     async treemapQueryDimensionAndSubatt(option){
       console.log(option)
+      /*const MEDIUM_GET_URL = this.getURL+'/player/'+this.id_player.toString()+'/attributes/'+chosen_dimension_option.toString()+'/sensor_endpoint_contribution'
+      const sensor_contribution = await Axios.get(MEDIUM_GET_URL);
+      console.log(sensor_contribution)
+      this.series=sensor_contribution.data
+      this.treeMapShow = true*/
     },
     selectedOptionClick(){
       console.log(this.selectedOption)
@@ -232,10 +239,6 @@ export default {
         subatts_names.push(subatt.name)
       });
       this.subattributes = subatts_names
-    },
-    selectedOptionDimension2(selectedOption2){
-     
-
     },
     randomChartData (n) {
       const data = []
