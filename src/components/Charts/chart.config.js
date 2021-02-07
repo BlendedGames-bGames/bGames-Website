@@ -3,7 +3,8 @@ export const chartColors = {
     primary: '#00D1B2',
     info: '#209CEE',
     danger: '#FF3860'
-  }
+  },
+  colorArray: ['#00D1B2', '#209CEE', '#FF3860']
 }
 
 export const baseChartOptions = {
