@@ -34,6 +34,16 @@
           </div>
 
       </div>
+      <card-component
+        class="has-table has-mobile-sort-spaced"
+        title="Registro de subatributos adquiridos"
+        icon="account-multiple"
+      >
+        <data-endpoint-table
+          :data-url="`${$router.options.base}data-sources/clients.json`"
+          :checkable="true"
+        />
+      </card-component>
       
 
       <card-component
@@ -78,6 +88,7 @@ import LineChart from '@/components/Charts/LineChart'
 import ClientsTableSample from '@/components/ClientsTableSample'
 import VueApexCharts from 'vue-apexcharts'
 import Axios from 'axios'
+import DataEndpointTable from '@/components/DataEndpointTable'
 
 import { mapGetters, mapActions } from 'vuex'
 import {baseURL, getPort} from '../store/urls'
@@ -91,13 +102,14 @@ export default {
     Tiles,
     HeroBar,
     TitleBar,
-    apexchart: VueApexCharts
+    apexchart: VueApexCharts,
+    DataEndpointTable
   },
   data () {
     return {
       id_actualChosenDimensionBar: null,
       id_actualChosenDimensionLine: null,
-
+      departments: ['Business Development', 'Marketing', 'Sales'],
       chartRadarLoading:false,
       chartBarLoading:false,
       chartLineDimn:false,
@@ -312,6 +324,7 @@ export default {
   mounted () {
     console.log('hola')
     this.fillChartRadar()
+    this.fillAdquiredSubattributesTable()
     this.listen();
 
     this.$buefy.snackbar.open({
@@ -324,6 +337,13 @@ export default {
       setRealTimeDimensionLevels: 'setRealTimeDimensionLevels',
       setRealTimeSubattributeLevels: 'setRealTimeSubattributeLevels'
     }),
+    async fillAdquiredSubattributesTable(){
+      ///id_player/:id_player/attributes/:id_attributes/adquired_subattributes_list
+      const MEDIUM_GET_URL = this.getURL+'/id_player/'+this.id_player.toString()+'/adquired_subattributes_list'
+      const tabledata = await Axios.get(MEDIUM_GET_URL);
+      console.log(tabledata)
+
+    },
     settingNewDimensions(attribute){
       let realData = this.series[0].data
       attribute.id_attributes.forEach( (id_attribute,index) => {

@@ -5,6 +5,7 @@
             <b-select
                     v-model="selectedOption"
                     :placeholder="placeholder"
+                    @input="selectClick"
                     required
                 >
                 <option
@@ -56,9 +57,14 @@ export default {
     },
     methods: {
         selectedOptionClick (){
-        console.log('asdasasddas')
-        this.$emit('selected-option-click', this.selectedOption )
+                        console.log(this.selectedOption )
 
+            this.$emit('selected-option-click', this.selectedOption )
+
+        },
+        selectClick(){
+            console.log(this.selectedOption )
+            this.$emit('selected-field-click', this.selectedOption )
         }
     }
 }
