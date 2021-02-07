@@ -4,20 +4,24 @@ import { baseURL, sensorPort } from '../urls'
 const state = {
   sensorsAndEndpoints: [],
   sensorTemplates: [],
-
+  id_sensors: [],
+  name_sensors:[],
   sensorURL: baseURL+ sensorPort
 };
 
 const getters = {
   sensorsAndEndpoints: ({sensorsAndEndpoints}) => sensorsAndEndpoints,
-  sensorTemplates: ({sensorTemplates}) => sensorTemplates
-
+  sensorTemplates: ({sensorTemplates}) => sensorTemplates,
+  id_sensors: ({id_sensors}) => id_sensors,
+  name_sensors: ({name_sensors}) => name_sensors,
 };
 
 const mutations = {
   RESET_VARIABLES(state){
     state.sensorTemplates.splice(0)
     state.sensorsAndEndpoints.splice(0)
+    state.id_sensors.splice(0)
+    state.name_sensors.splice(0)
   },
   SET_SENSOR_TEMPLATES(state, sensorTemplates) {
     console.log()
@@ -28,6 +32,8 @@ const mutations = {
   SET_SENSORS(state, sensors) {
    sensors.forEach(sensor => {
        state.sensorsAndEndpoints.push(sensor)
+       state.id_sensors.push(sensor.id_online_sensor)
+       state.name_sensors.push(sensor.name)
    });
   },
   SET_ENDPOINTS(state, payload) {

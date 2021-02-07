@@ -38,12 +38,15 @@ const mutations = {
 
   },
   RESET_VARIABLES(state){
+  
+    state.userCreatedAlready = false 
     state.id_player = 0
     state.userLevels.splice(0)
     state.userDimensionLevels.splice(0)
     state.userProfile = {}
     state.dataReady = false
     state.loggedIn = false
+    state.dimensionSocket = null
   },
   SET_ID_PLAYER(state,payload) {
     console.log(payload)

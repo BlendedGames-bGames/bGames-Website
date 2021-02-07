@@ -92,7 +92,7 @@ export default {
       treeMapShow:false,
       getURL:baseURL+getPort,
       subattributes: [],
-       series: [
+      series: [
             {
               name: 'Desktops',
               data: [
@@ -139,8 +139,8 @@ export default {
                 }
               ]
             }
-          ],
-          chartOptions: {
+      ],
+      chartOptions: {
             legend: {
               show: true,
               showForSingleSeries:true,
@@ -158,8 +158,7 @@ export default {
               text: 'Contribucion de sensores',
               align: 'center'
             }
-          }
-          
+      }          
     }
   },
   computed: {
@@ -283,18 +282,6 @@ export default {
         subatts_names.push(subatt.name)
       });
       this.subattributes = subatts_names
-    },
-    randomChartData (n) {
-      const data = []
-
-      for (let i = 0; i < n; i++) {
-        data.push(Math.round(Math.random() * 200))
-      }
-
-      return data
-    },
-    fillChartData () {
-      
     }
   }
 }
