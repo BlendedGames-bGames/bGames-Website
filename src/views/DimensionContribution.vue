@@ -155,7 +155,7 @@ export default {
               type: 'treemap'
             },
             title: {
-              text: 'Multi-dimensional Treemap',
+              text: 'Contribucion de sensores',
               align: 'center'
             }
           }
@@ -188,6 +188,9 @@ export default {
     async treemapQueryDimension(option){
       this.treeMapShow = false
       let id_dimension;
+
+      if(!option) return
+
       this.dimensionsAndSubattributes.forEach((dimension,index) => {
         if(dimension.name === option){
           id_dimension = dimension.id_attributes
@@ -199,16 +202,57 @@ export default {
       const sensor_contribution = await Axios.get(MEDIUM_GET_URL);
       console.log(sensor_contribution)
       this.series=sensor_contribution.data
+      this.chartOptions= {
+            legend: {
+              show: true,
+              showForSingleSeries:true,
+               formatter: function(seriesName, opts) {
+                  console.log()
+                  let total = opts.w.globals.series[opts.seriesIndex].reduce((a, b) => a + b, 0)
+                  return [seriesName, " - ", total]
+                }
+            },
+            chart: {
+              height: 350,
+              type: 'treemap'
+            },
+            title: {
+              text: `Contribucion de los sensores y puntos de datos asociados a la dimension ${option}`,
+              align: 'center'
+            }
+          }
       this.treeMapShow = true
       
     },
     async treemapQueryDimensionAndSubatt(option){
       console.log(option)
-      /*const MEDIUM_GET_URL = this.getURL+'/player/'+this.id_player.toString()+'/attributes/'+chosen_dimension_option.toString()+'/sensor_endpoint_contribution'
+      this.treeMapShow = false
+      if(!this.chosen_dimension_option || !this.chosen_subatt_option) return
+      ///player/:id_player/attributes/:id_attributes/subattributes/:id_subattributes/sensor_contribution
+      const MEDIUM_GET_URL = this.getURL+'/player/'+this.id_player.toString()+'/attributes/'+this.chosen_dimension_option.toString()+'/subattributes/'+this.chosen_subatt_option.toString()+'/sensor_endpoint_contribution'
       const sensor_contribution = await Axios.get(MEDIUM_GET_URL);
       console.log(sensor_contribution)
       this.series=sensor_contribution.data
-      this.treeMapShow = true*/
+      this.chartOptions= {
+            legend: {
+              show: true,
+              showForSingleSeries:true,
+               formatter: function(seriesName, opts) {
+                  console.log()
+                  let total = opts.w.globals.series[opts.seriesIndex].reduce((a, b) => a + b, 0)
+                  return [seriesName, " - ", total]
+                }
+            },
+            chart: {
+              height: 350,
+              type: 'treemap'
+            },
+            title: {
+              text: `Contribucion de los sensores y puntos de datos asociados al subatributo ${this.selectedOption}`,
+              align: 'center'
+            }
+          }
+      this.treeMapShow = true
     },
     selectedOptionClick(){
       console.log(this.selectedOption)
