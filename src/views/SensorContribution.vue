@@ -233,7 +233,7 @@ export default {
       this.chosen_endpoint_name = this.selectedOption
       for (let index = 0; index < this.sensorsAndEndpoints.length; index++) {
         const sensor = this.sensorsAndEndpoints[index];
-        this.chosen_endpoint_option = this.searchOnArrayOption(sensor.endpoints,'name',this.selectedOption,'id_sensor_endpoint')
+        this.chosen_endpoint_option = this.searchOnArrayOption(sensor.endpoints,'name_sensor_endpoint',this.selectedOption,'id_sensor_endpoint')
         if(this.chosen_endpoint_option !== undefined){
           break
         }
@@ -250,7 +250,7 @@ export default {
 
       let endpoint_names = []
       correspond_endpoints.forEach(endpoint => {
-        endpoint_names.push(endpoint.name)
+        endpoint_names.push(endpoint.name_sensor_endpoint)
       });
       this.endpoints = endpoint_names
     }
