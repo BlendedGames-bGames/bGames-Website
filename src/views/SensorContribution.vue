@@ -186,21 +186,11 @@ export default {
 
     searchOnArrayOption(arrayToSearch,attArray,option,attSingle){
       let result;
-      console.log(arrayToSearch)
-      console.log(attArray)
-      console.log(option)
-      console.log(attSingle)
-
       arrayToSearch.forEach((element) => {
-        console.log(element,element[attArray])
-        console.log(option)
           if(element[attArray] === option){           
-            console.log('pase por aqui')    
-            console.log(element[attSingle])    
             result = element[attSingle]             
           }
       });
-      console.log(result)
       return result
     },
 

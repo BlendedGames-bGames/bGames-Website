@@ -7,7 +7,7 @@
       </p>
       
       <div class="card-header-icon"> 
-         <b-field  v-if="select" horizontal label="Dimension" style="margin-right:2em; margin-top:1em">
+         <b-field  v-if="select" horizontal :label="label" style="margin-right:2em; margin-top:1em">
             <b-select
                  
                   v-model="selectedOption"
@@ -68,6 +68,10 @@ export default {
     title: {
       type: String,
       default: null
+    },
+    label: {
+      type: String,
+      default: 'Dimension'
     },
     icon: {
       type: String,
