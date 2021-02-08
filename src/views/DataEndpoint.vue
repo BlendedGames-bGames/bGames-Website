@@ -19,12 +19,7 @@
         :selectOptions="name_sensors"
         @selected-option-click="selectedSensor"
       >
-        <data-endpoint-table
-          :data-url="`${$router.options.base}data-sources/clients.json`"
-          :checkable="true"
-        />
       </card-component>
-
     </section>
   </div>
 </template>

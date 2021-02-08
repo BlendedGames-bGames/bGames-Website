@@ -1,12 +1,7 @@
 <template>
   <div>
-    <modal-box
-      :is-active="isModalActive"
-      :trash-object-name="trashObjectName"
-      @confirm="trashConfirm"
-      @cancel="trashCancel"
-    />
     <b-table
+      v-if="loaded"
       :checked-rows.sync="checkedRows"
       :checkable="checkable"
       :loading="isLoading"
@@ -15,40 +10,33 @@
       :striped="true"
       :hoverable="true"
       default-sort="name"
-      :data="clients"
+      :data="table_data"
     >
-      <b-table-column cell-class="has-no-head-mobile is-image-cell" v-slot="props">
-        <div class="image">
-          <img :src="props.row.avatar" class="is-rounded">
-        </div>
+      
+      <b-table-column label="Sensor" field="name_online_sensor" sortable v-slot="props">
+        {{ props.row.name_online_sensor }}
       </b-table-column>
-      <b-table-column label="Name" field="name" sortable v-slot="props">
-        {{ props.row.name }}
+      <b-table-column label="Punto de datos" field="name_sensor_endpoint" sortable v-slot="props">
+        {{ props.row.name_sensor_endpoint }}
       </b-table-column>
-      <b-table-column label="Company" field="company" sortable v-slot="props">
-        {{ props.row.company }}
+      <b-table-column label="Descripcion" field="description" v-slot="props">
+        {{ props.row.description }}
       </b-table-column>
-      <b-table-column label="City" field="city" sortable v-slot="props">
-        {{ props.row.city }}
+      <b-table-column label="Dimension" field="name_dimension" sortable v-slot="props">
+        {{ props.row.name_dimension }}
       </b-table-column>
-      <b-table-column cell-class="is-progress-col" label="Progress" field="progress" sortable v-slot="props">
-        <progress class="progress is-small is-primary" :value="props.row.progress" max="100">{{ props.row.progress }}</progress>
+      <b-table-column label="Subatributo" field="name_subattributes" sortable v-slot="props">
+        {{ props.row.name_subattributes }}
       </b-table-column>
-      <b-table-column label="Created" v-slot="props">
-        <small class="has-text-grey is-abbr-like" :title="props.row.created">{{ props.row.created }}</small>
+      <b-table-column label="Dato" field="data" sortable v-slot="props">
+        {{ props.row.data }}
       </b-table-column>
-      <b-table-column custom-key="actions" cell-class="is-actions-cell" v-slot="props">
-        <div class="buttons is-right">
-          <router-link :to="{name:'client.edit', params: {id: props.row.id}}" class="button is-small is-primary">
-            <b-icon icon="account-edit" size="is-small"/>
-          </router-link>
-          <button class="button is-small is-danger" type="button" @click.prevent="trashModal(props.row)">
-            <b-icon icon="trash-can" size="is-small"/>
-          </button>
-        </div>
+      <b-table-column label="Obtenido fecha" centered v-slot="props">
+        <span class="tag is-success">
+                    {{ new Date(props.row.created_time).toString() }}
+        </span>
       </b-table-column>
-
-      <section slot="empty" class="section">
+     <section slot="empty" class="section">
         <div class="content has-text-grey has-text-centered">
           <template v-if="isLoading">
             <p>
@@ -69,17 +57,15 @@
 </template>
 
 <script>
-import axios from 'axios'
+import Axios from 'axios'
 import ModalBox from '@/components/ModalBox'
+import { mapGetters } from 'vuex'
+import {baseURL, getPort} from '../store/urls'
 
 export default {
   name: 'DataEndpointTable',
   components: { ModalBox },
   props: {
-    dataUrl: {
-      type: String,
-      default: null
-    },
     checkable: {
       type: Boolean,
       default: false
@@ -89,59 +75,49 @@ export default {
     return {
       isModalActive: false,
       trashObject: null,
-      clients: [],
+      table_data: [],
       isLoading: false,
       paginated: false,
       perPage: 10,
-      checkedRows: []
+      checkedRows: [],
+      getURL:baseURL+getPort,
+      loaded:false
     }
   },
   computed: {
-    trashObjectName () {
-      if (this.trashObject) {
-        return this.trashObject.name
-      }
+     ...mapGetters('user', {
+          userDimensionLevels: 'userDimensionLevels',
+          userLevels: 'userLevels',
+          id_player: 'id_player',
+          dimensionSocket: 'dimensionSocket'
 
-      return null
-    }
+    }),
   },
-  mounted () {
-    if (this.dataUrl) {
+  async mounted () {
+    await this.loadingData()
+    
+  },
+
+  methods: {
+    async loadingData(){
       this.isLoading = true
-      axios
-        .get(this.dataUrl)
-        .then((r) => {
-          this.isLoading = false
-          if (r.data && r.data.data) {
-            if (r.data.data.length > this.perPage) {
+      const MEDIUM_GET_URL = this.getURL+'/id_player/'+this.id_player.toString()+'/adquired_subattributes_list'
+      try {
+            const subatts = await Axios.get(MEDIUM_GET_URL);
+            this.table_data = subatts.data
+            console.log(this.table_data)
+             if (this.table_data .length > this.perPage) {
               this.paginated = true
             }
-            this.clients = r.data.data
-          }
-        })
-        .catch((e) => {
-          this.isLoading = false
+            this.isLoading = false
+            this.loaded = true
+      } catch (error) {
           this.$buefy.toast.open({
             message: `Error: ${e.message}`,
             type: 'is-danger'
           })
-        })
-    }
-  },
-  methods: {
-    trashModal (trashObject) {
-      this.trashObject = trashObject
-      this.isModalActive = true
-    },
-    trashConfirm () {
-      this.isModalActive = false
-      this.$buefy.snackbar.open({
-        message: 'Confirmed',
-        queue: false
-      })
-    },
-    trashCancel () {
-      this.isModalActive = false
+      }
+   
     }
   }
 }

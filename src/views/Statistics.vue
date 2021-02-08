@@ -40,8 +40,7 @@
         icon="account-multiple"
       >
         <data-endpoint-table
-          :data-url="`${$router.options.base}data-sources/clients.json`"
-          :checkable="true"
+          :checkable="false"
         />
       </card-component>
       
@@ -324,7 +323,6 @@ export default {
   mounted () {
     console.log('hola')
     this.fillChartRadar()
-    this.fillAdquiredSubattributesTable()
     this.listen();
 
     this.$buefy.snackbar.open({
@@ -337,13 +335,6 @@ export default {
       setRealTimeDimensionLevels: 'setRealTimeDimensionLevels',
       setRealTimeSubattributeLevels: 'setRealTimeSubattributeLevels'
     }),
-    async fillAdquiredSubattributesTable(){
-      ///id_player/:id_player/attributes/:id_attributes/adquired_subattributes_list
-      const MEDIUM_GET_URL = this.getURL+'/id_player/'+this.id_player.toString()+'/adquired_subattributes_list'
-      const tabledata = await Axios.get(MEDIUM_GET_URL);
-      console.log(tabledata)
-
-    },
     settingNewDimensions(attribute){
       let realData = this.series[0].data
       attribute.id_attributes.forEach( (id_attribute,index) => {
