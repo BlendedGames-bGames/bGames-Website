@@ -69,6 +69,10 @@ export default {
     checkable: {
       type: Boolean,
       default: false
+    },
+    adquired_subattribute_rt: {
+      type:Array,
+      default:[]
     }
   },
   data () {
@@ -84,21 +88,93 @@ export default {
       loaded:false
     }
   },
+  watch: { 
+    adquired_subattribute_rt: function(newVal, oldVal) { // watch it
+        console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+        var new_data = this.formattingSubatt(newVal)
+        this.addingData(new_data)
+    }
+  },
   computed: {
      ...mapGetters('user', {
           userDimensionLevels: 'userDimensionLevels',
           userLevels: 'userLevels',
           id_player: 'id_player',
           dimensionSocket: 'dimensionSocket'
-
+    }),
+    ...mapGetters('sensor', {
+          sensorsAndEndpoints: 'sensorsAndEndpoints'
     }),
   },
   async mounted () {
-    await this.loadingData()
-    
+    await this.loadingData()    
+    console.log(this.userLevels)
+    console.log(this.sensorsAndEndpoints)
   },
-
   methods: {
+    addingData(new_data){
+      this.isLoading = true
+      new_data.forEach(data => {
+          this.table_data.unshift(data)
+      });
+      this.isLoading = false
+    },
+    formattingSubatt(subatts){
+      //results.push({id_subattributes:id_subattributes[i], data:new_data[i], id_sensor_endpoint:id_sensor_endpoint, created_time:date})
+      /*created_time: (...)
+        data: (...)
+        description: (...)
+        id_attributes: (...)
+        id_online_sensor: (...)
+        id_sensor_endpoint: (...)
+        id_subattributes: (...)
+        name_dimension: (...)
+        name_online_sensor: (...)
+        name_sensor_endpoint: (...)
+        name_subattributes: (...) 
+      */    
+        subatts.forEach(subatt => {
+          this.userLevels.forEach(dimension => {
+            let dimension_variables = this.searchOnArrayOption(dimension.subattribute_levels,'id_subattributes',subatt.id_subattributes,['name_subattributes','name_dimension','id_attributes'])
+            if(dimension_variables !== undefined && dimension_variables.length !== 0){
+              for (const variable of dimension_variables) {
+                    subatt[variable.name] = variable.data
+              }
+            }
+          });
+          this.sensorsAndEndpoints.forEach(sensor => {
+            let sensor_variables = this.searchOnArrayOption(sensor.endpoints,'id_sensor_endpoint',subatt.id_sensor_endpoint,['name_sensor_endpoint','id_online_sensor','description','name_online_sensor'])
+            if(sensor_variables !== undefined && sensor_variables.length !== 0){
+              for (const variable of sensor_variables) {
+                    subatt[variable.name] = variable.data
+              }
+            }
+          });
+        });
+        console.log('resultado')
+        console.log(subatts)
+        return subatts
+
+      
+    },
+    searchOnArrayOption(arrayToSearch,attArray,option,attSingle){
+      let result = []
+      arrayToSearch.forEach((element) => {
+          if(element[attArray] === option){       
+            if(Array.isArray(attSingle)){
+                for (const variable of attSingle) {
+                  result.push({name:variable,data:element[variable]})
+                }
+            }
+            else{
+              result = element[attSingle]             
+
+            }
+          }
+      });
+      return result
+    },
+
     async loadingData(){
       this.isLoading = true
       const MEDIUM_GET_URL = this.getURL+'/id_player/'+this.id_player.toString()+'/adquired_subattributes_list'

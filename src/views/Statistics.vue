@@ -41,6 +41,7 @@
       >
         <data-endpoint-table
           :checkable="false"
+          :adquired_subattribute_rt="adquired_subattribute_rt"
         />
       </card-component>
       
@@ -114,6 +115,7 @@ export default {
       chartLineDimn:false,
       chartLineDimn2:false,
       getURL:baseURL+getPort,
+      adquired_subattribute_rt:null,
 
       series: [{
             name: '',
@@ -396,8 +398,12 @@ export default {
       this.dimensionSocket.on('player_adquired_subattribute', subattribute => {
         console.log('aqui')
         console.log(subattribute)
-        this.settingNewSubattributes(subattribute)
-        this.setRealTimeSubattributeLevels(subattribute)
+        this.adquired_subattribute_rt = subattribute
+        console.log(this.id_actualChosenDimensionBar)
+        if(this.id_actualChosenDimensionBar){
+          this.settingNewSubattributes(subattribute)
+          this.setRealTimeSubattributeLevels(subattribute)
+        }
       });
 		},
     selectedOptionBarChartClick(selectedOption){
