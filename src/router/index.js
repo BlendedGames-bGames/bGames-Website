@@ -9,7 +9,7 @@ import SensorContribution from '../views/SensorContribution.vue'
 import DimensionContribution from '../views/DimensionContribution.vue'
 import DataEndpoint from '../views/DataEndpoint.vue'
 import SensorAsociation from '../views/SensorAsociation.vue'
-
+import TimeSeries from '../views/TimeSeries.vue'
 import firebase from 'firebase/app'
 import store from '../store/index'
 
@@ -46,6 +46,18 @@ const routes = [
     path: '/statistics',
     name: 'statistics',
     component: Statistics
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'Estadisticas en el tiempo',
+      requiresAuth: true
+
+    },
+    path: '/time_statistics',
+    name: 'time_statistics',
+    component: TimeSeries
   },
   {
     // Document title tag

@@ -44,6 +44,11 @@ export default {
             to: '/statistics',
             icon: 'desktop-mac',
             label: 'Estadisticas generales'
+          },
+           {
+            to: '/time_statistics',
+            icon: 'desktop-mac',
+            label: 'Estadisticas en el tiempo'
           }
         ],
         'Contribuciones',
