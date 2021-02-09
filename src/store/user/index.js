@@ -14,7 +14,8 @@ const state = {
   userLevels: [],
   userDimensionLevels: [],
   dataReady:false,
-  dimensionSocket: null
+  dimensionSocket: null,
+  loadingLoginData: false
 };
 
 const getters = {
@@ -27,7 +28,9 @@ const getters = {
   userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready,
   id_player: ({id_player}) => id_player,
   userLevels: ({userLevels}) => userLevels,
-  userDimensionLevels: ({userDimensionLevels}) => userDimensionLevels
+  userDimensionLevels: ({userDimensionLevels}) => userDimensionLevels,
+  loadingLoginData: ({loadingLoginData}) => loadingLoginData
+
 
 
 };
@@ -35,6 +38,10 @@ const getters = {
 const mutations = {
   TOGGLE_DATA_READY(state){
     state.dataReady = !state.dataReady
+
+  },
+  TOGGLE_LOADING_LOGIN_DATA(state){
+    state.loadingLoginData = !state.loadingLoginData
 
   },
   RESET_VARIABLES(state){
@@ -151,6 +158,7 @@ const actions = {
     await dispatch('settingDimensionsLevelsAndSubattributes')
     await dispatch('setupDimensionSocket')
     commit('TOGGLE_DATA_READY')
+    commit('TOGGLE_LOADING_LOGIN_DATA')
 
     router.replace({name:'statistics'})      
   },
@@ -212,7 +220,8 @@ const actions = {
     try {
       const user = await firebase.auth().signInWithPopup(provider);
       console.log(user)
-      
+      commit('TOGGLE_LOADING_LOGIN_DATA')
+
       if(user.additionalUserInfo.isNewUser){
         let profile = {
           "name": user.additionalUserInfo.profile.name,
@@ -243,6 +252,7 @@ const actions = {
     try {
         console.log(profile)
         const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
+        commit('TOGGLE_LOADING_LOGIN_DATA')
         dispatch('settingData',user.additionalUserInfo.profile.email)
 
     } catch (error) {
@@ -280,6 +290,7 @@ const actions = {
           }
           try {
             const MEDIUM_POST_URL = state.userURL+'/player'
+            commit('TOGGLE_LOADING_LOGIN_DATA')
             const user = await Axios.post(MEDIUM_POST_URL, profile);
             dispatch('settingData',user.user.email)
           } catch (error) {

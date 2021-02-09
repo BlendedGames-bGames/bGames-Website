@@ -16,6 +16,7 @@
      </div>
 
     </div>
+    <b-loading :is-full-page="isFullPage" v-model="loadingLoginData" :can-cancel="false"></b-loading>
   </div>
 </template>
 
@@ -23,6 +24,7 @@
 import CardComponent from '@/components/CardComponent'
 import HeroBar from '@/components/HeroBar'
 import LoginAndSignUpForm from '../components/LoginAndSignUpForm.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Login',
@@ -37,13 +39,17 @@ export default {
       form: {
         username: null,
         password: null,
-      }
+      },
+      isFullPage:true
     }
   },
   computed: {
     titleStack () {
       return ['Admin', 'Tables']
-    }
+    },
+    ...mapGetters('user',{
+        loadingLoginData:'loadingLoginData'
+    })
   },
   methods: {
     clicked (e) {

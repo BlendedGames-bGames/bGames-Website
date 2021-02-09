@@ -91,6 +91,7 @@ export default {
   methods: {
     ...mapMutations([
         'loginToggle', 
+        
     ]),
     ...mapActions('user', {
         loginProvider: 'loginProvider',
@@ -120,6 +121,7 @@ export default {
       else{
           this.loginEmailAndPassword({email:this.form.email, password: this.form.password})
       }
+      
       console.log(this.loggedIn)
      
       
