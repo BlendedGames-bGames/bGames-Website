@@ -33,6 +33,75 @@
                 suffix="%"
                 label="Performance"
               />
+               <card-widget
+                class="tile is-child"
+                type="is-primary"
+                icon="account-multiple"
+                :number="512"
+                label="Clients"
+              />
+              <card-widget
+                class="tile is-child"
+                type="is-info"
+                icon="cart-outline"
+                :number="7770"
+                prefix="$"
+                label="Sales"
+              />
+              <card-widget
+                class="tile is-child"
+                type="is-success"
+                icon="chart-timeline-variant"
+                :number="256"
+                suffix="%"
+                label="Performance"
+              />
+               <card-widget
+                class="tile is-child"
+                type="is-primary"
+                icon="account-multiple"
+                :number="512"
+                label="Clients"
+              />
+              <card-widget
+                class="tile is-child"
+                type="is-info"
+                icon="cart-outline"
+                :number="7770"
+                prefix="$"
+                label="Sales"
+              />
+              <card-widget
+                class="tile is-child"
+                type="is-success"
+                icon="chart-timeline-variant"
+                :number="256"
+                suffix="%"
+                label="Performance"
+              />
+               <card-widget
+                class="tile is-child"
+                type="is-primary"
+                icon="account-multiple"
+                :number="512"
+                label="Clients"
+              />
+              <card-widget
+                class="tile is-child"
+                type="is-info"
+                icon="cart-outline"
+                :number="7770"
+                prefix="$"
+                label="Sales"
+              />
+              <card-widget
+                class="tile is-child"
+                type="is-success"
+                icon="chart-timeline-variant"
+                :number="256"
+                suffix="%"
+                label="Performance"
+              />
           </tiles>
       </card-component>
     </section>

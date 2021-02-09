@@ -29,9 +29,9 @@
                         </b-field>
                         <hr />
                         <div class="control is-flex is-flex-direction-row is-justify-content-center">
-                            <b-button size="is-medium" native-type="submit" type="is-link" @click="login('EmailAndPass')"
-                                >Login</b-button
-                            >
+                            <b-button size="is-medium" native-type="submit" type="is-link" @click="login('EmailAndPass')">
+                              Login
+                            </b-button>
                         </div>
                 </form>
                 <hr />

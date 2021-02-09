@@ -33,7 +33,7 @@
       </b-table-column>
       <b-table-column label="Obtenido fecha" centered v-slot="props">
         <span class="tag is-success">
-                    {{ new Date(props.row.created_time).toString() }}
+                    {{ new Date(props.row.created_time).toLocaleString() }}
         </span>
       </b-table-column>
      <section slot="empty" class="section">

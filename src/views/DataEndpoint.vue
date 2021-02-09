@@ -3,9 +3,7 @@
     <title-bar :title-stack="titleStack" />
     <hero-bar>
       Puntos de datos
-      <router-link slot="right" to="/" class="button">
-        Dashboard
-      </router-link>
+    
     </hero-bar>
     <section class="section is-main-section">
 
@@ -19,6 +17,11 @@
         :selectOptions="name_sensors"
         @selected-option-click="selectedSensor"
       >
+          <sensor-endpoint-table
+              v-if="loaded"
+              :checkable="false"
+              :sensor_endpoints="sensor_endpoints"
+            />
       </card-component>
     </section>
   </div>
@@ -26,10 +29,10 @@
 
 <script>
 import Notification from '@/components/Notification'
-import DataEndpointTable from '@/components/DataEndpointTable'
 import CardComponent from '@/components/CardComponent'
 import TitleBar from '@/components/TitleBar'
 import HeroBar from '@/components/HeroBar'
+import SensorEndpointTable from '@/components/SensorEndpointTable'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -38,12 +41,14 @@ export default {
     HeroBar,
     TitleBar,
     CardComponent,
-    DataEndpointTable,
+    SensorEndpointTable,
     Notification
   },
   data () {
     return {
-      departments: ['Business Development', 'Marketing', 'Sales']
+      departments: ['Business Development', 'Marketing', 'Sales'],
+      loaded: false,
+      sensor_endpoints:null
       
     }
   },
@@ -73,7 +78,9 @@ export default {
     selectedSensor(selectedOption){
       var id_online_sensor = this.searchOnArrayOption(this.sensorsAndEndpoints,'name',selectedOption,'id_online_sensor')
       let correspond_endpoints = this.searchOnArrayOption(this.sensorsAndEndpoints,'id_online_sensor',id_online_sensor,'endpoints')
-      console.log(correspond_endpoints)
+      console.log(correspond_endpoints) 
+      this.sensor_endpoints = correspond_endpoints
+      this.loaded = true
 
     },
   }
