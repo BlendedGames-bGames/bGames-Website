@@ -23,6 +23,19 @@ const mutations = {
     state.id_sensors.splice(0)
     state.name_sensors.splice(0)
   },
+  SET_SPECIFIC_PARAMETERS_SINGLE(state,payload){
+    state.sensorsAndEndpoints.forEach((sensor) => {    
+      if(sensor.id_online_sensor === payload.id_online_sensor){
+        for (const endpoint of sensor.endpoints) {
+          if(endpoint.id_sensor_endpoint  == payload.id_sensor_endpoint){
+              endpoint.specific_parameters = payload.specific_parameters
+          } 
+          
+        }
+      }
+    });
+
+  },
   SET_SENSOR_TEMPLATES(state, sensorTemplates) {
     console.log()
     sensorTemplates.forEach(sensorTemplate => {
