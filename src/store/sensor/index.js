@@ -40,6 +40,23 @@ const mutations = {
     });
 
   },
+  SET_ENDPOINT_ACTIVATION(state,payload){
+    console.log('aqui')
+    console.log( state.sensorsAndEndpoints)
+    console.log( state.payload)
+  
+      state.sensorsAndEndpoints.forEach((sensor) => {    
+        if(sensor.id_online_sensor === payload.id_online_sensor){
+          for (const endpoint of sensor.endpoints) {
+            if(endpoint.id_sensor_endpoint  == payload.id_sensor_endpoint){
+                endpoint.activated = payload.activated
+            } 
+            
+          }
+        }
+      });
+  
+  },
   SET_SENSOR_TEMPLATES(state, sensorTemplates) {
     console.log()
     sensorTemplates.forEach(sensorTemplate => {

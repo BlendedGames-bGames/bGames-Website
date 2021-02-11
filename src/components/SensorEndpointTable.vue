@@ -44,6 +44,7 @@
 >
             <b-switch
                 v-model="props.row.activated"
+                @input="confirmSwitchToggle(props.row.activated, props.row.id_online_sensor, props.row.id_sensor_endpoint)"
                 passive-type='is-dark'
                 type='is-warning'>
             </b-switch>
@@ -135,7 +136,7 @@
 
                           {{editMessage}}
 
-                          <b-field :label="search_param"  style="margin-top:0.5em" :type="{ 'is-danger': hasError,'is-danger': hasErrorCall  }"
+                          <b-field :label="search_param"  style="margin-top:0.5em" :type="{ 'is-danger': hasError || hasErrorCall }"
                                   :message="[
                                       { 'Parametro no encontrado, intentar nuevamente': hasError },
                                       { 'Sugerencia: Escribir completamente el valor respetando mayusculas y simbolos': hasError },
@@ -328,8 +329,54 @@ export default {
   },
   methods: {
     ...mapMutations('sensor',{
-      SET_SPECIFIC_PARAMETERS_SINGLE: 'SET_SPECIFIC_PARAMETERS_SINGLE'
+      SET_SPECIFIC_PARAMETERS_SINGLE: 'SET_SPECIFIC_PARAMETERS_SINGLE',
+      SET_ENDPOINT_ACTIVATION: 'SET_ENDPOINT_ACTIVATION'
     }),
+    async confirmSwitchToggle(bool, id_online_sensor, id_sensor_endpoint) {
+      var properTitle, properMessage
+      console.log(bool)
+      if(!bool){
+        properTitle = 'Desactivar observacion del punto de datos'
+        properMessage = 'Estas seguro que quieres <b>desactivar</b> la observacion de este punto de datos?'
+       }
+       else{
+        properTitle = 'Activar observacion del punto de datos'
+        properMessage = 'Estas seguro que quieres <b>activar</b> la observacion de este punto de datos?'
+      }
+      this.$buefy.dialog.confirm({
+          title: properTitle,
+          message: properMessage,
+          confirmText: 'Si',
+          type: 'is-warning',
+          hasIcon: true,
+          onCancel: () => {
+            this.setEndpointActivation({activated: !bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })           
+          } ,
+          onConfirm: () => {
+            this.activationEndpointRequest(bool, id_online_sensor, id_sensor_endpoint)
+           
+          } 
+      })
+    },
+    async activationEndpointRequest(bool, id_online_sensor, id_sensor_endpoint){
+        this.setEndpointActivation({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
+        this.SET_ENDPOINT_ACTIVATION({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
+        const SENSOR_URL = this.sensorURL+'/sensor_endpoint/'+this.id_player+'/'+id_sensor_endpoint+'/activation'
+        let activate = bool ? 0 : 1
+        const data = {
+          activated: activate
+        }
+        console.log('paso por aqui')
+        try {
+              const putConfirmation = await Axios.put(SENSOR_URL, data)
+              console.log(putConfirmation)
+              this.$buefy.toast.open(!bool ? 'Observacion del punto de datos desactivada':'Observacion del punto de datos activada' )
+
+        } catch (error) {
+              this.$buefy.toast.open('Hubo un error en la activacion, intente nuevamente')
+
+        }
+    },
     setSpecificParametersSingle(payload){
       console.log(this.local_sensor_endpoints)
       console.log(payload)
@@ -337,6 +384,18 @@ export default {
         if(sensor.id_online_sensor === payload.id_online_sensor){
             if(sensor.id_sensor_endpoint  == payload.id_sensor_endpoint){
                 sensor.specific_parameters = JSON.stringify(payload.specific_parameters)
+              } 
+          }
+      });
+
+    },
+    setEndpointActivation(payload){
+      console.log(this.local_sensor_endpoints)
+      console.log(payload)
+      this.local_sensor_endpoints.forEach((sensor) => {    
+        if(sensor.id_online_sensor === payload.id_online_sensor){
+            if(sensor.id_sensor_endpoint  == payload.id_sensor_endpoint){
+                sensor.activated = payload.activated
               } 
           }
       });
@@ -592,6 +651,16 @@ export default {
        }
      }
       
+    },
+    confirmCustomDelete() {
+        this.$buefy.dialog.confirm({
+            title: 'Deleting account',
+            message: 'Are you sure you want to <b>delete</b> your account? This action cannot be undone.',
+            confirmText: 'Si',
+            type: 'is-warning',
+            hasIcon: true,
+            onConfirm: () => this.$buefy.toast.open('Account deleted!')
+        })
     },
 
     loadingData(){
