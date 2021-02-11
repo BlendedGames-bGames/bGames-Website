@@ -24,6 +24,10 @@ const mutations = {
     state.name_sensors.splice(0)
   },
   SET_SPECIFIC_PARAMETERS_SINGLE(state,payload){
+    console.log('aqui')
+  console.log( state.sensorsAndEndpoints)
+  console.log( state.payload)
+
     state.sensorsAndEndpoints.forEach((sensor) => {    
       if(sensor.id_online_sensor === payload.id_online_sensor){
         for (const endpoint of sensor.endpoints) {

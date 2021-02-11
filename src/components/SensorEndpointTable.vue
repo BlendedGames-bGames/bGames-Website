@@ -31,7 +31,7 @@
         </b-button>   
 
            <b-button :disabled="!props.row.specific_parameters" icon-left="pencil" native-type="submit" rounded type="is-success" 
-           @click="settingSpecificParameters(props.row.id_sensor_endpoint,props.row.id_online_sensor, props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint, props.row.dynamic_url)">
+           @click="settingSpecificParameters(props.row.id_sensor_endpoint,props.row.id_online_sensor, props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint, props.row.dynamic_url,props.row.name_sensor_endpoint)">
                               
         </b-button>
       
@@ -71,6 +71,8 @@
         </div>
       </section>
     </b-table>
+    
+   
     <b-modal v-model="viewCapturedParametersActive" :width="640" scroll="keep">
                 <form action="">
                   <div class="modal-card" style="width: auto">
@@ -122,12 +124,27 @@
                               @click="resettingDataAndClose()"/>
                       </header>
                       <section class="modal-card-body">
+                        <b-field label="Nombre">
+                              <b-input
+                                  :value="name_sensor_endpoint_edit"
+                                  placeholder="Your email"
+                                  disabled
+                                  required>
+                              </b-input>
+                          </b-field>
+
                           {{editMessage}}
 
-                          <b-field :label="search_param"  style="margin-top:1em">
+                          <b-field :label="search_param"  style="margin-top:0.5em" :type="{ 'is-danger': hasError,'is-danger': hasErrorCall  }"
+                                  :message="[
+                                      { 'Parametro no encontrado, intentar nuevamente': hasError },
+                                      { 'Sugerencia: Escribir completamente el valor respetando mayusculas y simbolos': hasError },
+                                      {'No se ha podido obtener el valor, intentar nuevamente':hasErrorCall}
+                                  ]">
                               <b-input
                                   :value="editionOption"
                                   v-model="editionOption"
+                                  
                                   required>
                               </b-input>
                           </b-field>
@@ -137,23 +154,46 @@
                           <b-button
                               v-if="editionModalTotalCount > 1 && editionModalActual >= 1"
                               label="Anterior"
+                              style="float:left"
                               type="is-primary" 
                               @click="goBack()"/>                          
                           <b-button
                               v-if="editionModalActual === editionModalTotalCount-1"
                               label="Guardar cambios"
                               type="is-primary" 
+                              style="float:right"
+
                               @click="queryAndGettingInfo()"
                               />
                           <b-button
                               v-else
                               label="Siguiente"
                               type="is-primary" 
+                              style="float:right"
+
                               @click="queryAndGettingInfo()"/>
                       </footer>
                   </div>
               </form>
         </b-modal>
+    <b-modal v-model="successModal"   :width="350" scroll="keep">
+        <form action="">
+                  <div class="modal-card" style="width: auto">
+                      <header class="modal-card-head">
+                          <p class="modal-card-title">Exito</p>
+                          <button
+                              type="button"
+                              class="delete"
+                              @click="successModal = false"/>
+                      </header>
+                      <section class="modal-card-body">
+                            Se actualizo existosamente el punto de datos {{name_sensor_endpoint_edit}}
+                      </section>
+                      <footer class="modal-card-foot">
+                      </footer>
+                  </div>
+              </form>
+    </b-modal>
      <b-modal v-model="viewSpecificParametersActive" :width="640" scroll="keep">
                 <form action="">
                   <div class="modal-card" style="width: auto">
@@ -229,6 +269,9 @@ export default {
       viewCapturedParametersActive: false,
       email:'',
       password:'',
+      successModal:false,
+      hasError:false,
+      hasErrorCall:false,
 
       local_sensor_endpoints:null,
       name_sensor_endpoint_view:'',
@@ -237,7 +280,7 @@ export default {
 
       id_sensor_endpoint_edit:null,
       id_online_sensor_edit: null,
-
+      name_sensor_endpoint_edit: '',
       specific_parameters_edit: null,
       specific_parameters_template_edit: null,
       token_parameters_edit: null,
@@ -254,6 +297,7 @@ export default {
       search_param: '',
       editionOption:'',
       editMessage: '',
+      
 
       isLoadingEditSpecificParameters:false
 
@@ -319,7 +363,7 @@ export default {
       this.search_param = actualSpecificTemplate.search_data.search_param 
       this.editionOption = this.retrieve_names[this.editionModalActual]
       this.retrieve_params[this.editionModalActual+1] = {}
-
+      this.retrieve_names.splice([this.editionModalActual+1])
     },
     createURL(){
       let actualSpecificTemplate = this.specific_parameters_template_edit.parameters[this.editionModalActual]
@@ -379,10 +423,11 @@ export default {
     async queryAndGettingInfo(){
       this.isLoadingEditSpecificParameters = true
       let actualSpecificTemplate = this.specific_parameters_template_edit.parameters[this.editionModalActual]
-
+      this.hasError = false
       let urlQuery = this.createURL()
       console.log(urlQuery)
       try {
+          this.hasErrorCall = false
           const query = await Axios.get(urlQuery)
           const queryData = query.data
           let search_param = actualSpecificTemplate.search_data.search_param
@@ -417,6 +462,7 @@ export default {
 
                 let specific_params_new = {}
                 let params_index = 0
+                console.log(this.specific_parameters_template_edit.parameters)
                 for (const parameter  of this.specific_parameters_template_edit.parameters) {
                   if(parameter.search_data.hasOwnProperty('specific_param')){
                     specific_params_new[parameter.search_data.specific_param] = this.retrieve_params[params_index][parameter.search_data.retrieve_param]
@@ -425,7 +471,7 @@ export default {
                     params_index++
                   }
                 }
-
+                console.log(specific_params_new)
                 specific_params_new['actual_data'] = actual_data
                 console.log(specific_params_new)
                 let specific_params_new_string = JSON.stringify(specific_params_new)
@@ -436,8 +482,9 @@ export default {
                 const putConfirmation = await Axios.put(SENSOR_URL, data)
                 this.SET_SPECIFIC_PARAMETERS_SINGLE({specific_parameters: specific_params_new_string, id_sensor_endpoint:this.id_sensor_endpoint_edit, id_online_sensor:this.id_online_sensor_edit })
                 this.setSpecificParametersSingle({specific_parameters: JSON.parse(specific_params_new_string), id_sensor_endpoint:this.id_sensor_endpoint_edit, id_online_sensor:this.id_online_sensor_edit })
-                this.isLoadingEditSpecificParameters = false
-                console.log('EXITO')
+                this.resettingDataAndClose()
+                this.successModal = true
+
 
               }
               else{
@@ -449,26 +496,28 @@ export default {
                   console.log(this.editionModalTotalCount)
                   this.isLoadingEditSpecificParameters = false
                   this.editionOption = ''
+                  this.hasError = false
+                  this.hasErrorCall = false
 
               }
           }
           else{           
             this.isLoadingEditSpecificParameters = false
-            console.log('error')
-
+            this.hasError = true
           }
           
 
       } catch (error) {
           this.isLoadingEditSpecificParameters = false
           console.log('ERROR', error)
+          this.hasErrorCall = true
         
       }
 
 
     },
     //props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint
-    settingSpecificParameters(id_sensor_endpoint,id_online_sensor,specific_parameters_template_string,specific_parameters_string,token_parameters_string,tokens_string,base_url,url_endpoint, dynamic_url){
+    settingSpecificParameters(id_sensor_endpoint,id_online_sensor,specific_parameters_template_string,specific_parameters_string,token_parameters_string,tokens_string,base_url,url_endpoint, dynamic_url,name_sensor_endpoint_string){
       //Parsing string to JSON
       this.id_sensor_endpoint_edit = id_sensor_endpoint
       this.id_online_sensor_edit = id_online_sensor
@@ -479,6 +528,7 @@ export default {
       this.base_url_edit = base_url
       this.url_endpoint_edit = url_endpoint 
       this.dynamic_url_edit = dynamic_url 
+      this.name_sensor_endpoint_edit = name_sensor_endpoint_string
 
       console.log(this.specific_parameters_template_edit)
       console.log(this.specific_parameters_edit)
@@ -490,7 +540,7 @@ export default {
 
 
       this.editionModalTotalCount = this.specific_parameters_template_edit.parameters.length
-
+      this.editionModalActual = 0
       //Setting up first modal
       this.editMessage = this.specific_parameters_template_edit.parameters[this.editionModalActual].instruction
       this.search_param = this.specific_parameters_template_edit.parameters[this.editionModalActual].search_data.search_param 
@@ -504,13 +554,18 @@ export default {
     },
     viewSpecificParameters(specific_parameters_string,specific_parameters_template_string,name_sensor_endpoint_string){
       console.log(specific_parameters_template_string)
+      console.log(specific_parameters_string)
       this.specific_parameters_view = JSON.parse(specific_parameters_string).actual_data
+            console.log(this.specific_parameters_view)
+
       this.specific_parameters_template_view = JSON.parse(specific_parameters_template_string).parameters
 
       this.name_sensor_endpoint_view = name_sensor_endpoint_string
       console.log(this.specific_parameters_template_view)
       let index = 0
+      console.log(this.specific_parameters_view)
       for (const field of this.specific_parameters_view) {
+          console.log(this.specific_parameters_template_view[index])
           field.message = this.specific_parameters_template_view[index].retrieve_message
           index++
       }
@@ -518,6 +573,7 @@ export default {
       this.viewSpecificParametersActive = true
     },
     viewCapturedParameters(watch_parameters_string,name_sensor_endpoint_string){
+
       this.name_sensor_endpoint_view = name_sensor_endpoint_string
       let watch_parameters = JSON.parse(watch_parameters_string)
       console.log(watch_parameters)
