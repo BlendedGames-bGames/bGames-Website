@@ -20,7 +20,7 @@
         {{ props.row.description }}
       </b-table-column>
       <b-table-column label="Parametros capturados" field="watch_parameters" v-slot="props">
-          <b-button  icon-left="magnify-plus" native-type="submit" rounded type="is-info" @click="viewCapturedParameters(props.row.watch_parameters)">
+          <b-button  icon-left="magnify-plus" native-type="submit" rounded type="is-info" @click="viewCapturedParameters(props.row.watch_parameters, props.row.name_sensor_endpoint)">
                               
           </b-button>     
       </b-table-column>
@@ -75,32 +75,38 @@
                 <form action="">
                   <div class="modal-card" style="width: auto">
                       <header class="modal-card-head">
-                          <p class="modal-card-title">Login</p>
+                          <p class="modal-card-title">Parametros capturados en el punto de datos</p>
                           <button
                               type="button"
                               class="delete"
                               @click="viewCapturedParametersActive = false"/>
                       </header>
                       <section class="modal-card-body">
-                          <b-field label="Email">
+                            <b-field label="Nombre">
                               <b-input
-                                  type="email"
-                                  :value="email"
+                                  :value="name_sensor_endpoint_view"
                                   placeholder="Your email"
+                                  disabled
                                   required>
                               </b-input>
                           </b-field>
 
-                          <b-field label="Password">
-                              <b-input
-                                  type="password"
-                                  :value="password"
-                                  password-reveal
-                                  placeholder="Your password"
-                                  required>
-                              </b-input>
-                          </b-field>
+                          <b-table
+                            :striped="true"
+                            :hoverable="true"
+                            :data="watch_parameters_captured"
+                          >
+                           <b-table-column label="Nombre" field="name_sensor_endpoint" sortable v-slot="props">
+                            {{ props.row.name }}
+                          </b-table-column>
+                          <b-table-column label="Descripcion" field="description" sortable v-slot="props">
+                            {{ props.row.description }}
+                          </b-table-column>
+                          </b-table>
                       </section>
+                       <footer class="modal-card-foot">
+                       
+                      </footer>
                   </div>
               </form>
         </b-modal>
@@ -239,6 +245,7 @@ export default {
       base_url_edit:null,
       url_endpoint_edit:null,
       dynamic_url_edit:null,
+      watch_parameters_captured: null,
       retrieve_params: [],
       retrieve_names: [],
 
@@ -510,9 +517,12 @@ export default {
 
       this.viewSpecificParametersActive = true
     },
-    viewCapturedParameters(watch_parameters_string){
+    viewCapturedParameters(watch_parameters_string,name_sensor_endpoint_string){
+      this.name_sensor_endpoint_view = name_sensor_endpoint_string
       let watch_parameters = JSON.parse(watch_parameters_string)
       console.log(watch_parameters)
+      this.watch_parameters_captured = watch_parameters.descriptions
+      console.log(this.watch_parameters_captured)
       this.viewCapturedParametersActive = true
     },
    

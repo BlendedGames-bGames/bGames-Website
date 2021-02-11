@@ -40,6 +40,10 @@ const mutations = {
     state.dataReady = !state.dataReady
 
   },
+  TOGGLE_LOGGED_IN(state){
+    state.loggedIn = !state.loggedIn
+
+  },
   TOGGLE_LOADING_LOGIN_DATA(state){
     state.loadingLoginData = !state.loadingLoginData
 
@@ -54,6 +58,7 @@ const mutations = {
     state.dataReady = false
     state.loggedIn = false
     state.dimensionSocket = null
+    state.loadingLoginData = false
   },
   SET_ID_PLAYER(state,payload) {
     console.log(payload)
@@ -153,12 +158,13 @@ const actions = {
   },
   async settingData({ dispatch, commit, state, rootState  }, email){
     await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
-      
     await dispatch('settingSensorsAndEndpoints',email)
     await dispatch('settingDimensionsLevelsAndSubattributes')
     await dispatch('setupDimensionSocket')
     commit('TOGGLE_DATA_READY')
+
     commit('TOGGLE_LOADING_LOGIN_DATA')
+    commit('TOGGLE_LOGGED_IN')
 
     router.replace({name:'statistics'})      
   },
@@ -218,10 +224,10 @@ const actions = {
         break;
     }    
     try {
-      const user = await firebase.auth().signInWithPopup(provider);
-      console.log(user)
+      //const user = await firebase.auth().signInWithPopup(provider);
+      //console.log(user)
       commit('TOGGLE_LOADING_LOGIN_DATA')
-
+      /*
       if(user.additionalUserInfo.isNewUser){
         let profile = {
           "name": user.additionalUserInfo.profile.name,
@@ -238,7 +244,8 @@ const actions = {
           console.log(error)
         }
       }
-      dispatch('settingData',user.additionalUserInfo.profile.email)
+      */
+      dispatch('settingData',/*user.additionalUserInfo.profile.email*/ 'leiser.mahu@gmail.com')
     
     } catch(error) {
       console.log(error);
