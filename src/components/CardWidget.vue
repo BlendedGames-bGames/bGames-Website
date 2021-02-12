@@ -1,19 +1,21 @@
 <template>
-  <card-component>
-    <div class="level is-mobile">
-      <div class="level-item">
-        <div class="is-widget-label">
-          <h3 class="subtitle is-spaced">
+  <card-component class="is-card-widget">
+    <div class="level is-mobile is-card-widget">
+      <div class="level-item is-flex is-flex-direction-column is-align-items-center">
+        <div class=" is-widget-title is-flex is-flex-direction-row " style="width:100%">
+          <img :src="image" style="max-width:80px" alt="JustBoil.me" />
+          <h1 class="title is-flex  is-flex-direction-row is-align-self-center">
             {{ label }}
-          </h3>
-          <h1 class="title">
-            <growing-number :value="number" :prefix="prefix" :suffix="suffix" />
           </h1>
         </div>
-      </div>
-      <div v-if="icon" class="level-item has-widget-icon">
-        <div class="is-widget-icon">
-          <b-icon :icon="icon" size="is-large" :type="type" />
+        <div class=" is-widget-description is-flex is-flex-direction-column is-justify-content-center is-align-items-center" style='padding: 3px; '>
+          <p class="description  ">
+                   {{description}}
+
+          </p>
+          <b-button style="margin-top:1em" size="is-medium" native-type="submit"  type="is-info">
+                  Asociar            
+          </b-button>
         </div>
       </div>
     </div>
@@ -22,10 +24,9 @@
 
 <script>
 import CardComponent from '@/components/CardComponent'
-import GrowingNumber from '@/components/GrowingNumber'
 export default {
   name: 'CardWidget',
-  components: { GrowingNumber, CardComponent },
+  components: { CardComponent },
   props: {
     icon: {
       type: String,
@@ -35,22 +36,20 @@ export default {
       type: Number,
       default: 0
     },
-    prefix: {
-      type: String,
-      default: null
-    },
-    suffix: {
-      type: String,
-      default: null
-    },
     label: {
       type: String,
       default: null
     },
-    type: {
+    description: {
       type: String,
-      default: null
+      default: ''
+    },
+    image:{
+      type: String,
+      default: ''
     }
   }
 }
 </script>
+<style>
+</style>

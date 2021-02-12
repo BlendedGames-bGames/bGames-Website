@@ -16,7 +16,8 @@
     }
   }
 
-  &.is-card-widget {
+  .is-card-widget {
+    background-color: $base-color-widget;
     .card-content {
       padding: $default-padding * .5;
     }
@@ -32,7 +33,6 @@
       margin-right: $card-content-padding * -1;
     }
   }
-
   .is-widget-icon {
     .icon {
       width: 5rem;
@@ -40,9 +40,30 @@
     }
   }
 
-  .is-widget-label {
+  .is-widget-title {
+      margin-top: $card-content-padding ;
+      .title{
+        font-size:1.3em;
+        margin-left: $card-content-padding *5 ; 
+        margin-right:  $card-content-padding ;
+      }
+      
+  }
+
+  .is-widget-description {
+    word-break: break-all; 
+    word-wrap: break-word;
     .subtitle {
       color: $grey;
     }
+    .description {
+      margin-top: $card-content-padding ;
+      margin-bottom: $card-content-padding ;
+      max-width: 350px;
+
+  
+      
+    }
+    
   }
 }

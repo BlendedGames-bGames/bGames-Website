@@ -164,7 +164,7 @@ const actions = {
     commit('TOGGLE_DATA_READY')
 
     commit('TOGGLE_LOADING_LOGIN_DATA')
-    commit('TOGGLE_LOGGED_IN')
+    //commit('TOGGLE_LOGGED_IN')
 
     router.replace({name:'statistics'})      
   },
@@ -224,10 +224,10 @@ const actions = {
         break;
     }    
     try {
-      //const user = await firebase.auth().signInWithPopup(provider);
-      //console.log(user)
+      const user = await firebase.auth().signInWithPopup(provider);
+      console.log(user)
       commit('TOGGLE_LOADING_LOGIN_DATA')
-      /*
+      
       if(user.additionalUserInfo.isNewUser){
         let profile = {
           "name": user.additionalUserInfo.profile.name,
@@ -244,8 +244,8 @@ const actions = {
           console.log(error)
         }
       }
-      */
-      dispatch('settingData',/*user.additionalUserInfo.profile.email*/ 'leiser.mahu@gmail.com')
+      
+      dispatch('settingData',user.additionalUserInfo.profile.email)
     
     } catch(error) {
       console.log(error);
