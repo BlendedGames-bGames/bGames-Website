@@ -6,6 +6,7 @@ const state = {
   sensorTemplates: [],
   id_sensors: [],
   name_sensors:[],
+  settingUpNewPlayer:false,
   sensorURL: baseURL+ sensorPort
 };
 
@@ -25,19 +26,19 @@ const mutations = {
   },
   SET_SPECIFIC_PARAMETERS_SINGLE(state,payload){
     console.log('aqui')
-  console.log( state.sensorsAndEndpoints)
-  console.log( state.payload)
+    console.log( state.sensorsAndEndpoints)
+    console.log( state.payload)
 
-    state.sensorsAndEndpoints.forEach((sensor) => {    
-      if(sensor.id_online_sensor === payload.id_online_sensor){
-        for (const endpoint of sensor.endpoints) {
-          if(endpoint.id_sensor_endpoint  == payload.id_sensor_endpoint){
-              endpoint.specific_parameters = payload.specific_parameters
-          } 
-          
+      state.sensorsAndEndpoints.forEach((sensor) => {    
+        if(sensor.id_online_sensor === payload.id_online_sensor){
+          for (const endpoint of sensor.endpoints) {
+            if(endpoint.id_sensor_endpoint  == payload.id_sensor_endpoint){
+                endpoint.specific_parameters = payload.specific_parameters
+            } 
+            
+          }
         }
-      }
-    });
+      });
 
   },
   SET_ENDPOINT_ACTIVATION(state,payload){
@@ -92,6 +93,80 @@ const actions = {
         commit('SET_SENSOR_TEMPLATES', reply.data)
         dispatch('setSensorsAndEndpoints')
 
+    } catch (error) {
+        console.log(error)
+    }
+
+  },
+  async setNewPlayerSensorsAndEndpoints({ dispatch, commit, state, rootState }, payload) {
+    let userData = payload.userData
+    let metadata = payload.metadata
+    console.log(userData)   
+    console.log(metadata)   
+
+    try {
+      ///sensor_relation/:id_player/:id_online_sensor
+        let MEDIUM_POST_URL = state.sensorURL+'/sensor_relation/'+metadata.id_player+'/'+metadata.id_online_sensor
+        let reply = await Axios.post(MEDIUM_POST_URL,{tokens:userData});    
+        console.log(reply)   
+        try {
+          ////1) Obtener TODOS los endpoints de un sensor en especial
+          let MEDIUM_GET_URL = state.sensorURL+'/sensor_sensor_endpoint/'+metadata.id_online_sensor
+          reply = await Axios.get(MEDIUM_GET_URL);  
+          console.log(reply.data)
+          let ids_sensor_endpoint = []
+          let specific_parameter_parameters_json;
+          let specific_parameter_parameters_array = []
+          for (const endpoint of reply.data) {
+            ids_sensor_endpoint.push(endpoint.id_sensor_endpoint)
+            //input
+            //specific_parameter_parameters_json = Array [{instruction:"", search_data:{"url": "/boards/{id}/lists", "url_params": {"id": "{id}"}, "search_param": "name", "retrieve_param": "id", "specific_param": "cardId"}, retrieve_message:""},{...}]
+            specific_parameter_parameters_json = JSON.parse(endpoint.specific_parameters).parameters
+            console.log(specific_parameter_parameters_json)
+            //output
+            // Array = {actual_data:[{data:""},{data:""}], "id":"", "id2":""}
+            let single_data = {"actual_data":[]}
+            for (const parameter of specific_parameter_parameters_json) {
+              single_data.actual_data.push({"data":""})
+              if(specific_parameter_parameters_json.search_data.hasOwnProperty('specific_param')){
+                single_data[specific_parameter_parameters_json.search_data.specific_param] = ""
+
+              }
+            }
+            specific_parameter_parameters_array.push(single_data)
+          }
+          /*
+          specific_parameter = {
+              "actual_data":[
+                {
+                  "data":""
+                },
+                {
+                  "data":""
+                }
+              ],
+              "id":"",
+              "id2":"" 
+              ...
+          }          
+          */
+          console.log(ids_sensor_endpoint)
+          console.log(specific_parameter_parameters_array)
+
+          ////1)Crea asociacion de un jugador a un sensor_endpoint en especifico
+          ///sensor_endpoint/:id_player/:id_sensor_endpoint
+          MEDIUM_POST_URL = state.sensorURL+'/sensor_endpoint_batch/'+metadata.id_player
+          reply = await Axios.post(MEDIUM_POST_URL,{ids_sensor_endpoint:ids_sensor_endpoint,specific_parameter_parameters_array:specific_parameter_parameters_array });   
+          console.log(reply)
+          await dispatch('setSensorsAndEndpoints')      
+
+          
+
+
+        } catch (error) {
+          console.log(error)
+
+        } 
     } catch (error) {
         console.log(error)
     }
