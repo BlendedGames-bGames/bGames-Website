@@ -50,9 +50,17 @@ const actions = {
   async createPlayerLevelRelations({ dispatch,commit, state, rootState }, profile) {
 
     try {
-        const MEDIUM_POST_URL = state.postURL+'/player_all_attributes/'+rootState.user.id_player
-        const reply = await Axios.post(MEDIUM_POST_URL, state.id_dimensions);
-       
+      console.log('Se supone que deberia haber un id aca: ')
+      console.log(rootState.user.id_player)
+      console.log('Se supone que deberia haber un array de ids de dimensiones: ')
+      console.log(state.id_dimensions)
+      let atts = {
+        "id_attributes": state.id_dimensions
+      }
+      const MEDIUM_POST_URL = state.postURL+'/player_all_attributes/'+rootState.user.id_player.toString()
+      console.log(MEDIUM_POST_URL)
+      const reply = await Axios.post(MEDIUM_POST_URL,atts);
+      console.log(reply)
 
     } catch (error) {
         console.log(error)

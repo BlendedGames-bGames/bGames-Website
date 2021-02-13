@@ -261,12 +261,12 @@ export default {
           })
           
           const userData = {
-            key: trelloKey,
-            token: trelloToken,
-            userName: trelloUsername
+            key: this.trelloKey,
+            token: this.trelloToken,
+            userName: this.trelloUsername
           }
           const metadata = {
-            id_player: id_player,
+            id_player: this.id_player,
             id_online_sensor: this.selectedSensor.id_online_sensor,
           }
           this.trelloUsername='',
@@ -289,6 +289,7 @@ export default {
                     ariaModal: true
               })
               this.alertTestingUrl()
+              this.hideClick()
           }
         }
     },

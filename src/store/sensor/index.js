@@ -15,9 +15,14 @@ const getters = {
   sensorTemplates: ({sensorTemplates}) => sensorTemplates,
   id_sensors: ({id_sensors}) => id_sensors,
   name_sensors: ({name_sensors}) => name_sensors,
+  settingUpNewPlayer: ({settingUpNewPlayer}) => settingUpNewPlayer,
+
 };
 
 const mutations = {
+  SET_NEW_PLAYER_TOGGLE(state){
+    state.settingUpNewPlayer = !state.settingUpNewPlayer
+  },
   RESET_VARIABLES(state){
     state.sensorTemplates.splice(0)
     state.sensorsAndEndpoints.splice(0)
@@ -111,7 +116,7 @@ const actions = {
         console.log(reply)   
         try {
           ////1) Obtener TODOS los endpoints de un sensor en especial
-          let MEDIUM_GET_URL = state.sensorURL+'/sensor_sensor_endpoint/'+metadata.id_online_sensor
+          let MEDIUM_GET_URL = state.sensorURL+'/sensor_sensor_endpoints/'+metadata.id_online_sensor
           reply = await Axios.get(MEDIUM_GET_URL);  
           console.log(reply.data)
           let ids_sensor_endpoint = []
@@ -128,8 +133,8 @@ const actions = {
             let single_data = {"actual_data":[]}
             for (const parameter of specific_parameter_parameters_json) {
               single_data.actual_data.push({"data":""})
-              if(specific_parameter_parameters_json.search_data.hasOwnProperty('specific_param')){
-                single_data[specific_parameter_parameters_json.search_data.specific_param] = ""
+              if(parameter.search_data.hasOwnProperty('specific_param')){
+                single_data[parameter.search_data.specific_param] = ""
 
               }
             }
@@ -158,7 +163,8 @@ const actions = {
           MEDIUM_POST_URL = state.sensorURL+'/sensor_endpoint_batch/'+metadata.id_player
           reply = await Axios.post(MEDIUM_POST_URL,{ids_sensor_endpoint:ids_sensor_endpoint,specific_parameter_parameters_array:specific_parameter_parameters_array });   
           console.log(reply)
-          await dispatch('setSensorsAndEndpoints')      
+          await dispatch('setSensorsAndEndpoints')
+          commit('SET_NEW_PLAYER_TOGGLE')      
 
           
 

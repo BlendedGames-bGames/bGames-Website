@@ -238,6 +238,14 @@ const actions = {
         try {
           const MEDIUM_POST_URL = state.userURL+'/player'
           await Axios.post(MEDIUM_POST_URL, profile);
+          const PLAYER_GET_URL = state.userURL+'/player_by_email/'+profile.email
+          const player = await Axios.get(PLAYER_GET_URL)
+          console.log('El nuevo jugador es: ')
+          console.log(player)
+          const id_player = player.data.id_players
+          console.log(id_player)
+
+          commit('SET_ID_PLAYER', id_player)
           await dispatch('attribute/createPlayerLevelRelations',null,{root:true})
 
         } catch (error) {

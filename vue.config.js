@@ -1,3 +1,6 @@
 module.exports = {
-    lintOnSave: 'warning'
+    lintOnSave: 'warning',
+    configureWebpack: {
+        devtool: 'source-map'
+    }
 }
