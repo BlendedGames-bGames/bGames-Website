@@ -7,6 +7,7 @@ const state = {
   id_sensors: [],
   name_sensors:[],
   settingUpNewPlayer:false,
+  settingUpDissociationPlayer:false,
   sensorURL: baseURL+ sensorPort
 };
 
@@ -16,12 +17,16 @@ const getters = {
   id_sensors: ({id_sensors}) => id_sensors,
   name_sensors: ({name_sensors}) => name_sensors,
   settingUpNewPlayer: ({settingUpNewPlayer}) => settingUpNewPlayer,
+  settingUpDissociationPlayer: ({settingUpDissociationPlayer}) => settingUpDissociationPlayer,
 
 };
 
 const mutations = {
   SET_NEW_PLAYER_TOGGLE(state){
     state.settingUpNewPlayer = !state.settingUpNewPlayer
+  },
+  SET_DISSOCIATION_PLAYER_TOGGLE(state){
+    state.settingUpDissociationPlayer = !state.settingUpDissociationPlayer
   },
   RESET_VARIABLES(state){
     state.sensorTemplates.splice(0)
@@ -64,10 +69,22 @@ const mutations = {
   
   },
   SET_SENSOR_TEMPLATES(state, sensorTemplates) {
-    console.log()
-    sensorTemplates.forEach(sensorTemplate => {
-        state.sensorTemplates.push(sensorTemplate)
-    });
+    state.sensorTemplates.splice(0)
+    console.log(sensorTemplates)
+    console.log(state.sensorsAndEndpoints)
+
+    for (let index = 0; index < sensorTemplates.length; index++) {
+      for (let index2 = 0; index2 < state.sensorsAndEndpoints.length; index2++) {
+        if(sensorTemplates[index].id_online_sensor === (state.sensorsAndEndpoints)[index2].id_online_sensor){
+          sensorTemplates[index]['associated'] = true
+          break
+        }
+      }
+      if(!sensorTemplates[index].hasOwnProperty('associated') ){
+        sensorTemplates[index]['associated'] = false
+      }
+      state.sensorTemplates.push(sensorTemplates[index])
+    }
    },
   SET_SENSORS(state, sensors) {
    sensors.forEach(sensor => {
@@ -90,18 +107,78 @@ const mutations = {
 
 const actions = {
   async setSensorsAndTemplatesAndEndpoints({ dispatch,commit, state }) {
+    console.log('EZ')
 
-    try {
+    try {      
+        
+        await dispatch('setSensorsAndEndpoints')
+        console.log(state.sensorsAndEndpoints)
         const MEDIUM_GET_URL = state.sensorURL+'/sensors_all'
         const reply = await Axios.get(MEDIUM_GET_URL);
-        
+        console.log(reply.data)
+
         commit('SET_SENSOR_TEMPLATES', reply.data)
-        dispatch('setSensorsAndEndpoints')
+
 
     } catch (error) {
         console.log(error)
     }
 
+  },
+  async setDissociationSensorsAndEndpoints({ dispatch, commit, state, rootState }, id_online_sensor){
+    let MEDIUM_DELETE_URL = state.sensorURL+'/sensor_relation/'+rootState.user.id_player+'/'+id_online_sensor
+    try{
+      let reply = await Axios.delete(MEDIUM_DELETE_URL);    
+      console.log(reply)   
+      try{
+        ////1) Obtener TODOS los endpoints de un sensor en especial
+        let MEDIUM_GET_URL = state.sensorURL+'/sensor_sensor_endpoints/'+id_online_sensor
+        reply = await Axios.get(MEDIUM_GET_URL);  
+        console.log(reply.data)
+        let ids_sensor_endpoint = []
+        for (const endpoint of reply.data) {
+          ids_sensor_endpoint.push(endpoint.id_sensor_endpoint)
+        }
+        for (const sensor_endpoint of ids_sensor_endpoint) {
+          ///sensor_endpoint/:id_players/:id_sensor_endpoint
+          try {
+            MEDIUM_DELETE_URL = state.sensorURL+'/sensor_endpoint/'+rootState.user.id_player+'/'+sensor_endpoint
+            reply = await Axios.delete(MEDIUM_DELETE_URL);   
+            console.log(reply)
+          } catch(error){
+            console.log(error)
+          }
+        }
+        let id_online_sensor_index
+        state.sensorsAndEndpoints.forEach((sensor,index) => {
+          if(sensor.id_online_sensor === id_online_sensor){
+            id_online_sensor_index = index
+            
+          }
+        });
+        console.log(id_online_sensor_index)
+        state.sensorsAndEndpoints.splice(id_online_sensor_index,1)
+        state.id_sensors.splice(id_online_sensor_index,1)
+        state.name_sensors.splice(id_online_sensor_index,1)
+        console.log(state.sensorsAndEndpoints)
+        console.log(state.id_sensors)
+        console.log(state.name_sensors)
+
+        await dispatch('setSensorsAndTemplatesAndEndpoints')
+        commit('SET_DISSOCIATION_PLAYER_TOGGLE')      
+        
+        
+      }catch(error){
+        console.log(error)
+
+      }
+
+    }catch (error){
+      console.log(error)
+
+    }
+
+  
   },
   async setNewPlayerSensorsAndEndpoints({ dispatch, commit, state, rootState }, payload) {
     let userData = payload.userData
@@ -170,7 +247,7 @@ const actions = {
           MEDIUM_POST_URL = state.sensorURL+'/sensor_endpoint_batch/'+metadata.id_player
           reply = await Axios.post(MEDIUM_POST_URL,{ids_sensor_endpoint:ids_sensor_endpoint,specific_parameter_parameters_array:specific_parameter_parameters_array });   
           console.log(reply)
-          await dispatch('setSensorsAndEndpoints')
+          await dispatch('setSensorsAndTemplatesAndEndpoints')
           commit('SET_NEW_PLAYER_TOGGLE')      
 
           

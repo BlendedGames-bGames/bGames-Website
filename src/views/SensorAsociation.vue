@@ -16,6 +16,7 @@
                 :image="sensor.image"
                 :description="sensor.description"
                 :label="sensor.name"
+                :associate="sensor.associated"
                 @handle-associate-action="association"
                 />
             
@@ -117,7 +118,7 @@
                   <b>esperar 5 minutos desde que realiza esta accion</b> para validar que es su cuenta
                 </p> 
                  <p>
-                  1) Ingrese su username en Trello:
+                  1) Ingrese su username en chess.com:
                 </p>
                 <b-field >
                               <b-input
@@ -264,7 +265,10 @@ export default {
   computed: {
     ...mapGetters('sensor', {
           sensorTemplates: 'sensorTemplates',
-          settingUpNewPlayer: 'settingUpNewPlayer'
+          settingUpNewPlayer: 'settingUpNewPlayer',
+          settingUpDissociationPlayer : 'settingUpDissociationPlayer',
+          sensorsAndEndpoints : 'sensorsAndEndpoints'
+
     }),
     ...mapGetters('user', {
           id_player: 'id_player'
@@ -272,10 +276,12 @@ export default {
   },
   methods: {
     ...mapMutations('sensor',{
-      SET_NEW_PLAYER_TOGGLE:'SET_NEW_PLAYER_TOGGLE'
+      SET_NEW_PLAYER_TOGGLE:'SET_NEW_PLAYER_TOGGLE',
+      SET_DISSOCIATION_PLAYER_TOGGLE : 'SET_DISSOCIATION_PLAYER_TOGGLE'
     }),
     ...mapActions('sensor',{
-      setNewPlayerSensorsAndEndpoints: 'setNewPlayerSensorsAndEndpoints'
+      setNewPlayerSensorsAndEndpoints: 'setNewPlayerSensorsAndEndpoints',
+      setDissociationSensorsAndEndpoints: 'setDissociationSensorsAndEndpoints'
     }),
     async associationClicked(){
         console.log('comenzando la verificacion de los datos')
@@ -348,14 +354,45 @@ export default {
     hideClick(){
       this.startTimer = false
       this.modalBool = false
-       this.trelloUsername='',
-          this.trelloKey='',
-          this.trelloToken=''
+      this.trelloUsername='',
+      this.trelloKey='',
+      this.trelloToken=''
+      this.chessUserName=''
     },
     association (payload) {
       console.log(payload)
       this.selectedSensor = payload
-      this.modalBool = true
+      if(this.selectedSensor.activation){
+            this.modalBool = true
+      }
+      else{
+          let properTitle = 'Desasociacion del sensor '+this.selectedSensor.name
+          let properMessage = 'Estas seguro que quieres <b>desacociarte</b> del sensor '+this.selectedSensor.name+'? \n No tendra acceso a los puntos de datos de este sensor y perdera sus configuraciones personales'
+          this.$buefy.dialog.confirm({
+              title: properTitle,
+              message: properMessage,
+              confirmText: 'Si',
+              type: 'is-warning',
+              hasIcon: true,
+              onConfirm: () => {
+                this.dissociationSensorsAndEndpoints(this.selectedSensor.id_online_sensor)
+              
+              } 
+          })
+      }
+    },
+    async dissociationSensorsAndEndpoints(id_online_sensor){
+      await this.setDissociationSensorsAndEndpoints(id_online_sensor)
+      console.log(this.settingUpDissociationPlayer)
+      if(this.settingUpDissociationPlayer){
+          this.$buefy.toast.open('Desasociacion del sensor '+this.selectedSensor.name+' realizada con exito!' )
+      }
+      else{
+          this.$buefy.toast.open('Hubo un error con la desasociacion del sensor '+this.selectedSensor.name+' , porfavor realizarla nuevamente' )
+      }
+      this.SET_DISSOCIATION_PLAYER_TOGGLE()
+      this.hideClick()
+
     },
     timeUp(){
       console.log('Se terminaron los minutos')
