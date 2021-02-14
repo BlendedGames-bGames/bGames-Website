@@ -25,7 +25,7 @@
           <div class="instructions" v-if="selectedSensor.name === 'Trello'" >
                 <p>
                   Primero que todo, debe estar <b>autenticado</b> con anterioridad en <a href="https://trello.com/home"></a>
-                  para poder asociar Trello con Blended Games
+                  para poder asociar su cuenta de Trello con Blended Games
                 </p> 
                  <p>
                   1) Ingrese su username en Trello:
@@ -111,13 +111,34 @@
               
           </div>
           <div  class="instructions" v-else-if="selectedSensor.name === 'Chess.com'">
-                <b-field label="chess">
+                <p>
+                  Debido a que la fuente de informacion de Chess.com es publica, no se puede determinar la autenticacion de usuarios por lo
+                  que se determinara su autentidad al <b>conectarse o desconectarse</b> de su cuenta de <a href="chess.com">chess.com</a> y
+                  <b>esperar 5 minutos desde que realiza esta accion</b> para validar que es su cuenta
+                </p> 
+                 <p>
+                  1) Ingrese su username en Trello:
+                </p>
+                <b-field >
                               <b-input
-                                  placeholder="Your email"
-                                  
+                                  v-model="chessUserName"
+                                  placeholder="Ingrese username" 
+                                  :disabled="startTimer"                                 
                                   required>
                               </b-input>
-                  </b-field>
+                </b-field>
+                 <p>
+                  2) Cuando se <b>conecte o desconecte</b> de su cuenta de <a href="chess.com">chess.com</a> (puede ser cualquiera de las 2)
+                  aprete el boton de abajo
+                </p>
+                 <b-button type="is-info" @click="startTimerClick(false)" :disabled="startTimer">
+                              Listo
+                 </b-button>
+                 <div v-if="startTimer" style="text-align:center">
+                   <Timer @time-is-up="timeUp"/>
+                 </div>
+
+                      
           </div>
         <div  class="instructions" v-else-if="selectedSensor.name === 'Linkedin'">
                 <b-field label="linkedin">
@@ -165,13 +186,13 @@
 <script>
 import CardWidget from '@/components/CardWidget'
 import Tiles from '@/components/Tiles'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions,mapMutations } from 'vuex'
 import Axios from 'axios'
 
 import TitleBar from '@/components/TitleBar'
 import CardComponent from '@/components/CardComponent'
 import InstructionsModal from '@/components/InstructionsModal'
-
+import Timer from '@/components/Timer/mainTimer'
 import CheckboxPicker from '@/components/CheckboxPicker'
 import RadioPicker from '@/components/RadioPicker'
 import FilePicker from '@/components/FilePicker'
@@ -187,13 +208,19 @@ export default {
     TitleBar,
     Tiles,
     CardWidget,
-    InstructionsModal
+    InstructionsModal,
+    Timer
     
   },
   data () {
     return {
+      minutes:5,
+			seconds:0,
       modalBool:false,
       isLoading: false,
+      startTimer: false,
+      chessUserName:'',
+      online:null,
       form: {
         name: null,
         email: null,
@@ -220,6 +247,20 @@ export default {
       modalTestingDescription: 'Se esta realizando una llamada al servicio para asegurar que los parametros son correctos',
     }
   },
+  filters: {
+		 prettify : function(value) {
+			  let data = value.split(':')
+			  let minutes = data[0]
+			  let seconds = data[1]
+			  if (minutes < 10) {
+					minutes = "0"+minutes
+			  }
+			  if (secondes < 10) {
+					seconds = "0"+seconds
+			  }
+			  return minutes+":"+seconds
+		 }
+	},
   computed: {
     ...mapGetters('sensor', {
           sensorTemplates: 'sensorTemplates',
@@ -230,6 +271,9 @@ export default {
     }),
   },
   methods: {
+    ...mapMutations('sensor',{
+      SET_NEW_PLAYER_TOGGLE:'SET_NEW_PLAYER_TOGGLE'
+    }),
     ...mapActions('sensor',{
       setNewPlayerSensorsAndEndpoints: 'setNewPlayerSensorsAndEndpoints'
     }),
@@ -277,6 +321,7 @@ export default {
           this.modalTestingDescription = 'Configurando y proveyendo los puntos de datos asociados al sensor '+ this.selectedSensor.name
           this.alertTestingUrl()
           await this.setNewPlayerSensorsAndEndpoints({userData: userData, metadata:metadata})
+          console.log(this.settingUpNewPlayer)
           if(this.settingUpNewPlayer){
                this.$buefy.dialog.alert({
                     title: 'Exito',
@@ -289,6 +334,9 @@ export default {
                     ariaModal: true
               })
               this.alertTestingUrl()
+              this.modalTestingTitle = 'Testing de parametros de asociacion al sensor'
+              this.modalTestingDescription = 'Se esta realizando una llamada al servicio para asegurar que los parametros son correctos'
+              this.SET_NEW_PLAYER_TOGGLE()
               this.hideClick()
           }
         }
@@ -298,6 +346,7 @@ export default {
         
     },
     hideClick(){
+      this.startTimer = false
       this.modalBool = false
        this.trelloUsername='',
           this.trelloKey='',
@@ -308,6 +357,93 @@ export default {
       this.selectedSensor = payload
       this.modalBool = true
     },
+    timeUp(){
+      console.log('Se terminaron los minutos')
+      this.startTimerClick(true)
+    },
+    async startTimerClick(toggle){
+      console.log(toggle)
+      const CHESS_URL = 'https://api.chess.com/pub/player/'+this.chessUserName+'/is-online'
+      try {
+        const reply = await Axios.get(CHESS_URL)
+        if(reply.status !== 200){
+           console.log('No existe este usuario')
+            this.$buefy.dialog.alert({
+                    title: 'Error username',
+                    message: 'No existe este usuario en chess.com, porfavor ingrese uno existente',
+                    type: 'is-danger',
+                    hasIcon: true,
+                    icon: 'times-circle',
+                    iconPack: 'fa',
+                    ariaRole: 'alertdialog',
+                    ariaModal: true
+          })
+          this.startTimer = false
+
+        }
+        else{
+           if(toggle){
+              this.alertTestingUrl()
+              if(this.online !== reply.data.online){
+                  console.log('Usuario autenticado!')
+                        
+                  const userData = {
+                    name: this.chessUserName
+                  }
+                  const metadata = {
+                    id_player: this.id_player,
+                    id_online_sensor: this.selectedSensor.id_online_sensor,
+                  }
+                  this.chessUserName = ''
+                  this.alertTestingUrl()
+
+                  this.modalTestingTitle =  'Ajustando configuraciones '
+                  this.modalTestingDescription = 'Configurando y proveyendo los puntos de datos asociados al sensor '+ this.selectedSensor.name
+                  this.alertTestingUrl()
+                  await this.setNewPlayerSensorsAndEndpoints({userData: userData, metadata:metadata})
+                  console.log(this.settingUpNewPlayer)
+                  if(this.settingUpNewPlayer){
+                      this.$buefy.dialog.alert({
+                            title: 'Exito',
+                            message: 'Ahora puede acceder a los puntos de datos correspondientes al sensor '+ this.selectedSensor.name,
+                            type: 'is-success',
+                            hasIcon: true,
+                            icon: 'check-circle',
+                            iconPack: 'fa',
+                            ariaRole: 'alertdialog',
+                            ariaModal: true
+                      })
+                      this.alertTestingUrl()
+                      this.modalTestingTitle = 'Testing de parametros de asociacion al sensor'
+                      this.modalTestingDescription = 'Se esta realizando una llamada al servicio para asegurar que los parametros son correctos'
+                      this.SET_NEW_PLAYER_TOGGLE()
+                      this.hideClick()
+                  }
+
+              }
+          }
+          else{
+            this.online = reply.data.online
+            this.startTimer = true
+          }
+
+        }
+       
+      } catch (error) {
+          console.log('Error de conexion')
+            this.$buefy.dialog.alert({
+                    title: 'Error de conexion',
+                    message: 'El sitio chess.com no esta respondiendo por el momento, porfavor intente asociar su cuenta mas tarde',
+                    type: 'is-danger',
+                    hasIcon: true,
+                    icon: 'times-circle',
+                    iconPack: 'fa',
+                    ariaRole: 'alertdialog',
+                    ariaModal: true
+          })
+          this.startTimer = false
+      }
+    }
   }
 }
 </script>

@@ -126,19 +126,26 @@ const actions = {
             ids_sensor_endpoint.push(endpoint.id_sensor_endpoint)
             //input
             //specific_parameter_parameters_json = Array [{instruction:"", search_data:{"url": "/boards/{id}/lists", "url_params": {"id": "{id}"}, "search_param": "name", "retrieve_param": "id", "specific_param": "cardId"}, retrieve_message:""},{...}]
-            specific_parameter_parameters_json = JSON.parse(endpoint.specific_parameters).parameters
-            console.log(specific_parameter_parameters_json)
-            //output
-            // Array = {actual_data:[{data:""},{data:""}], "id":"", "id2":""}
-            let single_data = {"actual_data":[]}
-            for (const parameter of specific_parameter_parameters_json) {
-              single_data.actual_data.push({"data":""})
-              if(parameter.search_data.hasOwnProperty('specific_param')){
-                single_data[parameter.search_data.specific_param] = ""
+            if(endpoint.specific_parameters !== null){
+              specific_parameter_parameters_json = JSON.parse(endpoint.specific_parameters).parameters
+              console.log(specific_parameter_parameters_json)
+              //output
+              // Array = {actual_data:[{data:""},{data:""}], "id":"", "id2":""}
+              let single_data = {"actual_data":[]}
+              for (const parameter of specific_parameter_parameters_json) {
+                single_data.actual_data.push({"data":""})
+                if(parameter.search_data.hasOwnProperty('specific_param')){
+                  single_data[parameter.search_data.specific_param] = ""
 
+                }
               }
+              specific_parameter_parameters_array.push(single_data)
+
             }
-            specific_parameter_parameters_array.push(single_data)
+            else{
+              specific_parameter_parameters_array.push(null)
+            }
+            
           }
           /*
           specific_parameter = {

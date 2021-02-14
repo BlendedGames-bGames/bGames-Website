@@ -67,3 +67,17 @@
     
   }
 }
+
+button {
+  padding:10px;
+}
+
+[v-cloak] {
+  opacity:0;
+}
+
+label {
+  width:20%;
+  padding:10px 0;
+  display:inline-block;
+}
