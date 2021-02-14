@@ -113,19 +113,19 @@
                   </div>
               </form>
         </b-modal>
-     <b-modal v-model="editSpecificParametersActive" :width="640" scroll="keep" :on-cancel="resettingDataAndClose">
-                <form action="">
-                  <div class="modal-card" style="width: auto">
-                      <header class="modal-card-head">
-                          <p v-if="editionModalTotalCount > 1" class="modal-card-title">Edicion del punto de datos [{{editionModalActual+1}}/{{editionModalTotalCount}}]</p>
-                          <p  class="modal-card-title" v-else> Edicion del punto de datos </p>
-                          <button
-                              type="button"
-                              class="delete"
-                              @click="resettingDataAndClose()"/>
-                      </header>
-                      <section class="modal-card-body">
-                        <b-field label="Nombre">
+        <instruction-steps-modal v-if="editSpecificParametersActive" 
+                                :modalTotalCount="editionModalTotalCount"
+                                :modalActualCount="editionModalActual"
+                                title="Edicion del punto de datos"
+                                lastStepButtonLabel="Guardar cambios"
+                                :isLoading="isLoadingEditSpecificParameters"
+                                @go-next-click="queryAndGettingInfo"
+                                @go-confirm-click="queryAndGettingInfo"
+                                @go-back-click="goBack"
+                                @reset-data-and-close-click="resettingDataAndClose"
+                                  
+                                >
+                          <b-field label="Nombre">
                               <b-input
                                   :value="name_sensor_endpoint_edit"
                                   placeholder="Your email"
@@ -149,34 +149,10 @@
                                   required>
                               </b-input>
                           </b-field>
-                          <b-loading :is-full-page="false" v-model="isLoadingEditSpecificParameters" :can-cancel="false"></b-loading>
-                      </section>
-                      <footer class="modal-card-foot">
-                          <b-button
-                              v-if="editionModalTotalCount > 1 && editionModalActual >= 1"
-                              label="Anterior"
-                              style="float:left"
-                              type="is-primary" 
-                              @click="goBack()"/>                          
-                          <b-button
-                              v-if="editionModalActual === editionModalTotalCount-1"
-                              label="Guardar cambios"
-                              type="is-primary" 
-                              style="float:right"
 
-                              @click="queryAndGettingInfo()"
-                              />
-                          <b-button
-                              v-else
-                              label="Siguiente"
-                              type="is-primary" 
-                              style="float:right"
 
-                              @click="queryAndGettingInfo()"/>
-                      </footer>
-                  </div>
-              </form>
-        </b-modal>
+        </instruction-steps-modal>
+
     <b-modal v-model="successModal"   :width="350" scroll="keep">
         <form action="">
                   <div class="modal-card" style="width: auto">
@@ -237,12 +213,13 @@
 <script>
 import Axios from 'axios'
 import ModalBox from '@/components/ModalBox'
+import InstructionStepsModal from '@/components/InstructionStepsModal'
 import { mapGetters, mapMutations } from 'vuex'
 import {baseURL, sensorPort} from '../store/urls'
 
 export default {
   name: 'SensorEndpointTable',
-  components: { ModalBox },
+  components: { ModalBox,InstructionStepsModal },
   props: {
     checkable: {
       type: Boolean,

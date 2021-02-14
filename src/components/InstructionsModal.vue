@@ -1,5 +1,5 @@
 <template>
-  <b-modal v-model="localToggle" :width="640"  scroll="clip" >
+  <b-modal v-model="localToggle" width="auto"  scroll="clip" >
         <div class="card"  >
             <header class="modal-card-head">
                 <p class="modal-card-title">Instruccion de asociacion al sensor {{sensorName}}</p>
