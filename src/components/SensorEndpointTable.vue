@@ -44,7 +44,7 @@
 >
             <b-switch
                 v-model="props.row.activated"
-                @input="confirmSwitchToggle(props.row.activated, props.row.id_online_sensor, props.row.id_sensor_endpoint)"
+                @input="confirmSwitchToggle(props.row.activated, props.row.id_online_sensor, props.row.id_sensor_endpoint, props.row.watch_parameters,props.row.base_url,props.row.url_endpoint,props.row.tokens,props.row.token_parameters,props.row.specific_parameters_template,props.row.specific_parameters)"
                 passive-type='is-dark'
                 type='is-warning'>
             </b-switch>
@@ -309,7 +309,8 @@ export default {
       SET_SPECIFIC_PARAMETERS_SINGLE: 'SET_SPECIFIC_PARAMETERS_SINGLE',
       SET_ENDPOINT_ACTIVATION: 'SET_ENDPOINT_ACTIVATION'
     }),
-    async confirmSwitchToggle(bool, id_online_sensor, id_sensor_endpoint) {
+    async confirmSwitchToggle(bool, id_online_sensor, id_sensor_endpoint, watch_parameters,base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters) {
+      
       var properTitle, properMessage
       console.log(bool)
       if(!bool){
@@ -330,19 +331,44 @@ export default {
             this.setEndpointActivation({activated: !bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })           
           } ,
           onConfirm: () => {
-            this.activationEndpointRequest(bool, id_online_sensor, id_sensor_endpoint)
+            this.activationEndpointRequest(bool, id_online_sensor, id_sensor_endpoint, watch_parameters, base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters)
            
           } 
       })
     },
-    async activationEndpointRequest(bool, id_online_sensor, id_sensor_endpoint){
+    searchForSelectedScheduleTime(id_sensor_endpoint){
+      let time_index
+      this.local_sensor_endpoints.forEach((sensor,index) => {
+        console.log(sensor)
+        if(sensor.id_sensor_endpoint === id_sensor_endpoint){
+          time_index = index
+        }
+      });
+      console.log(this.local_sensor_endpoints[time_index])
+      return this.local_sensor_endpoints[time_index].schedule_time
+    },
+    async activationEndpointRequest(bool, id_online_sensor, id_sensor_endpoint, watch_parameters, base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters){
         this.setEndpointActivation({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
         this.SET_ENDPOINT_ACTIVATION({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
-        const SENSOR_URL = this.sensorURL+'/sensor_endpoint/'+this.id_player+'/'+id_sensor_endpoint+'/activation'
-        let activate = bool ? 0 : 1
+        const SENSOR_URL = this.sensorURL+'/sensor_endpoint/'+this.id_player+'/'+id_sensor_endpoint
+        let activate = bool ? 1 : 0
+        console.log(activate)
         const data = {
-          activated: activate
+          id_player: this.id_player,
+          id_sensor_endpoint:id_sensor_endpoint,
+          id_online_sensor:id_online_sensor,
+          watch_parameters:watch_parameters,
+          base_url: base_url,
+          url_endpoint:url_endpoint,
+          tokens:tokens,
+          token_parameters:token_parameters,
+          specific_parameters_template:specific_parameters_template,
+          specific_parameters:specific_parameters,
+          unique_id: this.id_player.toString()+id_online_sensor.toString()+id_sensor_endpoint.toString(),
+          activated: activate,
+          schedule_time: this.searchForSelectedScheduleTime(id_sensor_endpoint)
         }
+        console.log(data)
         console.log('paso por aqui')
         try {
               const putConfirmation = await Axios.put(SENSOR_URL, data)
