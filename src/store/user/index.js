@@ -3,18 +3,20 @@ import Axios from 'axios';
 import router from '../../router/index';
 import Vue from 'vue';
 import io from 'socket.io-client';
-import { baseURL, userPort, getPort, postPort} from '../urls'
+import { baseURL, userPort, getPort, postPort, sensorCommunicationPort} from '../urls'
 const state = {
   userProfile: {},
   loggedIn: false,
   userCreatedAlready:false,
   userURL: baseURL+ userPort,
   getURL: baseURL+ getPort,
+  sensorCommunicationURL: baseURL + sensorCommunicationPort,
   id_player:0,
   userLevels: [],
   userDimensionLevels: [],
   dataReady:false,
   dimensionSocket: null,
+  authenticationSocket:null,
   loadingLoginData: false
 };
 
@@ -23,6 +25,7 @@ const getters = {
   userProfile: ({userProfile}) => userProfile,
   dataReady: ({dataReady}) => dataReady,
   dimensionSocket: ({dimensionSocket}) => dimensionSocket,
+  authenticationSocket: ({authenticationSocket}) => authenticationSocket,
 
   loggedIn: ({loggedIn}) => loggedIn,
   userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready,
@@ -87,6 +90,17 @@ const mutations = {
     });
     state.dimensionSocket.emit('joinRoom',state.id_player.toString());			
     state.dimensionSocket.on('success', (msg) => {
+      console.log(msg)
+    });
+
+  },
+  SETUP_AUTHENTICATION_SOCKET(state) {
+    state.authenticationSocket = io(baseURL+sensorCommunicationPort+'/authentication')
+    state.authenticationSocket.on('welcome', (msg) => {
+      console.log(msg)
+    });
+    state.authenticationSocket.emit('joinRoom',state.id_player.toString());			
+    state.authenticationSocket.on('success', (msg) => {
       console.log(msg)
     });
 
@@ -161,6 +175,7 @@ const actions = {
     await dispatch('settingSensorsAndEndpoints',email)
     await dispatch('settingDimensionsLevelsAndSubattributes')
     await dispatch('setupDimensionSocket')
+    await dispatch('setupAuthenticationSocket')
     commit('TOGGLE_DATA_READY')
 
     commit('TOGGLE_LOADING_LOGIN_DATA')
@@ -172,7 +187,7 @@ const actions = {
   async settingSensorsAndEndpoints({ dispatch, commit, state, rootState  }, email){
     const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+email
     const userData = await Axios.get(MEDIUM_GET_URL);
-    await dispatch('setIdPlayer', userData.data.id_players)
+    await dispatch('setIdPlayer', JSON.parse(userData.data).id_players)
     //setSensorsAndTemplatesAndEndpoints
     await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
     rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
@@ -208,9 +223,14 @@ const actions = {
     commit('SETUP_DIMENSION_SOCKET')
 
   },
+  async setupAuthenticationSocket({ commit }) {
+    commit('SETUP_AUTHENTICATION_SOCKET')
+
+  },
   async setIdPlayer({ commit }, id) {
     commit('SET_ID_PLAYER',id)
   },
+  
   async loginProvider({ dispatch, state,commit,rootState }, profile) {
     let provider;
     switch (profile.provider) {

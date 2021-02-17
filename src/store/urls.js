@@ -1,7 +1,8 @@
-let baseURL = 'http://144.126.216.255:'
-let sensorPort = '3007'
-let getPort = '3001' 
-let postPort = '3002' 
-let userPort = '3010'
+const baseURL = 'http://144.126.216.255:'
+const sensorPort = '3007'
+const getPort = '3001' 
+const postPort = '3002' 
+const userPort = '3010'
+const sensorCommunicationPort = '3006'
 
-export {baseURL,sensorPort,getPort,postPort,userPort}
+export {baseURL,sensorPort,getPort,postPort,userPort,sensorCommunicationPort}
