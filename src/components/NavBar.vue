@@ -210,7 +210,7 @@ export default {
       /*Input: attribute = {id_attributes: [], data: []}, ids de dimensiones y los datos nuevos actualizados desde el post att microservicio*/
       this.authenticationSocket.on('confirmUser', message => {
         console.log('aqui')
-        console.log(attribute)
+        console.log(message)
          this.$buefy.dialog.confirm({
           title: 'Confirmacion de autenticacion login en aplicacion de escritorio',
           message: message,
@@ -220,7 +220,7 @@ export default {
           onCancel: () => {
           } ,
           onConfirm: () => {
-            this.authenticationSocket.$emit('userConfirmed')
+            this.authenticationSocket.emit('userConfirmed')
            
           } 
       })
