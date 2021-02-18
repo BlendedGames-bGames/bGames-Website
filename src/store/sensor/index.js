@@ -33,6 +33,9 @@ const mutations = {
     state.sensorsAndEndpoints.splice(0)
     state.id_sensors.splice(0)
     state.name_sensors.splice(0)
+    state.settingUpNewPlayer = false
+    state.settingUpDissociationPlayer =false
+
   },
   SET_SPECIFIC_PARAMETERS_SINGLE(state,payload){
     console.log('aqui')

@@ -61,6 +61,7 @@ const mutations = {
     state.dataReady = false
     state.loggedIn = false
     state.dimensionSocket = null
+    state.authenticationSocket = null
     state.loadingLoginData = false
   },
   SET_ID_PLAYER(state,payload) {
