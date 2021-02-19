@@ -85,7 +85,7 @@
     </div>
   </nav>
 
-    <b-modal v-model="keyModal"   :width="600" scroll="keep">
+    <b-modal  v-model="keyModal"  :on-cancel="restTime" :width="600" scroll="keep">
         <form action="">
                   <div class="modal-card" style="width: auto">
                       <header class="modal-card-head">
@@ -104,6 +104,10 @@
                               </b-input>
                           </b-field>
                            <b-loading :is-full-page="false" v-model="isLoading" :can-cancel="false"></b-loading>
+                           <div v-if="generatedKey" style="text-align:center">
+                             Tiempo de expiracion de la llave:
+                               <Timer :time="time" @time-is-up="timeUp" @actual-time="actualTime"/>
+                           </div>
 
                       </section>
                       <footer class="modal-card-foot">
@@ -125,13 +129,15 @@ import NavBarMenu from '@/components/NavBarMenu'
 import UserAvatar from '@/components/UserAvatar'
 import firebase from 'firebase/app'
 import "firebase/auth"
-import {baseURL, sensorCommunicationPort} from '../store/urls'
+import {baseURL, sensorCommunicationPort,userPort} from '../store/urls'
+import Timer from '@/components/Timer/mainTimer'
 
 export default {
   name: 'NavBar',
   components: {
     UserAvatar,
-    NavBarMenu
+    NavBarMenu,
+    Timer
   },
   data () {
     return {
@@ -144,7 +150,11 @@ export default {
       keyModal:false,
       generatedKey:false,
       isLoading:false,
-      sensorCommunicationHost:baseURL+sensorCommunicationPort
+      truer:true,
+      sensorCommunicationHost:baseURL+sensorCommunicationPort,
+      userHost:baseURL+userPort,
+      time:120,
+      timer:null
     }
   },
   computed: {
@@ -183,9 +193,53 @@ export default {
     menuToggleMobile () {
       this.$store.commit('asideMobileStateToggle')
     },
-    async toggleKey(){
-              this.keyModal = true
+    timeUp(){
+      this.keyModal = false
+      this.deleteKey()
 
+    },
+    restTime(){
+      this.timer = setInterval( () => {
+        console.log(this.time)
+        if (this.time > 0) {
+            this.time--
+        } else {
+          this.stopTimer()
+        }
+      }, 1000 )
+
+    },
+    stopTimer(){
+      clearInterval(this.timer)      
+      this.deleteKey()
+    },
+    
+    async deleteKey(){
+      const data = {
+        key:null
+      }
+      const GET_KEY_URL = this.userHost+'/create_desktop_key/'+this.id_player 
+      try {
+            const reply = await Axios.post(GET_KEY_URL,data)
+            this.$buefy.toast.open('Expiro su llave de autenticacion, generela nuevamente')
+            this.time = 120
+            this.generatedKey = false
+
+      } catch (error) {
+              this.$buefy.toast.open('Hubo un error en la activacion, intente nuevamente')
+
+        }
+
+    },
+    actualTime(time){
+      this.time = time
+      console.log(this.keyModal)
+    },
+    async toggleKey(){
+      console.log(this.keyModal)
+      clearInterval(this.timer)      
+      this.keyModal = true
+      console.log(this.keyModal)
       if(!this.generatedKey){
         console.log('paso por aqui')
         this.isLoading = true

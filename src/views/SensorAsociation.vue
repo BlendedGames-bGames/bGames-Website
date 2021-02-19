@@ -56,11 +56,11 @@
                     </p>
 
                     <b-field >
-                                  <b-input
-                                      v-model="trelloKey"
-                                      placeholder="Ingresa la llave encontrada en la pagina"                                  
-                                      required>
-                                  </b-input>
+                          <b-input
+                              v-model="trelloKey"
+                              placeholder="Ingresa la llave encontrada en la pagina"                                  
+                              required>
+                          </b-input>
                     </b-field>
                     <div v-if="trelloKey.length !== 0">
                       <p>
@@ -130,13 +130,10 @@
                 </b-field>
                  <p>
                   2) Cuando se <b>conecte o desconecte</b> de su cuenta de <a href="chess.com">chess.com</a> (puede ser cualquiera de las 2)
-                  aprete el boton de abajo
+                  aprete el boton Asociar
                 </p>
-                 <b-button type="is-info" @click="startTimerClick(false)" :disabled="startTimer">
-                              Listo
-                 </b-button>
                  <div v-if="startTimer" style="text-align:center">
-                   <Timer @time-is-up="timeUp"/>
+                   <Timer :time="time" @time-is-up="timeUp" />
                  </div>
 
                       
@@ -215,6 +212,7 @@ export default {
   },
   data () {
     return {
+      time:302,
       minutes:5,
 			seconds:0,
       modalBool:false,
@@ -283,69 +281,74 @@ export default {
       setNewPlayerSensorsAndEndpoints: 'setNewPlayerSensorsAndEndpoints',
       setDissociationSensorsAndEndpoints: 'setDissociationSensorsAndEndpoints'
     }),
+    async trelloAssociation(){
+      let testingUrl='https://api.trello.com/1/members/'+this.trelloUsername+'/boards?key='+this.trelloKey+'&token='+this.trelloToken
+      this.alertTestingUrl()
+      const response = await Axios.get(testingUrl)
+      console.log(response)
+      if(response.status === 200){
+        this.alertTestingUrl()
+        this.$buefy.dialog.alert({
+                  title: 'Exito',
+                  message: 'Se pudo corroborar que sus datos son correctos',
+                  type: 'is-success',
+                  hasIcon: true,
+                  icon: 'check-circle',
+                  iconPack: 'fa',
+                  ariaRole: 'alertdialog',
+                  ariaModal: true
+        })
+        
+        const userData = {
+          key: this.trelloKey,
+          token: this.trelloToken,
+          userName: this.trelloUsername
+        }
+        const metadata = {
+          id_player: this.id_player,
+          id_online_sensor: this.selectedSensor.id_online_sensor,
+        }
+        this.trelloUsername='',
+        this.trelloKey='',
+        this.trelloToken=''
+
+        this.modalTestingTitle =  'Ajustando configuraciones '
+        this.modalTestingDescription = 'Configurando y proveyendo los puntos de datos asociados al sensor '+ this.selectedSensor.name
+        this.alertTestingUrl()
+        await this.setNewPlayerSensorsAndEndpoints({userData: userData, metadata:metadata})
+        console.log(this.settingUpNewPlayer)
+        if(this.settingUpNewPlayer){
+              this.$buefy.dialog.alert({
+                  title: 'Exito',
+                  message: 'Ahora puede acceder a los puntos de datos correspondientes al sensor '+ this.selectedSensor.name,
+                  type: 'is-success',
+                  hasIcon: true,
+                  icon: 'check-circle',
+                  iconPack: 'fa',
+                  ariaRole: 'alertdialog',
+                  ariaModal: true
+            })
+            this.alertTestingUrl()
+            this.modalTestingTitle = 'Testing de parametros de asociacion al sensor'
+            this.modalTestingDescription = 'Se esta realizando una llamada al servicio para asegurar que los parametros son correctos'
+            this.SET_NEW_PLAYER_TOGGLE()
+            this.hideClick()
+        }
+      }
+    },
     async associationClicked(){
         console.log('comenzando la verificacion de los datos')
         let testingUrl;
         switch (this.selectedSensor.name) {
           case 'Trello':
-            testingUrl='https://api.trello.com/1/members/'+this.trelloUsername+'/boards?key='+this.trelloKey+'&token='+this.trelloToken
+            this.trelloAssociation()
             break;
-        
+          case 'Chess.com':
+            this.startTimerClick(false)        
           default:
             break;
         }
-        this.alertTestingUrl()
-        const response = await Axios.get(testingUrl)
-        console.log(response)
-        if(response.status === 200){
-          this.alertTestingUrl()
-          this.$buefy.dialog.alert({
-                    title: 'Exito',
-                    message: 'Se pudo corroborar que sus datos son correctos',
-                    type: 'is-success',
-                    hasIcon: true,
-                    icon: 'check-circle',
-                    iconPack: 'fa',
-                    ariaRole: 'alertdialog',
-                    ariaModal: true
-          })
-          
-          const userData = {
-            key: this.trelloKey,
-            token: this.trelloToken,
-            userName: this.trelloUsername
-          }
-          const metadata = {
-            id_player: this.id_player,
-            id_online_sensor: this.selectedSensor.id_online_sensor,
-          }
-          this.trelloUsername='',
-          this.trelloKey='',
-          this.trelloToken=''
-
-          this.modalTestingTitle =  'Ajustando configuraciones '
-          this.modalTestingDescription = 'Configurando y proveyendo los puntos de datos asociados al sensor '+ this.selectedSensor.name
-          this.alertTestingUrl()
-          await this.setNewPlayerSensorsAndEndpoints({userData: userData, metadata:metadata})
-          console.log(this.settingUpNewPlayer)
-          if(this.settingUpNewPlayer){
-               this.$buefy.dialog.alert({
-                    title: 'Exito',
-                    message: 'Ahora puede acceder a los puntos de datos correspondientes al sensor '+ this.selectedSensor.name,
-                    type: 'is-success',
-                    hasIcon: true,
-                    icon: 'check-circle',
-                    iconPack: 'fa',
-                    ariaRole: 'alertdialog',
-                    ariaModal: true
-              })
-              this.alertTestingUrl()
-              this.modalTestingTitle = 'Testing de parametros de asociacion al sensor'
-              this.modalTestingDescription = 'Se esta realizando una llamada al servicio para asegurar que los parametros son correctos'
-              this.SET_NEW_PLAYER_TOGGLE()
-              this.hideClick()
-          }
-        }
+       
     },
     alertTestingUrl() {
         this.testingModal = !this.testingModal
@@ -361,6 +364,7 @@ export default {
     },
     association (payload) {
       console.log(payload)
+      console.log(this.modalBool)
       this.selectedSensor = payload
       if(this.selectedSensor.activation){
             this.modalBool = true
