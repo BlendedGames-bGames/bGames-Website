@@ -49,11 +49,14 @@ export default {
 								this.localTime--
 								this.$emit('actual-time', this.localTime)
 						} else {
-								clearInterval(this.timer)
-								this.$emit('time-is-up')
+							this.stopTimer()
+							this.$emit('time-is-up')
 						}
 					}, 1000 )
 				}
+			},
+			stopTimer(){
+				clearInterval(this.timer)
 			}
 	}
 }

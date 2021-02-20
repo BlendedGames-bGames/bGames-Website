@@ -93,7 +93,7 @@
                           <button
                               type="button"
                               class="delete"
-                              @click="keyModal = false"/>
+                              @click="restTime"/>
                       </header>
                       <section class="modal-card-body">
                           <b-field label="Llave">
@@ -199,6 +199,7 @@ export default {
 
     },
     restTime(){
+      this.keyModal = false
       this.timer = setInterval( () => {
         console.log(this.time)
         if (this.time > 0) {
@@ -233,7 +234,7 @@ export default {
     },
     actualTime(time){
       this.time = time
-      console.log(this.keyModal)
+      console.log(this.time)
     },
     async toggleKey(){
       console.log(this.keyModal)
