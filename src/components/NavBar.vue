@@ -275,7 +275,9 @@ export default {
           onCancel: () => {
           } ,
           onConfirm: () => {
+            clearInterval(this.timer)      
             this.authenticationSocket.emit('userConfirmed')
+
            
           } 
       })

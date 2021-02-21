@@ -139,10 +139,13 @@ export default {
     real_time_data: function(newVal, oldVal) { // watch it
         console.log('Prop changed: ', newVal, ' | was: ', oldVal)
         var new_data;
+                    console.log('paso por aqui -1')
+        console.log('paso por aqui')
         if(this.data_table_type === 'Adquired'){
             new_data = this.formattingSubatt(newVal)
         }
         else if(this.data_table_type === 'Expended'){
+            console.log('paso por aqui x2')
             new_data = this.formattingVideogameMechanic(newVal)
         }
         this.addingData(new_data)
@@ -176,24 +179,33 @@ export default {
     },
     formattingVideogameMechanic(videogame_data){
       //id_attributes:id_attributes[i], data:new_data[i], id_videogame:id_videogame, id_modifiable_mechanic:id_modifiable_mechanic, created_time:date}
+      console.log('no hay error -1')
       videogame_data.forEach(singleData => {
         //videogamesAndModifiableMechanics
-        this.videogamesAndModifiableMechanics.forEach(videogame => {
-            let videogame_variable = this.searchOnArrayOption(videogame.modifiable_mechanics,'id_modifiable_mechanic',singleData.id_modifiable_mechanic,['name_videogame','name_modifiable_mechanic','description'])
-            if(videogame_variable !== undefined && videogame_variable.length !== 0){
-              for (const variable of videogame_variable) {
-                    singleData[variable.name] = variable.data
+        console.log('no hay error 0')
+        console.log(this.videogamesAndModifiableMechanics)
+        for (const videogame of this.videogamesAndModifiableMechanics) {
+            if(videogame.id_videogame === singleData.id_videogame){
+              let videogame_variable = this.searchOnArrayOption(videogame.modifiable_mechanics,'id_modifiable_mechanic',singleData.id_modifiable_mechanic,['name_videogame','name_modifiable_mechanic','description'])
+              console.log(videogame_variable)
+              if(videogame_variable !== undefined && videogame_variable.length !== 0){
+                  for (const variable of videogame_variable) {
+                        singleData[variable.name] = variable.data
+                  }
+                  break
               }
             }
-        });
-        this.userLevels.forEach(dimension => {
-            let dimension_variables = this.searchOnArrayOption(dimension,'id_attributes',singleData.id_attributes,['name_dimension'])
-            if(dimension_variables !== undefined && dimension_variables.length !== 0){
-              for (const variable of dimension_variables) {
-                    singleData[variable.name] = variable.data
-              }
-            }
-        });
+        }
+        console.log('no hay error')
+            console.log(this.userLevels)
+
+        let dimension_variables = this.searchOnArrayOption(this.userLevels,'id_attributes',singleData.id_attributes,'name')
+        if(dimension_variables !== undefined){
+            singleData['name_dimension'] = dimension_variables
+        }   
+        console.log(dimension_variables)           
+        console.log('no hay error x2')
+
         
       });
       console.log('resultado')
