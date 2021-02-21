@@ -173,6 +173,7 @@ const actions = {
   },
   async settingData({ dispatch, commit, state, rootState  }, email){
     await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
+    await dispatch('videogame/setVideogamesAndModifiableMechanics',null,{root:true})
     await dispatch('settingSensorsAndEndpoints',email)
     await dispatch('settingDimensionsLevelsAndSubattributes')
     await dispatch('setupDimensionSocket')

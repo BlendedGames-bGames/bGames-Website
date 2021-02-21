@@ -1,58 +1,101 @@
 <template>
   <div>
-    <b-table
-      v-if="loaded"
-      :checked-rows.sync="checkedRows"
-      :checkable="checkable"
-      :loading="isLoading"
-      :paginated="paginated"
-      :per-page="perPage"
-      :striped="true"
-      :hoverable="true"
-      default-sort="name"
-      :data="table_data"
-    >
-      
-      <b-table-column label="Sensor" field="name_online_sensor" sortable v-slot="props">
-        {{ props.row.name_online_sensor }}
-      </b-table-column>
-      <b-table-column label="Punto de datos" field="name_sensor_endpoint" sortable v-slot="props">
-        {{ props.row.name_sensor_endpoint }}
-      </b-table-column>
-      <b-table-column label="Descripcion" field="description" v-slot="props">
-        {{ props.row.description }}
-      </b-table-column>
-      <b-table-column label="Dimension" field="name_dimension" sortable v-slot="props">
-        {{ props.row.name_dimension }}
-      </b-table-column>
-      <b-table-column label="Subatributo" field="name_subattributes" sortable v-slot="props">
-        {{ props.row.name_subattributes }}
-      </b-table-column>
-      <b-table-column label="Dato" field="data" sortable v-slot="props">
-        {{ props.row.data }}
-      </b-table-column>
-      <b-table-column label="Obtenido fecha" centered v-slot="props">
-        <span class="tag is-success">
-                    {{ new Date(props.row.created_time).toLocaleString() }}
-        </span>
-      </b-table-column>
-     <section slot="empty" class="section">
-        <div class="content has-text-grey has-text-centered">
-          <template v-if="isLoading">
-            <p>
-              <b-icon icon="dots-horizontal" size="is-large" />
-            </p>
-            <p>Fetching data...</p>
-          </template>
-          <template v-else>
-            <p>
-              <b-icon icon="emoticon-sad" size="is-large" />
-            </p>
-            <p>Nothing's here&hellip;</p>
-          </template>
-        </div>
-      </section>
-    </b-table>
+    <div v-if="this.data_table_type === 'Adquired'">
+      <b-table
+          v-if="loaded"
+          :checked-rows.sync="checkedRows"
+          :checkable="checkable"
+          :loading="isLoading"
+          :paginated="paginated"
+          :per-page="perPage"
+          :striped="true"
+          :hoverable="true"
+          default-sort="name"
+          :data="table_data"
+        >
+        
+              <b-table-column label="Sensor" field="name_online_sensor" sortable v-slot="props">
+                {{ props.row.name_online_sensor }}
+              </b-table-column>
+              <b-table-column label="Punto de datos" field="name_sensor_endpoint" sortable v-slot="props">
+                {{ props.row.name_sensor_endpoint }}
+              </b-table-column>
+              <b-table-column label="Descripcion" field="description" v-slot="props">
+                {{ props.row.description }}
+              </b-table-column>
+              <b-table-column label="Dimension" field="name_dimension" sortable v-slot="props">
+                {{ props.row.name_dimension }}
+              </b-table-column>
+              <b-table-column label="Subatributo" field="name_subattributes" sortable v-slot="props">
+                {{ props.row.name_subattributes }}
+              </b-table-column>
+              <b-table-column label="Dato" field="data" sortable v-slot="props">
+                {{ props.row.data }}
+              </b-table-column>
+              <b-table-column label="Obtenido fecha" centered v-slot="props">
+                <span class="tag is-success">
+                            {{ new Date(props.row.created_time).toLocaleString() }}
+                </span>
+              </b-table-column>
+              <section slot="empty" class="section">
+                <div class="content has-text-grey has-text-centered">
+                  <template v-if="isLoading">
+                    <p>
+                      <b-icon icon="dots-horizontal" size="is-large" />
+                    </p>
+                    <p>Fetching data...</p>
+                  </template>
+                  <template v-else>
+                    <p>
+                      <b-icon icon="emoticon-sad" size="is-large" />
+                    </p>
+                    <p>Nothing's here&hellip;</p>
+                  </template>
+                </div>
+              </section>
+
+      </b-table>
+    </div>
+    <div v-else-if="this.data_table_type === 'Expended'">
+        <b-table
+            v-if="loaded"
+            :checked-rows.sync="checkedRows"
+            :checkable="checkable"
+            :loading="isLoading"
+            :paginated="paginated"
+            :per-page="perPage"
+            :striped="true"
+            :hoverable="true"
+            default-sort="name"
+            :data="table_data"
+          >
+          
+          
+                <b-table-column label="Videojuego" field="name_videogame" sortable v-slot="props">
+                  {{ props.row.name_videogame }}
+                </b-table-column>
+                <b-table-column label="Mecanica modificada" field="name_modifiable_mechanic" sortable v-slot="props">
+                  {{ props.row.name_modifiable_mechanic }}
+                </b-table-column>
+                <b-table-column label="Descripcion" field="description" v-slot="props">
+                  {{ props.row.description }}
+                </b-table-column>
+                <b-table-column label="Dimension" field="name_dimension" sortable v-slot="props">
+                  {{ props.row.name_dimension }}
+                </b-table-column>
+                <b-table-column label="Dato" field="data" sortable v-slot="props">
+                  {{ props.row.data }}
+                </b-table-column>
+                <b-table-column label="Fecha de gasto" centered v-slot="props">
+                  <span class="tag is-success">
+                              {{ new Date(props.row.created_time).toLocaleString() }}
+                  </span>
+                </b-table-column>
+
+          </b-table>
+
+    </div>
+  
   </div>
 </template>
 
@@ -70,7 +113,11 @@ export default {
       type: Boolean,
       default: false
     },
-    adquired_subattribute_rt: {
+    data_table_type: {
+      type: String,
+      default: ''
+    },
+    real_time_data: {
       type:Array,
       default:[]
     }
@@ -89,27 +136,35 @@ export default {
     }
   },
   watch: { 
-    adquired_subattribute_rt: function(newVal, oldVal) { // watch it
+    real_time_data: function(newVal, oldVal) { // watch it
         console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-        var new_data = this.formattingSubatt(newVal)
+        var new_data;
+        if(this.data_table_type === 'Adquired'){
+            new_data = this.formattingSubatt(newVal)
+        }
+        else if(this.data_table_type === 'Expended'){
+            new_data = this.formattingVideogameMechanic(newVal)
+        }
         this.addingData(new_data)
     }
   },
   computed: {
      ...mapGetters('user', {
-          userDimensionLevels: 'userDimensionLevels',
           userLevels: 'userLevels',
-          id_player: 'id_player',
-          dimensionSocket: 'dimensionSocket'
+          id_player: 'id_player'
     }),
     ...mapGetters('sensor', {
           sensorsAndEndpoints: 'sensorsAndEndpoints'
+    }),
+    ...mapGetters('videogame', {
+          videogamesAndModifiableMechanics: 'videogamesAndModifiableMechanics'
     }),
   },
   async mounted () {
     await this.loadingData()    
     console.log(this.userLevels)
     console.log(this.sensorsAndEndpoints)
+    console.log(this.videogamesAndModifiableMechanics)
   },
   methods: {
     addingData(new_data){
@@ -118,6 +173,34 @@ export default {
           this.table_data.unshift(data)
       });
       this.isLoading = false
+    },
+    formattingVideogameMechanic(videogame_data){
+      //id_attributes:id_attributes[i], data:new_data[i], id_videogame:id_videogame, id_modifiable_mechanic:id_modifiable_mechanic, created_time:date}
+      videogame_data.forEach(singleData => {
+        //videogamesAndModifiableMechanics
+        this.videogamesAndModifiableMechanics.forEach(videogame => {
+            let videogame_variable = this.searchOnArrayOption(videogame.modifiable_mechanics,'id_modifiable_mechanic',singleData.id_modifiable_mechanic,['name_videogame','name_modifiable_mechanic','description'])
+            if(videogame_variable !== undefined && videogame_variable.length !== 0){
+              for (const variable of videogame_variable) {
+                    singleData[variable.name] = variable.data
+              }
+            }
+        });
+        this.userLevels.forEach(dimension => {
+            let dimension_variables = this.searchOnArrayOption(dimension,'id_attributes',singleData.id_attributes,['name_dimension'])
+            if(dimension_variables !== undefined && dimension_variables.length !== 0){
+              for (const variable of dimension_variables) {
+                    singleData[variable.name] = variable.data
+              }
+            }
+        });
+        
+      });
+      console.log('resultado')
+      console.log(videogame_data)
+      return videogame_data
+
+
     },
     formattingSubatt(subatts){
       //results.push({id_subattributes:id_subattributes[i], data:new_data[i], id_sensor_endpoint:id_sensor_endpoint, created_time:date})
@@ -177,19 +260,30 @@ export default {
 
     async loadingData(){
       this.isLoading = true
-      const MEDIUM_GET_URL = this.getURL+'/id_player/'+this.id_player.toString()+'/adquired_subattributes_list'
+      let MEDIUM_GET_URL;
+      if(this.data_table_type === 'Adquired'){
+        MEDIUM_GET_URL =  this.getURL+'/id_player/'+this.id_player.toString()+'/adquired_subattributes_list'
+      }
+      else if(this.data_table_type === 'Expended'){
+        MEDIUM_GET_URL =  this.getURL+'/id_player/'+this.id_player.toString()+'/expended_attributes_list'
+      }
       try {
-            const subatts = await Axios.get(MEDIUM_GET_URL);
-            this.table_data = subatts.data
             console.log(this.table_data)
-             if (this.table_data .length > this.perPage) {
+            console.log(MEDIUM_GET_URL)
+            const atts = await Axios.get(MEDIUM_GET_URL);
+            console.log(atts)
+            console.log(atts.data)
+            this.table_data = atts.data
+            console.log(this.table_data)
+             if (this.table_data.length > this.perPage) {
               this.paginated = true
             }
+            console.log(this.table_data)
             this.isLoading = false
             this.loaded = true
       } catch (error) {
           this.$buefy.toast.open({
-            message: `Error: ${e.message}`,
+            message: `Error:`,
             type: 'is-danger'
           })
       }

@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import user from '@/store/user'
 import sensor from '@/store/sensor'
 import attribute from '@/store/attribute'
+import videogame from '@/store/videogame'
 
 Vue.use(Vuex)
 
@@ -10,7 +11,8 @@ export default new Vuex.Store({
   modules: {
     user,
     sensor,
-    attribute
+    attribute,
+    videogame
   },
   state: {
     /* User */
@@ -90,6 +92,7 @@ export default new Vuex.Store({
       dispatch('user/resetVariables')
       commit('sensor/RESET_VARIABLES')
       commit('attribute/RESET_VARIABLES')
+      commit('videogame/RESET_VARIABLES')
 
     },
     hasPermission(context) {

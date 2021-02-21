@@ -34,16 +34,37 @@
           </div>
 
       </div>
-      <card-component
-        class="has-table has-mobile-sort-spaced"
-        title="Registro de subatributos adquiridos"
-        icon="account-multiple"
-      >
-        <data-endpoint-table
-          :checkable="false"
-          :adquired_subattribute_rt="adquired_subattribute_rt"
-        />
-      </card-component>
+       <b-tabs type="is-boxed" v-model="activeTab">
+            <b-tab-item label="Registro de subatributos adquiridos">
+                <card-component
+                      class="has-table has-mobile-sort-spaced"
+                      icon="account-multiple"
+                >
+                  <data-endpoint-table
+                    :data_table_type="'Adquired'"
+                    :checkable="false"
+                    :real_time_data="adquired_subattribute_rt"
+                  />
+                </card-component>
+          </b-tab-item>
+
+            <b-tab-item label="Registro de atributos gastados">
+                <card-component
+                class="has-table has-mobile-sort-spaced"
+                icon="account-multiple"
+                >
+                  <data-endpoint-table
+                    :data_table_type="'Expended'"
+                    :checkable="false"
+                    :real_time_data="expended_attribute_rt"
+                  />
+               </card-component>
+            </b-tab-item>
+       </b-tabs>
+      
+        
+    
+        
       
     </section>
   </div>
@@ -76,6 +97,8 @@ export default {
       chartBarLoading:false,
       getURL:baseURL+getPort,
       adquired_subattribute_rt:null,
+      expended_attribute_rt:null,
+      activeTab: 0,
 
       series: [{
             name: '',
@@ -253,6 +276,11 @@ export default {
         this.settingNewDimensions(attribute)
         this.setRealTimeDimensionLevels(attribute)
       });
+      this.dimensionSocket.on('player_expended_attribute', attribute => {
+        console.log('aqui')
+        console.log(attribute)
+        this.expended_attribute_rt = attribute
+      });
       /*Input: subattribute = {id_subattributes: [], data: []}, ids de subatributos y los datos nuevos actualizados desde el post att microservicio*/
       this.dimensionSocket.on('player_adquired_subattribute', subattribute => {
         console.log('aqui')
@@ -261,8 +289,9 @@ export default {
         console.log(this.id_actualChosenDimensionBar)
         if(this.id_actualChosenDimensionBar){
           this.settingNewSubattributes(subattribute)
-          this.setRealTimeSubattributeLevels(subattribute)
         }
+        this.setRealTimeSubattributeLevels(subattribute)
+        
       });
 		},
     selectedOptionBarChartClick(selectedOption){
