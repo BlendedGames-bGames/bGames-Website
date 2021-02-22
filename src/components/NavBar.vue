@@ -211,11 +211,11 @@ export default {
 
     },
     stopTimer(){
-      clearInterval(this.timer)      
       this.deleteKey()
     },
     
     async deleteKey(){
+      clearInterval(this.timer)      
       const data = {
         key:null
       }
@@ -276,7 +276,7 @@ export default {
           } ,
           onConfirm: () => {
             clearInterval(this.timer)      
-            this.authenticationSocket.emit('userConfirmed')
+            this.authenticationSocket.emit('userConfirmed', this.id_player.toString())
 
            
           } 
