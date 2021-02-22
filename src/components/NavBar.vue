@@ -239,9 +239,9 @@ export default {
     async toggleKey(){
       console.log(this.keyModal)
       clearInterval(this.timer)      
-      this.keyModal = true
       console.log(this.keyModal)
       if(!this.generatedKey){
+        this.keyModal = true
         console.log('paso por aqui')
         this.isLoading = true
         const GET_KEY_URL = this.sensorCommunicationHost+'/create_desktop_key/'+this.id_player 
@@ -280,7 +280,20 @@ export default {
 
            
           } 
-      })
+        })
+      });
+      this.authenticationSocket.on('keyUsed', message => {
+        console.log('aqui')
+        this.keyModal = false
+        clearInterval(this.timer)  
+        this.time = 120    
+        this.$buefy.toast.open('Ingreso a la aplicacion de escritorio exitosa')
+
+      });
+      this.authenticationSocket.on('logout', message => {
+        this.generatedKey = false
+        clearInterval(this.timer)  
+
       });
 		},
     async toggleConfirmationKey(){
