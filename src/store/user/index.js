@@ -124,6 +124,7 @@ const mutations = {
     })
   },
   SET_RT_USER_SUBATT_LEVELS(state,payload){
+    console.log(payload)
     console.log(payload.id_subattributes)
     console.log(payload.data)
     console.log(state.userLevels)
@@ -168,6 +169,7 @@ const actions = {
    
   },
   async setRealTimeSubattributeLevels({ dispatch, commit, state, rootState  }, payload){
+    console.log(payload)
     commit('SET_RT_USER_SUBATT_LEVELS',payload)
    
   },

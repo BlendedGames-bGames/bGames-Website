@@ -232,10 +232,35 @@ export default {
         data:realData
       }]
     },
+    actualIdSubattributesData(subattributes){
+      //Sacar los id_subattributes individuales y ponerlos en un arreglo
+      let id_subattributes = []
+      let data = []
+      subattributes.forEach(gained_data => {
+        id_subattributes.push(gained_data.id_subattributes)
+        data.push(gained_data.data)
+      });
+      const id_subattributes_data = {
+        "id_subattributes": id_subattributes,
+        "data":data
+      }
+      return id_subattributes_data
+    },
     settingNewSubattributes(subattribute){
       let changedDimensions = []
+      console.log(subattribute)
       console.log(this.id_actualChosenDimensionBar)
-      subattribute.id_subattributes.forEach( (id_subattribute,index) => {
+      /*
+      Ejemplo (No se ajusta literalmente a lo que esta en la base de datos, solo es para poner el formato de la variable)
+      subattribute = [{id_subattributes:2 //Resistencia//, data:3, id_sensor_endpoint:22, created_time:2021-05-04},
+                      {id_subattributes:6 //Reconocimiento de patrones//, data:3, id_sensor_endpoint:22, created_time:2021-05-04}, ...]
+
+      
+      */
+      let id_subattributes_data = this.actualIdSubattributesData(subattribute)
+      console.log("Estos son los ids y los datos", id_subattributes_data)
+
+      id_subattributes_data.id_subattributes.forEach( (id_subattribute,index) => {
           this.userLevels.forEach((level,index2) => {
             level.subattribute_levels.forEach((dimension_subattributes,index) => {
               if(dimension_subattributes.id_subattributes === id_subattribute){
@@ -259,10 +284,10 @@ export default {
         let actualSubattributes = this.series2[0].data
         console.log(actualSubattributes)
         console.log(boolArray)
-        console.log(subattribute.data)
+        console.log(id_subattributes_data.data)
         boolArray.forEach((bool,index) => {
           if(bool){
-            actualSubattributes[index] += subattribute.data[index]
+            actualSubattributes[index] += id_subattributes_data.data[index]
           }
         });
         this.series2 = [{ data:actualSubattributes }]
@@ -290,7 +315,11 @@ export default {
         if(this.id_actualChosenDimensionBar){
           this.settingNewSubattributes(subattribute)
         }
-        this.setRealTimeSubattributeLevels(subattribute)
+        console.log("Segunda ves: ",subattribute)
+        let id_subattributes_data = this.actualIdSubattributesData(subattribute)
+        console.log("Estos son los ids y los datos", id_subattributes_data)
+
+        this.setRealTimeSubattributeLevels(id_subattributes_data)
         
       });
 		},
