@@ -37,7 +37,7 @@
       
       </b-table-column>
       <b-table-column label="Tiempo de activacion (seg)"  field="schedule_time" sortable v-slot="props">
-            <b-numberinput v-model="props.row.schedule_time" controls-alignment="right" size="is-small" controls-position="compact" controls-rounded></b-numberinput>
+            <b-numberinput  class="is-flex is-flex-direction-row is-justify-content-center is-align-items-end " v-model="props.row.schedule_time" controls-alignment="right" size="is-small" controls-position="compact" controls-rounded></b-numberinput>
       </b-table-column>
      <b-table-column  label="Activacion" field="activated" sortable v-slot="props">
         <b-field             class="is-flex is-flex-direction-row is-justify-content-center"
@@ -351,6 +351,7 @@ export default {
         this.setEndpointActivation({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
         this.SET_ENDPOINT_ACTIVATION({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
         const SENSOR_URL = this.sensorURL+'/sensor_endpoint/'+this.id_player+'/'+id_sensor_endpoint
+        //Lo contrario
         let activate = bool ? 1 : 0
         console.log(activate)
         const data = {
@@ -364,6 +365,7 @@ export default {
           token_parameters:token_parameters,
           specific_parameters_template:specific_parameters_template,
           specific_parameters:specific_parameters,
+          //ID del endpoint que se le pone en el online_data_capture para identificarlo y poder parar la llamada al endpoint cada X schedule_time sec
           unique_id: this.id_player.toString()+id_online_sensor.toString()+id_sensor_endpoint.toString(),
           activated: activate,
           schedule_time: this.searchForSelectedScheduleTime(id_sensor_endpoint)
