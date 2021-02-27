@@ -1,6 +1,5 @@
 <template>
   <div>
-    <title-bar :title-stack="titleStack" />
     <hero-bar :has-right-visible="false">
       Contribudores a dimensiones y puntos de datos
     </hero-bar>

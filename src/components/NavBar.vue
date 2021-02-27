@@ -8,11 +8,6 @@
       >
         <b-icon :icon="menuToggleMobileIcon" />
       </a>
-      <div class="navbar-item has-control no-left-space-touch">
-        <div class="control">
-          <input class="input" placeholder="Search everywhere..." />
-        </div>
-      </div>
     </div>
     <div class="navbar-brand is-right">
       <a
@@ -26,21 +21,13 @@
       class="navbar-menu fadeIn animated faster"
       :class="{ 'is-active': isMenuNavBarActive }"
     >
-      <div class="navbar-end">
-        <a
-          class="navbar-item has-divider is-desktop-icon-only"
-          @click="toggleConfirmationKey"
-        >
-          <b-icon icon="key" custom-size="default" />
-          <span>Confirmar llave</span>
-        </a>
+      <div class="navbar-end" >
          <a
-                   title="Log out"
-          class="navbar-item has-divider is-desktop-icon-only"
+          class="navbar-item  "
           @click="toggleKey"
         >
           <b-icon icon="key" custom-size="default" />
-          <span>Llave de autenticacion</span>
+            Llave de autenticacion
         </a>
         <nav-bar-menu class="has-divider has-user-avatar">
           <user-avatar />
@@ -48,29 +35,7 @@
             <span>{{ userProfile.name }}</span>
           </div>
 
-          <div slot="dropdown" class="navbar-dropdown">
-            <router-link
-              to="/profile"
-              class="navbar-item"
-              exact-active-class="is-active"
-            >
-              <b-icon icon="account" custom-size="default" />
-              <span>My Profile</span>
-            </router-link>
-            <a class="navbar-item">
-              <b-icon icon="settings" custom-size="default"></b-icon>
-              <span>Settings</span>
-            </a>
-            <a class="navbar-item">
-              <b-icon icon="email" custom-size="default"></b-icon>
-              <span>Messages</span>
-            </a>
-            <hr class="navbar-divider" />
-            <a class="navbar-item" @click="logoutButton">
-              <b-icon icon="logout" custom-size="default" ></b-icon>
-              <span>Log Out</span>
-            </a>
-          </div>
+       
         </nav-bar-menu>
        
         <a

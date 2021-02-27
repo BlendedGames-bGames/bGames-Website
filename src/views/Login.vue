@@ -1,7 +1,7 @@
 <template>
   <div class="columns">
     <div class="column">
-        <img style="width: 100wh; height: 100vh" src="../assets/contact-background.jpg" alt="JustBoil.me" />
+        <img style="width: 100wh; height: 100vh" src="https://i.imgur.com/A3tzP69.jpg" alt="JustBoil.me" />
     </div>
     <div class="column" style="height:100vh">
       <div class="card" style=" border-radius: none; border: none;">

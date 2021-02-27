@@ -1,6 +1,5 @@
 <template>
   <div>
-    <title-bar :title-stack="titleStack" />
     <hero-bar :has-right-visible="false">
       Contribucion de sensores y puntos de datos
     </hero-bar>

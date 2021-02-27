@@ -1,6 +1,5 @@
 <template>
   <div>
-    <title-bar :title-stack="titleStack" />
     <hero-bar>
       Estadisticas en el tiempo
     </hero-bar>

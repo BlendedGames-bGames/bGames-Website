@@ -1,6 +1,5 @@
 <template>
   <div>
-    <title-bar :title-stack="titleStack" />
     <hero-bar :has-right-visible="false">
       Estadisticas generales
     </hero-bar>
