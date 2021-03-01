@@ -75,18 +75,24 @@ const mutations = {
     state.sensorTemplates.splice(0)
     console.log(sensorTemplates)
     console.log(state.sensorsAndEndpoints)
+    let validSensors = []
+    sensorTemplates.forEach(sensor => {
+      if(sensor.base_url !== null){
+        validSensors.push(sensor)
+      }
+    });
 
-    for (let index = 0; index < sensorTemplates.length; index++) {
+    for (let index = 0; index < validSensors.length; index++) {
       for (let index2 = 0; index2 < state.sensorsAndEndpoints.length; index2++) {
-        if(sensorTemplates[index].id_online_sensor === (state.sensorsAndEndpoints)[index2].id_online_sensor){
-          sensorTemplates[index]['associated'] = true
+        if(validSensors[index].id_online_sensor === (state.sensorsAndEndpoints)[index2].id_online_sensor){
+          validSensors[index]['associated'] = true
           break
         }
       }
-      if(!sensorTemplates[index].hasOwnProperty('associated') ){
-        sensorTemplates[index]['associated'] = false
+      if(!validSensors[index].hasOwnProperty('associated') ){
+        validSensors[index]['associated'] = false
       }
-      state.sensorTemplates.push(sensorTemplates[index])
+      state.sensorTemplates.push(validSensors[index])
     }
    },
   SET_SENSORS(state, sensors) {
