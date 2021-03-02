@@ -1,5 +1,5 @@
 <template>
-  <b-modal v-model="localToggle" width="auto"  scroll="clip" :on-cancel="resettingDataAndClose" >
+  <b-modal v-model="localToggle"   scroll="keep" :on-cancel="resettingDataAndClose" >
     <form action="">
         <div class="modal-card"  >
                 <header class="modal-card-head">

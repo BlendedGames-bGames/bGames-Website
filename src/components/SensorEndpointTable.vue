@@ -74,7 +74,7 @@
     </b-table>
     
    
-    <b-modal v-model="viewCapturedParametersActive" :width="640" scroll="keep">
+    <b-modal v-model="viewCapturedParametersActive" :width="640" scroll="clip">
                 <form action="">
                   <div class="modal-card" style="width: auto">
                       <header class="modal-card-head">
@@ -544,6 +544,8 @@ export default {
                   "specific_parameters": specific_params_new_string
                 }
                 const putConfirmation = await Axios.put(SENSOR_URL, data)
+                console.log('se salio de la confirmacion')
+                console.log(putConfirmation)
                 this.SET_SPECIFIC_PARAMETERS_SINGLE({specific_parameters: specific_params_new_string, id_sensor_endpoint:this.id_sensor_endpoint_edit, id_online_sensor:this.id_online_sensor_edit })
                 this.setSpecificParametersSingle({specific_parameters: JSON.parse(specific_params_new_string), id_sensor_endpoint:this.id_sensor_endpoint_edit, id_online_sensor:this.id_online_sensor_edit })
                 this.resettingDataAndClose()
