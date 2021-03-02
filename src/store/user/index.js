@@ -285,9 +285,6 @@ const actions = {
   },
   async loginEmailAndPassword({ commit, state, rootState }, profile) {
 
-    if (state.loggedIn)
-      return;
-
     try {
         console.log(profile)
         const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
@@ -310,7 +307,7 @@ const actions = {
       console.log(error);
     }
   },
-  async register({ commit, state }, profile) {
+  async register({ commit, state, dispatch }, profile) {
     try {
         const user = await firebase.auth().createUserWithEmailAndPassword(profile.email,profile.password)
         console.log(user)
