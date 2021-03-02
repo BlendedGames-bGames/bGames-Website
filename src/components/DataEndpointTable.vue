@@ -228,7 +228,14 @@ export default {
         name_sensor_endpoint: (...)
         name_subattributes: (...) 
       */    
-        subatts.forEach(subatt => {
+      let auxSubatt = []
+      subatts.forEach(subatt => {
+        let aux = subatt
+        aux.id_subattributes = parseInt(aux.id_subattributes)
+        aux.id_sensor_endpoint = parseInt(aux.id_sensor_endpoint)
+        subatt.push(aux)
+      });
+        auxSubatt.forEach(subatt => {
           this.userLevels.forEach(dimension => {
             let dimension_variables = this.searchOnArrayOption(dimension.subattribute_levels,'id_subattributes',subatt.id_subattributes,['name_subattributes','name_dimension','id_attributes'])
             if(dimension_variables !== undefined && dimension_variables.length !== 0){
@@ -247,8 +254,8 @@ export default {
           });
         });
         console.log('resultado')
-        console.log(subatts)
-        return subatts
+        console.log(auxSubatt)
+        return auxSubatt
 
       
     },
