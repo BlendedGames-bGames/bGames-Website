@@ -289,7 +289,7 @@ const actions = {
         console.log(profile)
         const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
         commit('TOGGLE_LOADING_LOGIN_DATA')
-        dispatch('settingData',user.additionalUserInfo.profile.email)
+        dispatch('settingData',profile.email)
 
     } catch (error) {
             console.log(error)
