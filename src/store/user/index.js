@@ -283,7 +283,7 @@ const actions = {
       console.log(error);
     }
   },
-  async loginEmailAndPassword({ commit, state, rootState }, profile) {
+  async loginEmailAndPassword({ commit, dispatch, state, rootState }, profile) {
 
     try {
         console.log(profile)
