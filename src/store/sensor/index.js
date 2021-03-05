@@ -97,9 +97,12 @@ const mutations = {
    },
   SET_SENSORS(state, sensors) {
    sensors.forEach(sensor => {
-       state.sensorsAndEndpoints.push(sensor)
-       state.id_sensors.push(sensor.id_online_sensor)
-       state.name_sensors.push(sensor.name)
+        state.sensorsAndEndpoints.push(sensor)
+        if(sensor.base_url !== null){
+          state.id_sensors.push(sensor.id_online_sensor)
+          state.name_sensors.push(sensor.name)        
+        }
+        
    });
   },
   SET_ENDPOINTS(state, payload) {

@@ -27,7 +27,9 @@
           @click="toggleKey"
         >
           <b-icon icon="key" custom-size="default" />
-            Llave de autenticacion
+            Llave de autenticacion    
+           <div v-if="!keyModal && keyGenerationPressed && generatedKey" class="timer">{{ prettyTime | prettify }}</div>
+
         </a>
         <nav-bar-menu class="has-divider has-user-avatar">
           <user-avatar />
@@ -119,10 +121,31 @@ export default {
       sensorCommunicationHost:baseURL+sensorCommunicationPort,
       userHost:baseURL+userPort,
       time:120,
-      timer:null
+      timer:null,
+      keyGenerationPressed:false
     }
   },
+  filters: {
+    prettify : function(value) {
+      let data = value.split(':')
+      let minutes = data[0]
+      let secondes = data[1]
+      if (minutes < 10) {
+        minutes = "0"+minutes
+      }
+      if (secondes < 10) {
+        secondes = "0"+secondes
+      }
+      return minutes+":"+secondes
+    }
+	},
   computed: {
+    prettyTime () {
+				let time = this.time / 60
+				let minutes = parseInt(time)
+				let secondes = Math.round((time - minutes) * 60)
+				return minutes+":"+secondes
+		},
     menuNavBarToggleIcon () {
       return this.isMenuNavBarActive ? 'close' : 'dots-vertical'
     },
@@ -197,6 +220,9 @@ export default {
         }
 
     },
+    toggleKeyModal(){
+      this.keyModal = !this.keyModal
+    },
     actualTime(time){
       this.time = time
       console.log(this.time)
@@ -205,8 +231,9 @@ export default {
       console.log(this.keyModal)
       clearInterval(this.timer)      
       console.log(this.keyModal)
+      this.toggleKeyModal()
       if(!this.generatedKey){
-        this.keyModal = true
+        this.keyGenerationPressed = true
         console.log('paso por aqui')
         this.isLoading = true
         const GET_KEY_URL = this.sensorCommunicationHost+'/create_desktop_key/'+this.id_player 
