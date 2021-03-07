@@ -118,6 +118,34 @@ const mutations = {
 };
 
 const actions = {
+  async addingNewSensorsAndTemplatesAndEndpoints({ dispatch,commit, state }, payload) {
+    console.log('EZ')
+
+    try {      
+        let MEDIUM_GET_URL = state.sensorURL+'/sensor/'+payload.id
+        let reply = await Axios.get(MEDIUM_GET_URL);
+        console.log(reply.data)
+        
+        commit('SET_SENSORS', [reply.data])
+        await dispatch('setEndpointsSingle', {id:payload.id} )
+
+        MEDIUM_GET_URL = state.sensorURL+'/sensors_all'
+        reply = await Axios.get(MEDIUM_GET_URL);
+        console.log(reply.data)
+
+        commit('SET_SENSOR_TEMPLATES', reply.data)
+
+
+    } catch (error) {
+        console.log(error)
+    }
+
+  },
+  async setEndpointsSingle({ dispatch, commit, state }, profile) {
+    await dispatch('setSingleEndpoints', {id:profile.id})       
+    
+  },
+
   async setSensorsAndTemplatesAndEndpoints({ dispatch,commit, state }) {
     console.log('EZ')
 
@@ -170,13 +198,29 @@ const actions = {
         });
         console.log(id_online_sensor_index)
         state.sensorsAndEndpoints.splice(id_online_sensor_index,1)
-        state.id_sensors.splice(id_online_sensor_index,1)
-        state.name_sensors.splice(id_online_sensor_index,1)
+
+        let id_sensor_index;
+        state.id_sensors.forEach((id,index) => {
+          if(id === id_online_sensor){
+            id_sensor_index = index
+            
+          }
+        });
+
+        state.id_sensors.splice(id_sensor_index,1)        
+        state.name_sensors.splice(id_sensor_index,1)
+        
         console.log(state.sensorsAndEndpoints)
         console.log(state.id_sensors)
         console.log(state.name_sensors)
 
-        await dispatch('setSensorsAndTemplatesAndEndpoints')
+
+        MEDIUM_GET_URL = state.sensorURL+'/sensors_all'
+        reply = await Axios.get(MEDIUM_GET_URL);
+        console.log(reply.data)
+
+        commit('SET_SENSOR_TEMPLATES', reply.data)
+        
         commit('SET_DISSOCIATION_PLAYER_TOGGLE')      
         
         
@@ -259,7 +303,7 @@ const actions = {
           MEDIUM_POST_URL = state.sensorURL+'/sensor_endpoint_batch/'+metadata.id_player
           reply = await Axios.post(MEDIUM_POST_URL,{ids_sensor_endpoint:ids_sensor_endpoint,specific_parameter_parameters_array:specific_parameter_parameters_array });   
           console.log(reply)
-          await dispatch('setSensorsAndTemplatesAndEndpoints')
+          await dispatch('addingNewSensorsAndTemplatesAndEndpoints',{id:metadata.id_online_sensor})
           commit('SET_NEW_PLAYER_TOGGLE')      
 
           

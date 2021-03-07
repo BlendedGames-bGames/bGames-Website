@@ -138,18 +138,7 @@
 
                       
           </div>
-        <div  class="instructions" v-else-if="selectedSensor.name === 'Linkedin'">
-                <b-field label="linkedin">
-                              <b-input
-                                  placeholder="Your email"
-                                  
-                                  required>
-                              </b-input>
-                  </b-field>
-
-
-          </div>       
-
+      
           <b-modal v-model="testingModal" :width="640"  scroll="clip" >
                   <div class="card"  >
                       <header class="modal-card-head">
@@ -186,6 +175,7 @@ import CardWidget from '@/components/CardWidget'
 import Tiles from '@/components/Tiles'
 import { mapGetters, mapActions,mapMutations } from 'vuex'
 import Axios from 'axios'
+import firebase from '@/firebase';
 
 import TitleBar from '@/components/TitleBar'
 import CardComponent from '@/components/CardComponent'
@@ -395,12 +385,55 @@ export default {
       this.trelloToken=''
       this.chessUserName=''
     },
-    association (payload) {
+    async TwitterAssociation(){
+      let provider = new firebase.auth.TwitterAuthProvider();
+      const user = await firebase.auth().signInWithPopup(provider);
+      console.log(user)
+      const userData = {
+          username: user.additionalUserInfo.username,
+          id: user.additionalUserInfo.profile.id_str,
+          accessToken: user.credential.accessToken,
+          secret: user.credential.secret
+      }
+      const metadata = {
+          id_player: this.id_player,
+          id_online_sensor: this.selectedSensor.id_online_sensor,
+      }
+      this.modalTestingTitle =  'Ajustando configuraciones '
+      this.modalTestingDescription = 'Configurando y proveyendo los puntos de datos asociados al sensor '+ this.selectedSensor.name
+      this.alertTestingUrl()
+      await this.setNewPlayerSensorsAndEndpoints({userData: userData, metadata:metadata})
+      console.log(this.settingUpNewPlayer)
+      if(this.settingUpNewPlayer){
+            this.$buefy.dialog.alert({
+                title: 'Exito',
+                message: 'Ahora puede acceder a los puntos de datos correspondientes al sensor '+ this.selectedSensor.name,
+                type: 'is-success',
+                hasIcon: true,
+                icon: 'check-circle',
+                iconPack: 'fa',
+                ariaRole: 'alertdialog',
+                ariaModal: true
+          })
+          this.alertTestingUrl()
+          this.modalTestingTitle = 'Testing de parametros de asociacion al sensor'
+          this.modalTestingDescription = 'Se esta realizando una llamada al servicio para asegurar que los parametros son correctos'
+          this.SET_NEW_PLAYER_TOGGLE()
+          this.hideClick()
+      }
+    },
+
+    async association (payload) {
       console.log(payload)
       console.log(this.modalBool)
       this.selectedSensor = payload
       if(this.selectedSensor.activation){
+        if(this.selectedSensor.name !== 'Twitter'){
             this.modalBool = true
+        }
+        else{
+           this.TwitterAssociation()
+        }
       }
       else{
           let properTitle = 'Desasociacion del sensor '+this.selectedSensor.name
