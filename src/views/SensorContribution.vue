@@ -16,14 +16,14 @@
                                         @selected-option-click="circleChartQuerySensor"
                       /> 
                      
-                      <select-component label="Dimension" 
+                      <select-component label="Sensor" 
                                         placeholder="Seleciona un sensor"
                                         :selectOptions="name_sensors" 
                                         @selected-field-click="chosen_sensor"
                                         @selected-option-click="circleChartQuerySensorAndEndpoint"
                       >
                           <b-field  vertical
-                                    label="Subatributo" style="margin-bottom: 1em">
+                                    label="Punto de datos" style="margin-bottom: 1em">
                             <b-select
                                 v-model="selectedOption"
                                 placeholder="Selecciona un punto de datos en particular"
@@ -150,7 +150,15 @@ export default {
                 .attr("class", "label")
                 .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
                 .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
-                .text(function(d) { return d.data.name; });
+                .text(function(d) { 
+                  console.log(d.data)
+                  let name = d.data.name
+                  if(d.data.hasOwnProperty('size')){
+                      let sizeStr = d.data.size.toString()
+                      name+= ': '
+                      name+=sizeStr
+                  }
+                  return name; });
 
             var node = g.selectAll("circle,text");
 
