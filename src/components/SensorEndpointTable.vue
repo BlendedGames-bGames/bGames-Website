@@ -31,7 +31,7 @@
         </b-button>   
 
            <b-button :disabled="!props.row.specific_parameters" icon-left="pencil" native-type="submit" rounded type="is-success" 
-           @click="settingSpecificParameters(props.row.id_sensor_endpoint,props.row.id_online_sensor, props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint, props.row.dynamic_url,props.row.name_sensor_endpoint)">
+           @click="settingSpecificParameters(props.row.id_sensor_endpoint,props.row.id_online_sensor, props.row.header_parameters,props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint, props.row.dynamic_url,props.row.name_sensor_endpoint)">
                               
         </b-button>
       
@@ -196,6 +196,7 @@
                               <b-field >
                                 <b-input
                                     :value="option.data"
+                                    disabled
                                     required>
                                 </b-input>
                               </b-field>
@@ -212,10 +213,11 @@
 
 <script>
 import Axios from 'axios'
+
 import ModalBox from '@/components/ModalBox'
 import InstructionStepsModal from '@/components/InstructionStepsModal'
 import { mapGetters, mapMutations } from 'vuex'
-import {baseURL, sensorPort} from '../store/urls'
+import {baseURL, sensorPort, sensorCommunicationPort} from '../store/urls'
 
 export default {
   name: 'SensorEndpointTable',
@@ -233,6 +235,7 @@ export default {
   
   data () {
     return {
+      sensorCommunicationHost:baseURL+sensorCommunicationPort,
       isModalActive: false,
       trashObject: null,
       table_data: [],
@@ -263,6 +266,7 @@ export default {
       specific_parameters_template_edit: null,
       token_parameters_edit: null,
       tokens_edit:null,
+      header_parameters_edit:null,
       base_url_edit:null,
       url_endpoint_edit:null,
       dynamic_url_edit:null,
@@ -490,8 +494,98 @@ export default {
       this.hasError = false
       let urlQuery = this.createURL()
       console.log(urlQuery)
-      try {
-          this.hasErrorCall = false
+      this.hasErrorCall = false
+      if(this.base_url_edit === 'https://api.twitter.com/2/'){
+        try {
+          const MEDIUM_POST_URL = this.sensorCommunicationHost+'/twitter_specific_parameter_call'
+          const parameters = {
+            name:this.name_sensor_endpoint_edit,
+            tokens: this.tokens_edit,
+            token_parameters: this.token_parameters_edit,
+            parameters_template:actualSpecificTemplate,
+            header_parameters: this.header_parameters_edit,
+            data: this.editionOption
+          }
+          const reply = await Axios.post(MEDIUM_POST_URL, parameters );
+          
+          let search_param = actualSpecificTemplate.search_data.search_param
+          let retrieve_param = actualSpecificTemplate.search_data.retrieve_param
+          
+          if(reply.data.message){
+              this.retrieve_params[this.editionModalActual][retrieve_param] = reply.data.retrieve_param
+              this.retrieve_names[this.editionModalActual] = this.editionOption
+              console.log(this.retrieve_params)
+              this.editionModalActual++
+              if(this.editionModalActual === this.editionModalTotalCount){
+                //Guardar en la db el nuevo valor del parametro especifico y luego en el vuex store
+                //
+                console.log(this.retrieve_names)
+                console.log(this.retrieve_params)
+                //await Axios.put('/sensor_endpoint/:id_players/:id_sensor_endpoint')
+                const SENSOR_URL = this.sensorURL+'/sensor_endpoint/'+this.id_player+'/'+this.id_sensor_endpoint_edit
+                let actual_data = []
+                for (const name of this.retrieve_names) {
+                  actual_data.push({data:name})
+                }
+                console.log(actual_data)
+
+                let specific_params_new = {}
+                let params_index = 0
+                console.log(this.specific_parameters_template_edit.parameters)
+                for (const parameter  of this.specific_parameters_template_edit.parameters) {
+                  if(parameter.search_data.hasOwnProperty('specific_param')){
+                    specific_params_new[parameter.search_data.specific_param] = this.retrieve_params[params_index][parameter.search_data.retrieve_param]
+                  }
+                  else{
+                    params_index++
+                  }
+                }
+                console.log(specific_params_new)
+                specific_params_new['actual_data'] = actual_data
+                console.log(specific_params_new)
+                let specific_params_new_string = JSON.stringify(specific_params_new)
+                console.log(specific_params_new_string)
+                const data = {
+                  "specific_parameters": specific_params_new_string
+                }
+                const putConfirmation = await Axios.put(SENSOR_URL, data)
+                console.log('se salio de la confirmacion')
+                console.log(putConfirmation)
+                this.SET_SPECIFIC_PARAMETERS_SINGLE({specific_parameters: specific_params_new_string, id_sensor_endpoint:this.id_sensor_endpoint_edit, id_online_sensor:this.id_online_sensor_edit })
+                this.setSpecificParametersSingle({specific_parameters: JSON.parse(specific_params_new_string), id_sensor_endpoint:this.id_sensor_endpoint_edit, id_online_sensor:this.id_online_sensor_edit })
+                this.resettingDataAndClose()
+                this.successModal = true
+
+
+              }
+              else{
+                  //Setting next modal modal
+                  actualSpecificTemplate = this.specific_parameters_template_edit.parameters[this.editionModalActual]
+                  this.editMessage = actualSpecificTemplate.instruction
+                  this.search_param = actualSpecificTemplate.search_data.search_param 
+                  console.log(this.editionModalActual)
+                  console.log(this.editionModalTotalCount)
+                  this.isLoadingEditSpecificParameters = false
+                  this.editionOption = ''
+                  this.hasError = false
+                  this.hasErrorCall = false
+
+              }
+          }
+          else{           
+            this.isLoadingEditSpecificParameters = false
+            this.hasError = true
+          }
+
+        } catch (error) {
+          this.isLoadingEditSpecificParameters = false
+          console.log('ERROR', error)
+          this.hasErrorCall = true
+        
+        }
+      }
+      else{
+        try {
           const query = await Axios.get(urlQuery)
           const queryData = query.data
           let search_param = actualSpecificTemplate.search_data.search_param
@@ -571,19 +665,22 @@ export default {
             this.isLoadingEditSpecificParameters = false
             this.hasError = true
           }
-          
 
-      } catch (error) {
-          this.isLoadingEditSpecificParameters = false
-          console.log('ERROR', error)
-          this.hasErrorCall = true
-        
+        }
+        catch (error) {
+            this.isLoadingEditSpecificParameters = false
+            console.log('ERROR', error)
+            this.hasErrorCall = true
+    
+          }
+          
       }
+     
 
 
     },
     //props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint
-    settingSpecificParameters(id_sensor_endpoint,id_online_sensor,specific_parameters_template_string,specific_parameters_string,token_parameters_string,tokens_string,base_url,url_endpoint, dynamic_url,name_sensor_endpoint_string){
+    settingSpecificParameters(id_sensor_endpoint,id_online_sensor,header_parameters_string,specific_parameters_template_string,specific_parameters_string,token_parameters_string,tokens_string,base_url,url_endpoint, dynamic_url,name_sensor_endpoint_string){
       //Parsing string to JSON
       this.id_sensor_endpoint_edit = id_sensor_endpoint
       this.id_online_sensor_edit = id_online_sensor
@@ -595,6 +692,7 @@ export default {
       this.url_endpoint_edit = url_endpoint 
       this.dynamic_url_edit = dynamic_url 
       this.name_sensor_endpoint_edit = name_sensor_endpoint_string
+      this.header_parameters_edit = JSON.parse(header_parameters_string)
 
       console.log(this.specific_parameters_template_edit)
       console.log(this.specific_parameters_edit)
@@ -638,13 +736,13 @@ export default {
 
       this.viewSpecificParametersActive = true
     },
-    viewCapturedParameters(watch_parameters_string,name_sensor_endpoint_string){
+    async viewCapturedParameters(watch_parameters_string,name_sensor_endpoint_string){
 
       this.name_sensor_endpoint_view = name_sensor_endpoint_string
       let watch_parameters = JSON.parse(watch_parameters_string)
       console.log(watch_parameters)
       this.watch_parameters_captured = watch_parameters.descriptions
-      console.log(this.watch_parameters_captured)
+   
       this.viewCapturedParametersActive = true
     },
    
