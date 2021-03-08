@@ -233,7 +233,7 @@ export default {
         let aux = subatt
         aux.id_subattributes = parseInt(aux.id_subattributes)
         aux.id_sensor_endpoint = parseInt(aux.id_sensor_endpoint)
-        subatt.push(aux)
+        auxSubatt.push(aux)
       });
         auxSubatt.forEach(subatt => {
           this.userLevels.forEach(dimension => {

@@ -258,7 +258,7 @@ export default {
       */
       let id_subattributes_data = this.actualIdSubattributesData(subattribute)
       console.log("Estos son los ids y los datos", id_subattributes_data)
-
+      console.log(this.series2[0].data)
       id_subattributes_data.id_subattributes.forEach( (id_subattribute,index) => {
           this.userLevels.forEach((level,index2) => {
             level.subattribute_levels.forEach((dimension_subattributes,index) => {
@@ -269,6 +269,7 @@ export default {
             
           });
       })
+      console.log(changedDimensions)
       if(changedDimensions.includes(this.id_actualChosenDimensionBar)){
         //Se actualizo uno o mas subatributo que estan en pantalla en el chart de barras
         let boolArray = []
@@ -284,11 +285,15 @@ export default {
         console.log(actualSubattributes)
         console.log(boolArray)
         console.log(id_subattributes_data.data)
+
+        let indexAux = 0 
         boolArray.forEach((bool,index) => {
           if(bool){
-            actualSubattributes[index] += id_subattributes_data.data[index]
+            actualSubattributes[indexAux] += id_subattributes_data.data[index]
+            indexAux++
           }
         });
+        console.log(actualSubattributes)
         this.series2 = [{ data:actualSubattributes }]
       }
     },
