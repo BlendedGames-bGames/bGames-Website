@@ -109,21 +109,82 @@ export default {
     }),
      ...mapGetters('user', {
           id_player: 'id_player'
-    })
+    }),
+    ...mapGetters('attribute', {
+          dimensionsAndSubattributes: 'dimensionsAndSubattributes',
+          name_dimensions: 'name_dimensions',
+    }),
   },
   mounted () {
     //this.renderZoomableCircles()
   },
   methods: {
+    inTheArray(searchElement){
+      console.log('entre')
+      console.log(this.name_dimensions)
+      console.log(searchElement)
+      for (const element of this.name_dimensions) {
+        if(element === searchElement){
+          let subClass
+          switch (element) {
+            case 'Cognitivo':
+              subClass = 'node--leaf--cognitive'
+              
+              break;
+            case 'Físico':
+              subClass = 'node--leaf--physical'
+
+              break;
+            case 'Social':
+              subClass = 'node--leaf--social'
+             
+              break;
+
+            case 'Linguistico':
+              subClass = 'node--leaf--linguistic'
+            
+              break;
+
+            case 'Afectivo':
+              subClass = 'node--leaf--affective'
+            
+              break;
+            default:
+              break;
+          }
+          return subClass
+        }
+      }
+      return null
+    },
+    searchCorrespondingDimension(actualSubatt){
+      console.log(actualSubatt)
+      console.log(this.dimensionsAndSubattributes)
+      let subClass
+      this.dimensionsAndSubattributes.forEach((dimension,index) => {
+        dimension.subattributes.forEach( subatt=> {
+          console.log('166')
+          console.log(subatt.name)
+          console.log(actualSubatt)
+          if(subatt.name ===  actualSubatt){
+            console.log('entre adentro de la comparacion')
+            subClass = this.inTheArray(dimension.name)
+            console.log(subClass)            
+          }
+        });
+      });
+      return subClass
+    },
     renderZoomableCircles(data){
+            let vm=this;
             var svg = d3.select("svg"),
                       margin = 20,
                       diameter = +svg.attr("width"),
                       g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
             var color = d3.scaleLinear()
-                .domain([-1, 5])
-                .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+                .domain([-1, 1])
+                .range(["hsl(0, 0%, 90%)", "white"])
                 .interpolate(d3.interpolateHcl);
 
             var pack = d3.pack()
@@ -140,9 +201,38 @@ export default {
             var circle = g.selectAll("circle")
               .data(nodes)
               .enter().append("circle")
-                .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-                .style("fill", function(d) { return d.children ? color(d.depth) : null; })
-                .on("click", function(event,d) { if (focus !== d) zoom(event,d), event.stopPropagation(); });
+              .attr("class", function(d) { 
+                    if(d.parent){
+                      if(d.children){
+                        return "node"
+                      }
+                      else{
+                        let actualClass = 'node '
+                        let subClass = vm.inTheArray(d.data.name)
+                        if(subClass){
+                          console.log(actualClass + subClass)
+                          return actualClass + subClass
+                        }
+                        else{
+                          subClass = vm.searchCorrespondingDimension(d.data.name)
+                          console.log(subClass)
+                          return actualClass + subClass
+                        } 
+                        //return "node node--leaf"
+                        
+                      }
+
+                    }
+                    else {
+                      return "node node--root"
+                    }
+                   
+                    
+                    //return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; 
+                
+                })
+              .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+              .on("click", function(event,d) { if (focus !== d) zoom(event,d), event.stopPropagation(); });
 
             var text = g.selectAll("text")
               .data(nodes)
@@ -276,7 +366,22 @@ export default {
 }
 
 .node--leaf {
-  fill: white;
+  fill: hsl(0, 0%, 95%);
+}
+.node--leaf--cognitive {
+  fill: rgb(11, 103, 250);
+}
+.node--leaf--physical {
+  fill: rgb(39, 255, 244);
+}
+.node--leaf--social {
+  fill: rgb(241, 232, 104);
+}
+.node--leaf--linguistic {
+  fill: rgb(237, 107, 241);
+}
+.node--leaf--affective {
+  fill: rgb(240, 93, 93);
 }
 
 .label {
@@ -287,7 +392,12 @@ export default {
 
 .label,
 .node--root,
-.node--leaf {
+.node--leaf,
+.node--leaf--affective,
+.node--leaf--social,
+.node--leaf--physical,
+.node--leaf--cognitive,
+.node--leaf--linguistic {
   pointer-events: none;
 }
 
