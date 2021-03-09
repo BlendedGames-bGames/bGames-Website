@@ -4,6 +4,7 @@
       Asociacion a sensores basados en la web
     </hero-bar>
     <section class="section is-main-section">
+      <b-loading :is-full-page="true" v-model="loadingTwitter" :can-cancel="false"></b-loading>
       <card-component title="Forms" icon="ballot">
           <tiles>
               <card-widget  
@@ -232,6 +233,8 @@ export default {
       trelloToken:'',
       testingModal: false,
 
+      loadingTwitter:false,
+
       modalTestingTitle: 'Testing de parametros de asociacion al sensor',
       modalTestingDescription: 'Se esta realizando una llamada al servicio para asegurar que los parametros son correctos',
     }
@@ -324,21 +327,23 @@ export default {
                 this.modalTestingDescription = 'Se esta realizando una llamada al servicio para asegurar que los parametros son correctos'
                 this.SET_NEW_PLAYER_TOGGLE()
                 this.hideClick()
+                this.loadingTwitter = false
             }
           }
           else{
             this.alertTestingUrl()
             this.$buefy.dialog.alert({
-                      title: 'Error',
-                      message: 'No existe usuario con ese nombre de usuario en '+ this.selectedSensor.name +' por favor reviselo nuevamente',
-                      type: 'is-success',
-                      hasIcon: true,
-                      icon: 'check-circle',
-                      iconPack: 'fa',
-                      ariaRole: 'alertdialog',
-                      ariaModal: true
-                })
-                            this.hideClick()
+                title: 'Error',
+                message: 'No existe usuario con ese nombre de usuario en '+ this.selectedSensor.name +' por favor reviselo nuevamente',
+                type: 'is-success',
+                hasIcon: true,
+                icon: 'check-circle',
+                iconPack: 'fa',
+                ariaRole: 'alertdialog',
+                ariaModal: true
+          })
+          this.hideClick()
+          this.loadingTwitter = false
 
 
           }
@@ -355,6 +360,8 @@ export default {
               ariaModal: true
           })
           this.hideClick()
+          this.loadingTwitter = false
+
 
       }
      
@@ -362,6 +369,8 @@ export default {
     async associationClicked(){
         console.log('comenzando la verificacion de los datos')
         let testingUrl;
+        this.loadingTwitter = true
+
         switch (this.selectedSensor.name) {
           case 'Trello':
             this.trelloAssociation()
@@ -386,6 +395,7 @@ export default {
       this.chessUserName=''
     },
     async TwitterAssociation(){
+      this.loadingTwitter = true
       let provider = new firebase.auth.TwitterAuthProvider();
       const user = await firebase.auth().signInWithPopup(provider);
       console.log(user)
@@ -420,6 +430,7 @@ export default {
           this.modalTestingDescription = 'Se esta realizando una llamada al servicio para asegurar que los parametros son correctos'
           this.SET_NEW_PLAYER_TOGGLE()
           this.hideClick()
+          this.loadingTwitter = false
       }
     },
 
@@ -445,6 +456,7 @@ export default {
               type: 'is-warning',
               hasIcon: true,
               onConfirm: () => {
+                this.loadingTwitter = true
                 this.dissociationSensorsAndEndpoints(this.selectedSensor.id_online_sensor)
               
               } 
@@ -458,10 +470,11 @@ export default {
           this.$buefy.toast.open('Desasociacion del sensor '+this.selectedSensor.name+' realizada con exito!' )
       }
       else{
-          this.$buefy.toast.open('Hubo un error con la desasociacion del sensor '+this.selectedSensor.name+' , porfavor realizarla nuevamente' )
+          this.$buefy.toast.open('Hubo un error con la desasociacion del sensor '+this.selectedSensor.name+' , porfavor realizar la accion nuevamente' )
       }
       this.SET_DISSOCIATION_PLAYER_TOGGLE()
       this.hideClick()
+      this.loadingTwitter = false
 
     },
     timeUp(){
