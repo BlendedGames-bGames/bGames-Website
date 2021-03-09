@@ -40,7 +40,7 @@
             <b-numberinput  class="is-flex is-flex-direction-row is-justify-content-center is-align-items-end " v-model="props.row.schedule_time" controls-alignment="right" size="is-small" controls-position="compact" controls-rounded></b-numberinput>
       </b-table-column>
      <b-table-column  label="Activacion" field="activated" sortable v-slot="props">
-        <b-field             class="is-flex is-flex-direction-row is-justify-content-center"
+        <b-field  class="is-flex is-flex-direction-row is-justify-content-center"
 >
             <b-switch
                 v-model="props.row.activated"
@@ -48,6 +48,7 @@
                 passive-type='is-dark'
                 type='is-warning'>
             </b-switch>
+            <b-loading :is-full-page="false" v-model="activationLoading" :can-cancel="false"></b-loading>
         </b-field>
       </b-table-column>
       <b-table-column label="Ultima modificacion" centered v-slot="props">
@@ -253,6 +254,7 @@ export default {
       successModal:false,
       hasError:false,
       hasErrorCall:false,
+      activationLoading:false,
 
       local_sensor_endpoints:null,
       name_sensor_endpoint_view:'',
@@ -352,6 +354,7 @@ export default {
       return this.local_sensor_endpoints[time_index].schedule_time
     },
     async activationEndpointRequest(header_parameters, bool, id_online_sensor, id_sensor_endpoint, watch_parameters, base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters){
+        this.activationLoading = true
         this.setEndpointActivation({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
         this.SET_ENDPOINT_ACTIVATION({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
         const SENSOR_URL = this.sensorURL+'/sensor_endpoint/'+this.id_player+'/'+id_sensor_endpoint
@@ -379,10 +382,13 @@ export default {
         console.log('paso por aqui')
         try {
               const putConfirmation = await Axios.put(SENSOR_URL, data)
+              this.activationLoading = false
               console.log(putConfirmation)
               this.$buefy.toast.open(!bool ? 'Observacion del punto de datos desactivada':'Observacion del punto de datos activada' )
 
         } catch (error) {
+                        this.activationLoading = false
+
               this.$buefy.toast.open('Hubo un error en la activacion, intente nuevamente')
 
         }
