@@ -168,6 +168,7 @@ export default {
     this.$router.afterEach(() => {
       this.isMenuNavBarActive = false
     })
+    this.checkAlreadyLoggedInDesktopApp()
     if(!this.authenticationSocket){
       console.log(this)
         this.setupAuthenticationSocket()
@@ -185,7 +186,8 @@ export default {
     ]), 
     
     ...mapActions('socket', {
-        setupAuthenticationSocket: 'setupAuthenticationSocket'
+        setupAuthenticationSocket: 'setupAuthenticationSocket',
+        leaveRoomsSockets : 'leaveRoomsSockets'
     }),
     ...mapActions('user', {
         logout: 'logout'
@@ -238,6 +240,18 @@ export default {
     actualTime(time){
       this.time = time
       console.log(this.time)
+    },
+    async checkAlreadyLoggedInDesktopApp(){
+        const GET_KEY_URL = this.sensorCommunicationHost+'/player_already_logged_desktop_app/'+this.id_player 
+        try {
+            const reply = await Axios.get(GET_KEY_URL)
+            this.keyGenerationPressed = reply.data.message
+            this.generatedKey = reply.data.message
+
+        } catch (error) {
+              this.$buefy.toast.open('Hubo un error en la confirmacion de si esta ya autenticado en la aplicacion de escritorio, intente nuevamente')
+        }
+
     },
     async toggleKey(){
       console.log(this.keyModal)
@@ -331,6 +345,8 @@ export default {
       this.isMenuNavBarActive = !this.isMenuNavBarActive
     },
     async logoutButton () {
+      //this.authenticationSocket.emit('leaveRoom', this.id_player.toString())
+      this.leaveRoomsSockets()
       this.logout()
       this.$buefy.snackbar.open({
         message: 'Logging out',

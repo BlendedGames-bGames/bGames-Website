@@ -17,6 +17,14 @@ const mutations = {
         state.dimensionSocket = null
         state.authenticationSocket = null
     },
+    LEAVE_ROOM_DIMENSION_SOCKET(state,id_player){  
+      state.dimensionSocket.emit('leaveRoom', id_player.toString())
+
+    },
+    LEAVE_ROOM_AUTHENTICATION_SOCKET(state, id_player){  
+      state.authenticationSocket.emit('leaveRoom', id_player.toString())
+
+    },
 
     SETUP_DIMENSION_SOCKET(state,id_player) {        
         state.dimensionSocket = io(baseURL+postPort+'/dimensions')
@@ -56,6 +64,11 @@ const actions = {
       let id_player = rootState.user.id_player
       commit('SETUP_AUTHENTICATION_SOCKET',id_player)
 
+    },
+    async leaveRoomsSockets({ commit, rootState}) {
+      let id_player = rootState.user.id_player
+      commit('LEAVE_ROOM_DIMENSION_SOCKET',id_player)
+      commit('LEAVE_ROOM_AUTHENTICATION_SOCKET',id_player)
     },
   
 
