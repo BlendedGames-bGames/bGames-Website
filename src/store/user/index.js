@@ -15,8 +15,6 @@ const state = {
   userLevels: [],
   userDimensionLevels: [],
   dataReady:false,
-  dimensionSocket: null,
-  authenticationSocket:null,
   loadingLoginData: false
 };
 
@@ -24,8 +22,6 @@ const getters = {
 
   userProfile: ({userProfile}) => userProfile,
   dataReady: ({dataReady}) => dataReady,
-  dimensionSocket: ({dimensionSocket}) => dimensionSocket,
-  authenticationSocket: ({authenticationSocket}) => authenticationSocket,
 
   loggedIn: ({loggedIn}) => loggedIn,
   userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready,
@@ -84,28 +80,7 @@ const mutations = {
       email: userProfile.email
     };
   },
-  SETUP_DIMENSION_SOCKET(state) {
-    state.dimensionSocket = io(baseURL+postPort+'/dimensions')
-    state.dimensionSocket.on('welcome', (msg) => {
-      console.log(msg)
-    });
-    state.dimensionSocket.emit('joinRoom',state.id_player.toString());			
-    state.dimensionSocket.on('success', (msg) => {
-      console.log(msg)
-    });
-
-  },
-  SETUP_AUTHENTICATION_SOCKET(state) {
-    state.authenticationSocket = io(baseURL+sensorCommunicationPort+'/authentication')
-    state.authenticationSocket.on('welcome', (msg) => {
-      console.log(msg)
-    });
-    state.authenticationSocket.emit('joinRoom',state.id_player.toString());			
-    state.authenticationSocket.on('success', (msg) => {
-      console.log(msg)
-    });
-
-  },
+ 
   LOGOUT(state) {
     state.loggedIn = false;
     state.userProfile = {};
@@ -174,12 +149,15 @@ const actions = {
    
   },
   async settingData({ dispatch, commit, state, rootState  }, email){
+
     await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
     await dispatch('videogame/setVideogamesAndModifiableMechanics',null,{root:true})
+
     await dispatch('settingSensorsAndEndpoints',email)
     await dispatch('settingDimensionsLevelsAndSubattributes')
-    await dispatch('setupDimensionSocket')
-    await dispatch('setupAuthenticationSocket')
+
+    await dispatch('socket/setupSockets',null,{root:true})
+    
     commit('TOGGLE_DATA_READY')
 
     commit('TOGGLE_LOADING_LOGIN_DATA')
@@ -225,6 +203,7 @@ const actions = {
   },  
   async setupDimensionSocket({ commit }) {
     commit('SETUP_DIMENSION_SOCKET')
+    console.log('sali')
 
   },
   async setupAuthenticationSocket({ commit }) {
@@ -301,6 +280,8 @@ const actions = {
       await firebase.auth().signOut();
       await dispatch('resetAllVariables',null,{root:true})
       console.log('paso por aqui')
+      window.localStorage.setItem('user',null)
+
       router.replace({name:'login'})
 
     } catch(error) {

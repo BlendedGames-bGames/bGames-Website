@@ -265,10 +265,18 @@ export default {
           id_player: 'id_player'
     }),
   },
+  mounted(){
+    this.SET_CURRENT_ROUTE('/sensor_asociation')
+    window.localStorage.setItem('route','/sensor_asociation' )
+  },
   methods: {
+    //SET_CURRENT_ROUTE
     ...mapMutations('sensor',{
       SET_NEW_PLAYER_TOGGLE:'SET_NEW_PLAYER_TOGGLE',
       SET_DISSOCIATION_PLAYER_TOGGLE : 'SET_DISSOCIATION_PLAYER_TOGGLE'
+    }),
+    ...mapMutations({
+      SET_CURRENT_ROUTE:'SET_CURRENT_ROUTE'
     }),
     ...mapActions('sensor',{
       setNewPlayerSensorsAndEndpoints: 'setNewPlayerSensorsAndEndpoints',

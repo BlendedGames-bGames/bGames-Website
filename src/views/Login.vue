@@ -43,6 +43,9 @@ export default {
       isFullPage:true
     }
   },
+  mounted(){
+    window.localStorage.setItem('route','/login' )
+  },
   computed: {
     titleStack () {
       return ['Admin', 'Tables']

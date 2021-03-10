@@ -20,7 +20,18 @@ const routes = [
   {
     
     path: '/',
-    redirect: {name:'login'}
+    beforeEnter: (to, from, next) => {
+      // ...
+      console.log(window.localStorage.getItem('route'))
+      let route = window.localStorage.getItem('route')
+      if(route){
+        next(route)
+      }
+      else{
+        next('/login')
+      }
+
+    }
   },
 
   {
@@ -145,17 +156,13 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  const isAuthenticated = firebase.auth().currentUser
-  console.log(requiresAuth, isAuthenticated)
-  console.log(!isAuthenticated)
-  console.log(to)
-  window.localStorage.setItem('previousAuthentication',isAuthenticated)
-  window.localStorage.setItem('previousRoute',to.fullPath)
+  let currentUser = window.localStorage.getItem('user')
+  console.log(requiresAuth)
+  console.log(currentUser)
+  console.log(currentUser === 'null')
 
-  if (requiresAuth && !isAuthenticated && isAuthenticated !== null) {
-  
-
-    next( '/login' )
+  if (requiresAuth && currentUser === 'null') {
+    next( '/' )
   }
   else{
     next()

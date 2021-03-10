@@ -194,26 +194,33 @@ export default {
     ...mapGetters('user', {
           userDimensionLevels: 'userDimensionLevels',
           userLevels: 'userLevels',
-          id_player: 'id_player',
+          id_player: 'id_player'
+    }),
+    ...mapGetters('socket', {
           dimensionSocket: 'dimensionSocket'
-
     }),
     ...mapGetters('attribute', {
           name_dimensions: 'name_dimensions',
           id_dimensions: 'id_dimensions',
     }),
+    
   },
   mounted () {
+    window.localStorage.setItem('route','/statistics' )
     console.log('hola')
     this.fillChartRadar()
+    console.log(this.dimensionSocket)
+    if(!this.dimensionSocket){
+      console.log(this)
+      this.setupDimensionSocket()
+    }
     this.listen();
 
-    this.$buefy.snackbar.open({
-      message: 'Welcome back',
-      queue: false
-    })
   },
   methods: {
+    ...mapActions('socket', {
+        setupDimensionSocket: 'setupDimensionSocket'
+    }),
     ...mapActions('user',{
       setRealTimeDimensionLevels: 'setRealTimeDimensionLevels',
       setRealTimeSubattributeLevels: 'setRealTimeSubattributeLevels'

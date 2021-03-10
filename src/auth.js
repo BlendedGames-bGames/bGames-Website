@@ -7,20 +7,11 @@ firebase.auth().onAuthStateChanged(function(user) {
   const isAuthenticated = firebase.auth().currentUser
   console.log(isAuthenticated)
   console.log(user)
-  console.log(typeof(window.localStorage.getItem('previousAuthentication')))
 
   if (user) {
-    
     console.log('entre con el user: ', user)
+    window.localStorage.setItem('user',user)
     store.commit(`user/USER_DETAILS`, user);
-    if(window.localStorage.getItem('previousAuthentication') === 'null'){
-      console.log("sdasaddsaads")
-      console.log(window.localStorage.getItem('previousRoute'))
-      if(window.localStorage.getItem('previousRoute') !== '/login'){
-        router.replace({ path: window.localStorage.getItem('previousRoute') })
-
-      }
-    }
     
   } else {
     store.commit(`user/LOGOUT`);

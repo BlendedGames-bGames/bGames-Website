@@ -176,11 +176,8 @@ export default {
     }),
   },
   mounted () {
+    window.localStorage.setItem('route','/dimensions_sensors' )
 
-    this.$buefy.snackbar.open({
-      message: 'Welcome back',
-      queue: false
-    })
   },
   methods: {
     async treemapQueryDimension(option){

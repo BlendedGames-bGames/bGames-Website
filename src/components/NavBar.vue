@@ -153,10 +153,12 @@ export default {
       return this.isAsideMobileExpanded ? 'backburger' : 'forwardburger'
     },
     ...mapGetters('user', {
-          id_player: 'id_player',
-          authenticationSocket: 'authenticationSocket'
-
+          id_player: 'id_player'
     }),
+    ...mapGetters('socket', {
+        authenticationSocket: 'authenticationSocket'
+    }),
+
     ...mapState(['isNavBarVisible', 'isAsideMobileExpanded', 'userName']),
     ...mapState('user', ['userProfile' ]    )
   },
@@ -164,6 +166,10 @@ export default {
     this.$router.afterEach(() => {
       this.isMenuNavBarActive = false
     })
+    if(!this.authenticationSocket){
+      console.log(this)
+        this.setupAuthenticationSocket()
+    }
     this.listen()
   },
   beforeCreate () {
@@ -174,7 +180,11 @@ export default {
   methods: {
      ...mapMutations([
         'isAuthenticatedToggle'
-    ]),
+    ]), 
+    
+    ...mapActions('socket', {
+        setupAuthenticationSocket: 'setupAuthenticationSocket'
+    }),
     ...mapActions('user', {
         logout: 'logout'
     }),

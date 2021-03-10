@@ -64,6 +64,11 @@ export default {
           id_player: 'id_player'
     })
   },
+  mounted(){
+    window.localStorage.setItem('route','/data_points' )
+
+
+  },
   methods: {
      searchOnArrayOption(arrayToSearch,attArray,option,attSingle){
       let result;

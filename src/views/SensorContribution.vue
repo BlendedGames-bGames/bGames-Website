@@ -72,7 +72,7 @@ import HeroBar from '@/components/HeroBar'
 import CardComponent from '@/components/CardComponent'
 import SelectComponent from '../components/SelectComponent.vue'
 import {baseURL, getPort} from '../store/urls'
-import { mapGetters } from 'vuex'
+import { mapGetters,mapMutations } from 'vuex'
 import Axios from 'axios'
 
 export default {
@@ -116,9 +116,13 @@ export default {
     }),
   },
   mounted () {
-    //this.renderZoomableCircles()
+      this.SET_CURRENT_ROUTE('/sensors_dimensions')
+      window.localStorage.setItem('route','/sensors_dimensions' )
   },
   methods: {
+    ...mapMutations({
+      SET_CURRENT_ROUTE:'SET_CURRENT_ROUTE'
+    }),
     inTheArray(searchElement){
       console.log('entre')
       console.log(this.name_dimensions)

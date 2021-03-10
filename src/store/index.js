@@ -4,7 +4,9 @@ import user from '@/store/user'
 import sensor from '@/store/sensor'
 import attribute from '@/store/attribute'
 import videogame from '@/store/videogame'
+import socket from '@/store/socket'
 
+import createPersistedState from "vuex-persistedstate";
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -12,8 +14,14 @@ export default new Vuex.Store({
     user,
     sensor,
     attribute,
-    videogame
+    videogame,
+    socket
   },
+  plugins: [
+    createPersistedState({
+      paths: ['user','sensor','attribute','videogame'],
+    }),
+  ],
   state: {
     /* User */
     userCred: false,
@@ -34,13 +42,21 @@ export default new Vuex.Store({
     isAsideMobileExpanded: false,
 
     /* */
-    loginForm:true
+    loginForm:true,
+
+    /* */
+    currentRoute: '/login'
   },
   getters:{
+    currentRoute: ({currentRoute}) => currentRoute,
 
   },
   mutations: {
     /* A fit-them-all commit */
+    SET_CURRENT_ROUTE (state, payload) {
+      state.currentRoute = payload
+    },
+
     basic (state, payload) {
       state[payload.key] = payload.value
     },
@@ -93,6 +109,7 @@ export default new Vuex.Store({
       commit('sensor/RESET_VARIABLES')
       commit('attribute/RESET_VARIABLES')
       commit('videogame/RESET_VARIABLES')
+      commit('socket/RESET_VARIABLES')
 
     },
     hasPermission(context) {

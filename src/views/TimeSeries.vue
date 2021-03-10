@@ -40,7 +40,7 @@ import HeroBar from '@/components/HeroBar'
 import CardComponent from '@/components/CardComponent'
 import VueApexCharts from 'vue-apexcharts'
 import Axios from 'axios'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import {baseURL, getPort} from '../store/urls'
 export default {
   name: 'SensorAsociation',
@@ -174,6 +174,10 @@ export default {
           
     }
   },
+  mounted(){
+    this.SET_CURRENT_ROUTE('/time_statistics')
+    window.localStorage.setItem('route','/time_statistics' )
+  },
   computed: {
     titleStack () {
       return ['Admin', 'Forms']
@@ -191,6 +195,9 @@ export default {
     }),
   },
   methods: {
+    ...mapMutations({
+      SET_CURRENT_ROUTE:'SET_CURRENT_ROUTE'
+    }),
     selectedDatesLineChartClick(selectedOption){
       console.log(selectedOption)
       this.fillChartLineDimn(selectedOption)
