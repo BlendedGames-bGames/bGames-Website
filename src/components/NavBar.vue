@@ -25,10 +25,11 @@
          <a
           class="navbar-item  "
           @click="toggleKey"
+          :disabled="keyGenerationDisable"
         >
           <b-icon icon="key" custom-size="default" />
             Llave de autenticacion    
-           <div v-if="!keyModal && keyGenerationPressed && generatedKey" class="timer">{{ prettyTime | prettify }}</div>
+           <div v-if="!keyModal && !keyGenerationPressed && generatedKey" class="timer">{{ prettyTime | prettify }}</div>
 
         </a>
         <nav-bar-menu class="has-divider has-user-avatar">
@@ -122,7 +123,8 @@ export default {
       userHost:baseURL+userPort,
       time:120,
       timer:null,
-      keyGenerationPressed:false
+      keyGenerationPressed:false,
+      keyGenerationDisable:false
     }
   },
   filters: {
@@ -241,9 +243,10 @@ export default {
       console.log(this.keyModal)
       clearInterval(this.timer)      
       console.log(this.keyModal)
-      this.toggleKeyModal()
+      if(!this.keyGenerationPressed){
+         this.toggleKeyModal()
+      }
       if(!this.generatedKey){
-        this.keyGenerationPressed = true
         console.log('paso por aqui')
         this.isLoading = true
         const GET_KEY_URL = this.sensorCommunicationHost+'/create_desktop_key/'+this.id_player 
@@ -289,12 +292,17 @@ export default {
         this.keyModal = false
         clearInterval(this.timer)  
         this.time = 120    
+        this.keyGenerationPressed = true
+        this.keyGenerationDisable = true
         this.$buefy.toast.open('Ingreso a la aplicacion de escritorio exitosa')
 
       });
       this.authenticationSocket.on('logout', message => {
         this.generatedKey = false
+        this.keyGenerationPressed = false
+        this.keyGenerationDisable = false
         clearInterval(this.timer)  
+        this.$buefy.toast.open('Se ha salido de su cuenta desde la aplicacion de escritorio exitosamente')
 
       });
 		},
