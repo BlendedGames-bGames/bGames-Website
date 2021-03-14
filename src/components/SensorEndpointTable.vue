@@ -526,8 +526,6 @@ export default {
       this.isLoadingEditSpecificParameters = true
       let actualSpecificTemplate = this.specific_parameters_template_edit.parameters[this.editionModalActual]
       this.hasError = false
-      let urlQuery = this.createURL()
-      console.log(urlQuery)
       this.hasErrorCall = false
       if(this.base_url_edit === 'https://api.twitter.com/2/'){
         try {
@@ -620,6 +618,8 @@ export default {
       }
       else{
         try {
+          let urlQuery = this.createURL()
+          console.log(urlQuery)
           const query = await Axios.get(urlQuery)
           const queryData = query.data
           let search_param = actualSpecificTemplate.search_data.search_param
