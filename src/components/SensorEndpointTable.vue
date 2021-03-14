@@ -315,6 +315,27 @@ export default {
       SET_SPECIFIC_PARAMETERS_SINGLE: 'SET_SPECIFIC_PARAMETERS_SINGLE',
       SET_ENDPOINT_ACTIVATION: 'SET_ENDPOINT_ACTIVATION'
     }),
+    checkEmptyParameters(specific_parameters,schedule_time_activation){
+      console.log(specific_parameters)      
+      console.log(typeof specific_parameters)
+      console.log(schedule_time_activation)
+      if(schedule_time_activation < 11 || schedule_time_activation === null || isNaN(parseInt(schedule_time_activation))){
+        this.$buefy.toast.open('El tiempo de activacion de un punto de datos debe ser a lo menos de 10 segundos!')
+        return true
+      }
+      if(specific_parameters == null){
+        return false
+      }
+      let specific_parameters_JSON = JSON.parse(specific_parameters)
+      //No se ha puesto ningun parametro especifico => la primera data esta vacia
+      if(specific_parameters_JSON.actual_data[0].data.length === 0){
+        this.$buefy.toast.open('No se han ingresado parametros especificos para este punto de datos, porfavor complete los campos respectivos')
+        return true
+      }
+      else{
+        return false
+      }
+    },
     async confirmSwitchToggle(header_parameters,bool, id_online_sensor, id_sensor_endpoint, watch_parameters,base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters) {
       
       var properTitle, properMessage
@@ -355,6 +376,12 @@ export default {
     },
     async activationEndpointRequest(header_parameters, bool, id_online_sensor, id_sensor_endpoint, watch_parameters, base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters){
         this.activationLoading = true
+        let schedule_time_activation = this.searchForSelectedScheduleTime(id_sensor_endpoint)
+        if(this.checkEmptyParameters(specific_parameters,schedule_time_activation)){
+          this.activationLoading = false
+          this.setEndpointActivation({activated: !bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor }) 
+          return
+        }
         this.setEndpointActivation({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
         this.SET_ENDPOINT_ACTIVATION({activated: bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })
         const SENSOR_URL = this.sensorURL+'/sensor_endpoint/'+this.id_player+'/'+id_sensor_endpoint
@@ -376,7 +403,7 @@ export default {
           //ID del endpoint que se le pone en el online_data_capture para identificarlo y poder parar la llamada al endpoint cada X schedule_time sec
           unique_id: this.id_player.toString()+id_online_sensor.toString()+id_sensor_endpoint.toString(),
           activated: activate,
-          schedule_time: this.searchForSelectedScheduleTime(id_sensor_endpoint)
+          schedule_time: schedule_time_activation
         }
         console.log(data)
         console.log('paso por aqui')
