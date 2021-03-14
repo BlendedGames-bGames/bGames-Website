@@ -409,7 +409,7 @@ export default {
       console.log(user)
       const userData = {
           username: user.additionalUserInfo.username,
-          id: user.additionalUserInfo.profile.id_str,
+          ids: user.additionalUserInfo.profile.id_str,
           accessToken: user.credential.accessToken,
           secret: user.credential.secret
       }

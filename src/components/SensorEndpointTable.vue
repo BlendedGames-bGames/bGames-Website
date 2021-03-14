@@ -25,12 +25,12 @@
           </b-button>     
       </b-table-column>
       <b-table-column label="Parametros especificos" field="schedule_time"  v-slot="props">
-        <b-button :disabled="!props.row.specific_parameters" icon-left="magnify-plus" native-type="submit" rounded type="is-info" 
+        <b-button :disabled="!props.row.specific_parameters_template" icon-left="magnify-plus" native-type="submit" rounded type="is-info" 
         @click="viewSpecificParameters(props.row.specific_parameters, props.row.specific_parameters_template, props.row.name_sensor_endpoint)">
                               
         </b-button>   
 
-           <b-button :disabled="!props.row.specific_parameters" icon-left="pencil" native-type="submit" rounded type="is-success" 
+           <b-button :disabled="!props.row.specific_parameters_template" icon-left="pencil" native-type="submit" rounded type="is-success" 
            @click="settingSpecificParameters(props.row.id_sensor_endpoint,props.row.id_online_sensor, props.row.header_parameters,props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint, props.row.dynamic_url,props.row.name_sensor_endpoint)">
                               
         </b-button>
@@ -323,7 +323,7 @@ export default {
         this.$buefy.toast.open('El tiempo de activacion de un punto de datos debe ser a lo menos de 10 segundos!')
         return true
       }
-      if(specific_parameters == null){
+      if(specific_parameters === null || specific_parameters === 'null'){
         return false
       }
       let specific_parameters_JSON = JSON.parse(specific_parameters)
