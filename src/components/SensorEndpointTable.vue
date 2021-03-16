@@ -31,7 +31,7 @@
         </b-button>   
 
            <b-button :disabled="!props.row.specific_parameters_template" icon-left="pencil" native-type="submit" rounded type="is-success" 
-           @click="settingSpecificParameters(props.row.id_sensor_endpoint,props.row.id_online_sensor, props.row.header_parameters,props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint, props.row.dynamic_url,props.row.name_sensor_endpoint)">
+           @click="settingSpecificParameters(props.row.id_players_sensor_endpoint,props.row.id_sensor_endpoint,props.row.id_online_sensor, props.row.header_parameters,props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint, props.row.dynamic_url,props.row.name_sensor_endpoint)">
                               
         </b-button>
       
@@ -44,7 +44,7 @@
 >
             <b-switch
                 v-model="props.row.activated"
-                @input="confirmSwitchToggle(props.row.header_parameters,props.row.activated, props.row.id_online_sensor, props.row.id_sensor_endpoint, props.row.watch_parameters,props.row.base_url,props.row.url_endpoint,props.row.tokens,props.row.token_parameters,props.row.specific_parameters_template,props.row.specific_parameters)"
+                @input="confirmSwitchToggle(props.row.id_players_sensor_endpoint,props.row.header_parameters,props.row.activated, props.row.id_online_sensor, props.row.id_sensor_endpoint, props.row.watch_parameters,props.row.base_url,props.row.url_endpoint,props.row.tokens,props.row.token_parameters,props.row.specific_parameters_template,props.row.specific_parameters)"
                 passive-type='is-dark'
                 type='is-warning'>
             </b-switch>
@@ -266,6 +266,7 @@ export default {
       name_sensor_endpoint_edit: '',
       specific_parameters_edit: null,
       specific_parameters_template_edit: null,
+      id_players_sensor_endpoint_edit:null,
       token_parameters_edit: null,
       tokens_edit:null,
       header_parameters_edit:null,
@@ -336,7 +337,7 @@ export default {
         return false
       }
     },
-    async confirmSwitchToggle(header_parameters,bool, id_online_sensor, id_sensor_endpoint, watch_parameters,base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters) {
+    async confirmSwitchToggle(id_players_sensor_endpoint,header_parameters,bool, id_online_sensor, id_sensor_endpoint, watch_parameters,base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters) {
       
       var properTitle, properMessage
       console.log(bool)
@@ -358,7 +359,7 @@ export default {
             this.setEndpointActivation({activated: !bool, id_sensor_endpoint:id_sensor_endpoint, id_online_sensor:id_online_sensor })           
           } ,
           onConfirm: () => {
-            this.activationEndpointRequest(header_parameters, bool, id_online_sensor, id_sensor_endpoint, watch_parameters, base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters)
+            this.activationEndpointRequest(id_players_sensor_endpoint,header_parameters, bool, id_online_sensor, id_sensor_endpoint, watch_parameters, base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters)
            
           } 
       })
@@ -374,7 +375,7 @@ export default {
       console.log(this.local_sensor_endpoints[time_index])
       return this.local_sensor_endpoints[time_index].schedule_time
     },
-    async activationEndpointRequest(header_parameters, bool, id_online_sensor, id_sensor_endpoint, watch_parameters, base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters){
+    async activationEndpointRequest(id_players_sensor_endpoint,header_parameters, bool, id_online_sensor, id_sensor_endpoint, watch_parameters, base_url,url_endpoint,tokens,token_parameters,specific_parameters_template,specific_parameters){
         this.activationLoading = true
         let schedule_time_activation = this.searchForSelectedScheduleTime(id_sensor_endpoint)
         if(this.checkEmptyParameters(specific_parameters,schedule_time_activation)){
@@ -401,7 +402,7 @@ export default {
           specific_parameters_template:specific_parameters_template,
           specific_parameters:specific_parameters,
           //ID del endpoint que se le pone en el online_data_capture para identificarlo y poder parar la llamada al endpoint cada X schedule_time sec
-          unique_id: this.id_player.toString()+id_online_sensor.toString()+id_sensor_endpoint.toString(),
+          id_players_sensor_endpoint: id_players_sensor_endpoint,
           activated: activate,
           schedule_time: schedule_time_activation
         }
@@ -714,9 +715,10 @@ export default {
 
     },
     //props.row.specific_parameters_template, props.row.specific_parameters,props.row.token_parameters,props.row.tokens,props.row.base_url,props.row.url_endpoint
-    settingSpecificParameters(id_sensor_endpoint,id_online_sensor,header_parameters_string,specific_parameters_template_string,specific_parameters_string,token_parameters_string,tokens_string,base_url,url_endpoint, dynamic_url,name_sensor_endpoint_string){
+    settingSpecificParameters(id_players_sensor_endpoint,id_sensor_endpoint,id_online_sensor,header_parameters_string,specific_parameters_template_string,specific_parameters_string,token_parameters_string,tokens_string,base_url,url_endpoint, dynamic_url,name_sensor_endpoint_string){
       //Parsing string to JSON
       this.id_sensor_endpoint_edit = id_sensor_endpoint
+      this.id_players_sensor_endpoint_edit = id_players_sensor_endpoint
       this.id_online_sensor_edit = id_online_sensor
       this.specific_parameters_template_edit = JSON.parse(specific_parameters_template_string)
       this.specific_parameters_edit = JSON.parse(specific_parameters_string)
