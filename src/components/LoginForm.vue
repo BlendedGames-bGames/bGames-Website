@@ -83,6 +83,13 @@ export default {
       }
     }
   },
+  props:{
+    typeLogin: {
+      type: Boolean,
+      default: false
+    }
+  },
+  
   computed:{
     ...mapGetters('user',{
       loggedIn: 'loggedIn'
@@ -116,10 +123,10 @@ export default {
     },
     async login(provider){
       if(provider !== 'EmailAndPass'){
-          this.loginProvider({provider:provider})
+          this.loginProvider({provider:provider, typeLogin:this.typeLogin})
       }
       else{
-          this.loginEmailAndPassword({email:this.form.email, password: this.form.password})
+          this.loginEmailAndPassword({email:this.form.email, password: this.form.password, typeLogin:this.typeLogin})
       }
       
       console.log(this.loggedIn)

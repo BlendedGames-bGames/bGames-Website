@@ -11,6 +11,7 @@ import DataEndpoint from '../views/DataEndpoint.vue'
 import SensorAsociation from '../views/SensorAsociation.vue'
 import TimeSeries from '../views/TimeSeries.vue'
 import PrivacyPolicy from '../views/PrivacyPolicy.vue'
+import DeleteUserDataTemplate from '../views/DeleteUserDataTemplate.vue'
 
 import firebase from 'firebase/app'
 import store from '../store/index'
@@ -153,6 +154,18 @@ const routes = [
     path: '/privacy_policy',
     name: 'privacy_policy',
     component: PrivacyPolicy
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'Eliminación de datos de usuario',
+      requiresAuth: false
+
+    },
+    path: '/delete_user_data',
+    name: 'delete_user_data',
+    component: DeleteUserDataTemplate
   }
 ]
 

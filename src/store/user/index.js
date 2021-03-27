@@ -77,8 +77,12 @@ const mutations = {
     }  
     state.userProfile = {
       name: name,
-      email: userProfile.email
+      email: userProfile.email,
+      providerId:userProfile.providerData[0].providerId,
+      uid:userProfile.providerData[0].uid
     };
+    console.log('estoy aqui!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    console.log(state.userProfile)
   },
  
   LOGOUT(state) {
@@ -148,22 +152,24 @@ const actions = {
     commit('SET_RT_USER_SUBATT_LEVELS',payload)
    
   },
-  async settingData({ dispatch, commit, state, rootState  }, email){
+  async settingData({ dispatch, commit, state, rootState  }, profile){
 
     await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
     await dispatch('videogame/setVideogamesAndModifiableMechanics',null,{root:true})
 
-    await dispatch('settingSensorsAndEndpoints',email)
+    await dispatch('settingSensorsAndEndpoints',profile.email)
     await dispatch('settingDimensionsLevelsAndSubattributes')
 
     await dispatch('socket/setupSockets',null,{root:true})
-    
-    commit('TOGGLE_DATA_READY')
-
     commit('TOGGLE_LOADING_LOGIN_DATA')
-    //commit('TOGGLE_LOGGED_IN')
 
-    router.replace({name:'statistics'})      
+    //commit('TOGGLE_LOGGED_IN')
+    if(!profile.typeLogin){
+        
+      commit('TOGGLE_DATA_READY')
+
+      router.replace({name:'statistics'})      
+    }
   },
   
   async settingSensorsAndEndpoints({ dispatch, commit, state, rootState  }, email){
@@ -256,7 +262,7 @@ const actions = {
         }
       }
       
-      dispatch('settingData',user.additionalUserInfo.profile.email)
+      dispatch('settingData',{email:user.additionalUserInfo.profile.email,  typeLogin:profile.typeLogin})
     
     } catch(error) {
       console.log(error);
@@ -268,7 +274,7 @@ const actions = {
         console.log(profile)
         const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
         commit('TOGGLE_LOADING_LOGIN_DATA')
-        dispatch('settingData',profile.email)
+        dispatch('settingData',{email:profile.email, typeLogin:profile.typeLogin})
 
     } catch (error) {
             console.log(error)
