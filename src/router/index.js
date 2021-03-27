@@ -10,6 +10,8 @@ import DimensionContribution from '../views/DimensionContribution.vue'
 import DataEndpoint from '../views/DataEndpoint.vue'
 import SensorAsociation from '../views/SensorAsociation.vue'
 import TimeSeries from '../views/TimeSeries.vue'
+import PrivacyPolicy from '../views/PrivacyPolicy.vue'
+
 import firebase from 'firebase/app'
 import store from '../store/index'
 
@@ -138,6 +140,19 @@ const routes = [
     name: 'client.edit',
     component: () => import(/* webpackChunkName: "client-form" */ '../views/ClientForm.vue'),
     props: true
+  },
+  
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'Politicas de privacidad',
+      requiresAuth: false
+
+    },
+    path: '/privacy_policy',
+    name: 'privacy_policy',
+    component: PrivacyPolicy
   }
 ]
 

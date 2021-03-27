@@ -6,10 +6,11 @@
              <div class="main-body">
 
                 <router-view />
+                                        <footer-bar />
+
             </div>
 
 
-        <footer-bar />
 
     </div>
     <div v-else>

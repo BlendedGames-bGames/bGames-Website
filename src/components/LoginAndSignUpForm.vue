@@ -1,7 +1,11 @@
 <template>
     <div >
         <login-form v-if="loginForm"/>
-        <sign-up-form v-else/>        
+        <sign-up-form v-else/>       
+        
+            <router-link to="/privacy_policy">
+                        <b> Politicas de privacidad</b>  
+              </router-link>     
     </div>
         
 </template>
