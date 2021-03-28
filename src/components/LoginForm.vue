@@ -1,68 +1,68 @@
 <template>
-        <card-component title="" icon="" class="column is-two-thirds is-offset-2" >
-                <form @submit.prevent="submit">
-                        <b-field   horizontal
-                                label="Email" style="margin-bottom: 2em"
-                        >
-                        <b-field>
-                            <b-input
-                            v-model="form.email"
-                            icon="account"
-                            placeholder="email"
-                            name="email"
-                            required
-                            />
-                        </b-field>
-                    
-                        </b-field>
-                        <b-field  horizontal
-                                label="Password"
-                        >
-                            <b-input
-                            v-model="form.password"
-                            icon="lock"
-                            type="password"
-                            placeholder="Password"
-                            name="password"
-                            required
-                            />
-                        </b-field>
-                        <hr />
-                        <div class="control is-flex is-flex-direction-row is-justify-content-center">
-                            <b-button size="is-medium" native-type="submit" type="is-link" @click="login('EmailAndPass')">
-                              Login
-                            </b-button>
-                        </div>
-                </form>
-                <hr />
-                <div >
-                        <b-button size="is-large" type="is-danger" @click="login('Google')"
-                            icon-left="google"  style="margin-bottom:1em" expanded> 
-                            Login con Google
+    <card-component title="" icon="" class="column is-two-thirds is-offset-2" >
+            <form @submit.prevent="submit">
+                    <b-field   horizontal
+                            label="Email" style="margin-bottom: 2em"
+                    >
+                    <b-field>
+                        <b-input
+                        v-model="form.email"
+                        icon="account"
+                        placeholder="email"
+                        name="email"
+                        required
+                        />
+                    </b-field>
+                
+                    </b-field>
+                    <b-field  horizontal
+                            label="Password"
+                    >
+                        <b-input
+                        v-model="form.password"
+                        icon="lock"
+                        type="password"
+                        placeholder="Password"
+                        name="password"
+                        required
+                        />
+                    </b-field>
+                    <hr />
+                    <div class="control is-flex is-flex-direction-row is-justify-content-center">
+                        <b-button size="is-medium" native-type="submit" type="is-link" @click="login('EmailAndPass')">
+                          Login
                         </b-button>
-                        <b-button size="is-large"  type="is-info" expanded @click="login('Facebook')"
-                            icon-left="facebook" >
-                            Login con Facebook
-                        </b-button>
-
-                </div>
-                <hr/>
-                <div class="columns is-flex is-flex-direction-row is-justify-content-center">
-                        <h1>Eres nuevo? Create una cuenta!</h1>
-                        
-
-                </div>
-                <div class="columns is-flex is-flex-direction-row is-justify-content-center">
-
-                    <b-button size="is-medium"  
-                                icon-left="account"   v-on:click="registerToggle">
-                                Sign up
-                            
+                    </div>
+            </form>
+            <hr />
+            <div >
+                    <b-button size="is-large" type="is-danger" @click="login('Google')"
+                        icon-left="google"  style="margin-bottom:1em" expanded> 
+                        Login con Google
+                    </b-button>
+                    <b-button size="is-large"  type="is-info" expanded @click="login('Facebook')"
+                        icon-left="facebook" >
+                        Login con Facebook
                     </b-button>
 
-                </div>                 
-        </card-component>
-        
+            </div>
+            <hr/>
+            <div class="columns is-flex is-flex-direction-row is-justify-content-center">
+                    <h1>Eres nuevo? Create una cuenta!</h1>
+                    
+
+            </div>
+            <div class="columns is-flex is-flex-direction-row is-justify-content-center">
+
+                <b-button size="is-medium"  
+                            icon-left="account"   v-on:click="registerToggle">
+                            Sign up
+                        
+                </b-button>
+
+            </div>                 
+    </card-component>
+    
         
 </template>
 
@@ -83,16 +83,10 @@ export default {
       }
     }
   },
-  props:{
-    typeLogin: {
-      type: Boolean,
-      default: false
-    }
-  },
-  
   computed:{
     ...mapGetters('user',{
-      loggedIn: 'loggedIn'
+      loggedIn: 'loggedIn',
+      typeLogin: 'typeLogin'
     })
   },
   methods: {
@@ -123,10 +117,10 @@ export default {
     },
     async login(provider){
       if(provider !== 'EmailAndPass'){
-          this.loginProvider({provider:provider, typeLogin:this.typeLogin})
+          this.loginProvider({provider:provider})
       }
       else{
-          this.loginEmailAndPassword({email:this.form.email, password: this.form.password, typeLogin:this.typeLogin})
+          this.loginEmailAndPassword({email:this.form.email, password: this.form.password})
       }
       
       console.log(this.loggedIn)

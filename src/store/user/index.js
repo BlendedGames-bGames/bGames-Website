@@ -15,26 +15,169 @@ const state = {
   userLevels: [],
   userDimensionLevels: [],
   dataReady:false,
-  loadingLoginData: false
+  loadingLoginData: false,
+
+  adminPermission: false,
+  notAnAdmin:false,
+  typeLogin: false,
+  menu:  [
+    'Dashboard',
+    [
+      {
+        to: '/statistics',
+        icon: 'desktop-mac',
+        label: 'Estadisticas generales'
+      },
+        {
+        to: '/time_statistics',
+        icon: 'desktop-mac',
+        label: 'Estadisticas en el tiempo'
+      }
+    ],
+    'Contribuciones',
+    [         
+      {
+        to: '/dimensions_sensors',
+        icon: 'desktop-mac',
+        label: 'Dimensiones'
+      },
+        {
+        to: '/sensors_dimensions',
+        icon: 'desktop-mac',
+        label: 'Sensores y Puntos de datos'
+      }
+    ],
+    'Administracion',
+    [
+      {
+        to: '/data_points',
+        label: 'Puntos de datos',
+        icon: 'table',
+      },
+      {
+        to: '/sensor_asociation',
+        label: 'Asociacion a sensores',
+        icon: 'square-edit-outline'
+      }
+    ]
+  ]
+
 };
 
 const getters = {
 
   userProfile: ({userProfile}) => userProfile,
   dataReady: ({dataReady}) => dataReady,
+  menu: ({menu}) => menu,
+  typeLogin: ({typeLogin}) => typeLogin,
 
   loggedIn: ({loggedIn}) => loggedIn,
   userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready,
   id_player: ({id_player}) => id_player,
   userLevels: ({userLevels}) => userLevels,
   userDimensionLevels: ({userDimensionLevels}) => userDimensionLevels,
-  loadingLoginData: ({loadingLoginData}) => loadingLoginData
+  loadingLoginData: ({loadingLoginData}) => loadingLoginData,
 
 
+  adminPermission: ({adminPermission}) => adminPermission,
+  notAnAdmin: ({notAnAdmin}) => notAnAdmin
 
 };
 
 const mutations = {
+  TOGGLE_ADMIN_PERMISSION(state){
+    state.adminPermission = !state.adminPermission
+
+  },
+  TOGGLE_MENU_PLAYER(state){
+    state.menu = [
+          'Dashboard',
+        [
+          {
+            to: '/statistics',
+            icon: 'desktop-mac',
+            label: 'Estadisticas generales'
+          },
+            {
+            to: '/time_statistics',
+            icon: 'desktop-mac',
+            label: 'Estadisticas en el tiempo'
+          }
+        ],
+        'Contribuciones',
+        [         
+          {
+            to: '/dimensions_sensors',
+            icon: 'desktop-mac',
+            label: 'Dimensiones'
+          },
+            {
+            to: '/sensors_dimensions',
+            icon: 'desktop-mac',
+            label: 'Sensores y Puntos de datos'
+          }
+        ],
+        'Administracion',
+        [
+          {
+            to: '/data_points',
+            label: 'Puntos de datos',
+            icon: 'table',
+          },
+          {
+            to: '/sensor_asociation',
+            label: 'Asociacion a sensores',
+            icon: 'square-edit-outline'
+          }
+        ]
+    ]
+    state.typeLogin = false 
+ 
+
+  },
+  TOGGLE_MENU_ADMIN(state){
+    state.menu = [
+      'Administracion de sensores',
+     [
+       {
+         to: '/sensor_crud',
+         icon: 'desktop-mac',
+         label: 'CRUD sensores web'
+       },
+       {
+         to: '/endpoint_crud',
+         icon: 'desktop-mac',
+         label: 'CRUD endpoints'
+       },
+       {
+         to: '/conversion_crud',
+         icon: 'desktop-mac',
+         label: 'CRUD conversiones'
+       },
+     ],
+     'Administracion de dimensiones y atributos',
+     [         
+       {
+         to: '/dimension_crud',
+         icon: 'desktop-mac',
+         label: 'CRUD dimensiones'
+       },
+        {
+         to: '/attribute_CRUD',
+         icon: 'desktop-mac',
+         label: 'CRUD atributos'
+       }
+     ]
+   ]
+   state.typeLogin = true 
+
+
+  },
+  
+  TOGGLE_NOT_AN_ADMIN(state){
+    state.notAnAdmin = !state.notAnAdmin
+
+  },
   TOGGLE_DATA_READY(state){
     state.dataReady = !state.dataReady
 
@@ -59,6 +202,52 @@ const mutations = {
     state.dimensionSocket = null
     state.authenticationSocket = null
     state.loadingLoginData = false
+    
+    state.adminPermission = false,
+    state.notAnAdmin = false,
+    state.typeLogin = false,
+    state.menu = [
+      'Dashboard',
+      [
+        {
+          to: '/statistics',
+          icon: 'desktop-mac',
+          label: 'Estadisticas generales'
+        },
+          {
+          to: '/time_statistics',
+          icon: 'desktop-mac',
+          label: 'Estadisticas en el tiempo'
+        }
+      ],
+      'Contribuciones',
+      [         
+        {
+          to: '/dimensions_sensors',
+          icon: 'desktop-mac',
+          label: 'Dimensiones'
+        },
+          {
+          to: '/sensors_dimensions',
+          icon: 'desktop-mac',
+          label: 'Sensores y Puntos de datos'
+        }
+      ],
+      'Administracion',
+      [
+        {
+          to: '/data_points',
+          label: 'Puntos de datos',
+          icon: 'table',
+        },
+        {
+          to: '/sensor_asociation',
+          label: 'Asociacion a sensores',
+          icon: 'square-edit-outline'
+        }
+      ]
+    ]
+
   },
   SET_ID_PLAYER(state,payload) {
     console.log(payload)
@@ -154,33 +343,62 @@ const actions = {
   },
   async settingData({ dispatch, commit, state, rootState  }, profile){
 
-    await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
-    await dispatch('videogame/setVideogamesAndModifiableMechanics',null,{root:true})
-
     await dispatch('settingSensorsAndEndpoints',profile.email)
-    await dispatch('settingDimensionsLevelsAndSubattributes')
+    if(state.adminPermission && state.typeLogin){      
+      await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
+      await dispatch('videogame/setVideogamesAndModifiableMechanics',null,{root:true})
 
-    await dispatch('socket/setupSockets',null,{root:true})
-    commit('TOGGLE_LOADING_LOGIN_DATA')
+      await dispatch('settingDimensionsLevelsAndSubattributes')
 
-    //commit('TOGGLE_LOGGED_IN')
-    if(!profile.typeLogin){
-        
+      await dispatch('socket/setupSockets',null,{root:true})
+      
       commit('TOGGLE_DATA_READY')
 
-      router.replace({name:'statistics'})      
+      commit('TOGGLE_LOADING_LOGIN_DATA')
+      //commit('TOGGLE_LOGGED_IN')
+
+      router.replace({name:'sensor_crud'})      
+
     }
+
+    else if(!state.adminPermission && state.typeLogin){
+
+      commit('TOGGLE_LOADING_LOGIN_DATA')
+      commit('TOGGLE_NOT_AN_ADMIN')
+    }
+    else{
+      await dispatch('attribute/setDimensionsAndSubattributes',null,{root:true})
+      await dispatch('videogame/setVideogamesAndModifiableMechanics',null,{root:true})
+
+      await dispatch('settingDimensionsLevelsAndSubattributes')
+
+      await dispatch('socket/setupSockets',null,{root:true})
+      
+      commit('TOGGLE_DATA_READY')
+
+      commit('TOGGLE_LOADING_LOGIN_DATA')
+      //commit('TOGGLE_LOGGED_IN')
+
+      router.replace({name:'statistics'})  
+
+    }
+
+
   },
   
   async settingSensorsAndEndpoints({ dispatch, commit, state, rootState  }, email){
     const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+email
     const userData = await Axios.get(MEDIUM_GET_URL);
-    await dispatch('setIdPlayer', JSON.parse(userData.data).id_players)
-    //setSensorsAndTemplatesAndEndpoints
-    await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
-    rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
-      console.log(sensor)
-    });
+    if(JSON.parse(userData.data).type === 1){
+      //Si tiene permisos de administrador
+      await dispatch('setIdPlayer', JSON.parse(userData.data).id_players)
+      //setSensorsAndTemplatesAndEndpoints
+      await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
+      rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
+        console.log(sensor)
+      });
+      commit('TOGGLE_ADMIN_PERMISSION')
+    }
   },
   async settingSubattributesLevels({ dispatch, commit, state }){
     for (const level of state.userLevels) {      
@@ -262,7 +480,7 @@ const actions = {
         }
       }
       
-      dispatch('settingData',{email:user.additionalUserInfo.profile.email,  typeLogin:profile.typeLogin})
+      dispatch('settingData',{email:user.additionalUserInfo.profile.email})
     
     } catch(error) {
       console.log(error);
@@ -274,7 +492,7 @@ const actions = {
         console.log(profile)
         const user = await firebase.auth().signInWithEmailAndPassword(profile.email,profile.password)
         commit('TOGGLE_LOADING_LOGIN_DATA')
-        dispatch('settingData',{email:profile.email, typeLogin:profile.typeLogin})
+        dispatch('settingData',{email:profile.email})
 
     } catch (error) {
             console.log(error)

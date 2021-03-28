@@ -13,6 +13,14 @@ import TimeSeries from '../views/TimeSeries.vue'
 import PrivacyPolicy from '../views/PrivacyPolicy.vue'
 import DeleteUserDataTemplate from '../views/DeleteUserDataTemplate.vue'
 
+
+import SensorCRUD from '../views_developers/SensorCRUD.vue'
+import EndpointCRUD from '../views_developers/EndpointCRUD.vue'
+import ConversionCRUD from '../views_developers/ConversionCRUD.vue'
+
+import DimensionCRUD from '../views_developers/DimensionCRUD.vue'
+import AttributeCRUD from '../views_developers/AttributeCRUD.vue'
+
 import firebase from 'firebase/app'
 import store from '../store/index'
 
@@ -121,28 +129,7 @@ const routes = [
     name: 'sensor_asociation',
     component: SensorAsociation
   },
-  {
-    meta: {
-      title: 'New Client',
-      requiresAuth: true
-
-    },
-    path: '/client/new',
-    name: 'client.new',
-    component: () => import(/* webpackChunkName: "client-form" */ '../views/ClientForm.vue')
-  },
-  {
-    meta: {
-      title: 'Edit Client',
-      requiresAuth: true
-
-    },
-    path: '/client/:id',
-    name: 'client.edit',
-    component: () => import(/* webpackChunkName: "client-form" */ '../views/ClientForm.vue'),
-    props: true
-  },
-  
+   
   {
     // Document title tag
     // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
@@ -166,6 +153,67 @@ const routes = [
     path: '/delete_user_data',
     name: 'delete_user_data',
     component: DeleteUserDataTemplate
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'CRUD de sensores',
+      requiresAuth: true
+
+    },
+    path: '/sensor_crud',
+    name: 'sensor_crud',
+    component: SensorCRUD
+  },
+
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'CRUD de endpoints',
+      requiresAuth: true
+
+    },
+    path: '/endpoint_crud',
+    name: 'endpoint_crud',
+    component: EndpointCRUD
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'CRUD de conversiones',
+      requiresAuth: true
+
+    },
+    path: '/conversion_crud',
+    name: 'conversion_crud',
+    component: ConversionCRUD
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'CRUD de dimensiones',
+      requiresAuth: true
+
+    },
+    path: '/dimension_crud',
+    name: 'dimension_crud',
+    component: DimensionCRUD
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'CRUD de atributos',
+      requiresAuth: true
+
+    },
+    path: '/attribute_crud',
+    name: 'attribute_crud',
+    component: AttributeCRUD
   }
 ]
 

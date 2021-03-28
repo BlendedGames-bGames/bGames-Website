@@ -4,19 +4,12 @@
         <nav-bar />
         <aside-menu :menu="menu" />
              <div class="main-body">
-
                 <router-view />
-                                        <footer-bar />
-
+                <footer-bar />
             </div>
-
-
-
     </div>
     <div v-else>
-
         <router-view />
-
     </div>
   </div>
 </template>
@@ -37,96 +30,16 @@ export default {
   },
   data () {
     return {
-      isLoading: false,
-      menu:[
-         'Dashboard',
-        [
-          {
-            to: '/statistics',
-            icon: 'desktop-mac',
-            label: 'Estadisticas generales'
-          },
-           {
-            to: '/time_statistics',
-            icon: 'desktop-mac',
-            label: 'Estadisticas en el tiempo'
-          }
-        ],
-        'Contribuciones',
-        [         
-          {
-            to: '/dimensions_sensors',
-            icon: 'desktop-mac',
-            label: 'Dimensiones'
-          },
-           {
-            to: '/sensors_dimensions',
-            icon: 'desktop-mac',
-            label: 'Sensores y Puntos de datos'
-          }
-        ],
-        'Administracion',
-        [
-          {
-            to: '/data_points',
-            label: 'Puntos de datos',
-            icon: 'table',
-          },
-          {
-            to: '/sensor_asociation',
-            label: 'Asociacion a sensores',
-            icon: 'square-edit-outline'
-          }
-        ]
-      ]
-      /*menu:[
-        'Estadisticas',
-        [
-          {
-            to: '/dashboard',
-            icon: 'desktop-mac',
-            label: 'Dimensiones'
-          },
-          {
-            to: '/dashboard',
-            icon: 'desktop-mac',
-            label: 'Sensores'
-          }
-        ],
-        'Configuracion',
-        [
-          {
-            to: '/tables',
-            label: 'Administracion sensores',
-            icon: 'table',
-          },
-          {
-            to: '/forms',
-            label: 'Asociacion de sensores',
-            icon: 'square-edit-outline'
-          }
-        ],
-        'About',
-        [
-          {
-            href: 'https://admin-one.justboil.me',
-            label: 'Premium Demo',
-            icon: 'credit-card'
-          },
-          {
-            href: 'https://justboil.me/bulma-admin-template/one',
-            label: 'About',
-            icon: 'help-circle'
-          }
-        ]
-      ]*/
+      isLoading: false
+     
     }
   },
   
   computed: {
       ...mapGetters('user', {
           loggedIn: 'loggedIn',
-          dataReady: 'dataReady'
+          dataReady: 'dataReady',
+          menu:'menu'
     })
   }
 }

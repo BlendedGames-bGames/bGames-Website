@@ -50,6 +50,12 @@
        
           
         </div>
+        <div v-if="simpleButton" class="">
+              <b-button  type="is-link" @click="simpleButtonClicked"
+                >
+                        {{simpleButtonLabel}}
+                </b-button>
+        </div>
          
 
       </div>
@@ -96,6 +102,14 @@ export default {
     selectOptions: {
       type: Array,
       default: () => []
+    },
+    simpleButton: {
+      type: Boolean,
+      default: false
+    },
+    simpleButtonLabel: {
+      type: String,
+      default: ''
     }
   },
    data () {
@@ -131,6 +145,11 @@ export default {
     queryClicked (){
       console.log('asdasasddas2')
       this.$emit('query-option-click', [this.from, this.to] )
+
+    },
+    simpleButtonClicked (){
+      console.log('asdasasddas3')
+      this.$emit('handle-simple-click' )
 
     }
   }
