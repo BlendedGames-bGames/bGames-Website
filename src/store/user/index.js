@@ -389,6 +389,7 @@ const actions = {
   async settingSensorsAndEndpoints({ dispatch, commit, state, rootState  }, email){
     const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+email
     const userData = await Axios.get(MEDIUM_GET_URL);
+    console.log(userData.data)
     if(JSON.parse(userData.data).type === 1){
       //Si tiene permisos de administrador
       await dispatch('setIdPlayer', JSON.parse(userData.data).id_players)
@@ -512,28 +513,34 @@ const actions = {
       console.log(error);
     }
   },
-  async register({ commit, state, dispatch }, profile) {
+  async register({ commit, state, dispatch }, profile_info) {
     try {
-        const user = await firebase.auth().createUserWithEmailAndPassword(profile.email,profile.password)
+        const user = await firebase.auth().createUserWithEmailAndPassword(profile_info.email,profile_info.password)
         console.log(user)
 
          if(user.additionalUserInfo.isNewUser){
           //Name of the user (before the @)
+          console.log(user.user)
+
           const searchTerm = '@'
           const searchIndex = user.user.email.lastIndexOf(searchTerm)
           const name = user.user.email.slice(0,searchIndex)
+          console.log(user.user.email)
+
           let profile = {
             "name": name,
             "email": user.user.email,
-            "password": user.additionalUserInfo.providerId,
+            "password": profile_info.password,
             "external_type": 'firebase.com',
             "external_id":user.user.uid
           }
+          console.log(profile)
+
           try {
             const MEDIUM_POST_URL = state.userURL+'/player'
             commit('TOGGLE_LOADING_LOGIN_DATA')
             const user = await Axios.post(MEDIUM_POST_URL, profile);
-            dispatch('settingData',user.user.email)
+            
           } catch (error) {
             console.log(error)
           }
