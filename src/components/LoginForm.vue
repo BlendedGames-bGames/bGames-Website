@@ -1,6 +1,6 @@
 <template>
     <card-component title="" icon="" class="column is-two-thirds is-offset-2" >
-            <form @submit.prevent="submit">
+            <form>
                     <b-field   horizontal
                             label="Email" style="margin-bottom: 2em"
                     >
@@ -29,7 +29,7 @@
                     </b-field>
                     <hr />
                     <div class="control is-flex is-flex-direction-row is-justify-content-center">
-                        <b-button size="is-medium" native-type="submit" type="is-link" @click="login('EmailAndPass')">
+                        <b-button size="is-medium"  type="is-link" @click="login('EmailAndPass')">
                           Login
                         </b-button>
                     </div>
@@ -86,7 +86,8 @@ export default {
   computed:{
     ...mapGetters('user',{
       loggedIn: 'loggedIn',
-      typeLogin: 'typeLogin'
+      typeLogin: 'typeLogin',
+      incorrectPassword:'incorrectPassword'
     })
   },
   methods: {
@@ -96,21 +97,11 @@ export default {
     ]),
     ...mapActions('user', {
         loginProvider: 'loginProvider',
-        loginEmailAndPassword: 'loginEmailAndPassword'
+        loginEmailAndPassword: 'loginEmailAndPassword',
+        incorrectPasswordToggle:'incorrectPasswordToggle'
     }),
-
-    submit () {
-      this.isLoading = true
-      setTimeout(() => {
-        this.isLoading = false
-        this.$buefy.snackbar.open(
-          {
-            message: 'Updated',
-            queue: false
-          },
-          500
-        )
-      })
+    formReset(){
+      this.form.password = ''
     },
     registerToggle () {
       this.loginToggle()
@@ -120,7 +111,23 @@ export default {
           this.loginProvider({provider:provider})
       }
       else{
-          this.loginEmailAndPassword({email:this.form.email, password: this.form.password})
+          await this.loginEmailAndPassword({email:this.form.email, password: this.form.password})
+          setTimeout(() => {
+            var message;
+            console.log(this.incorrectPassword)
+            if(this.incorrectPassword){
+              message = 'Contraseña incorrecta, intente nuevamente'
+              this.incorrectPasswordToggle()
+            }
+            this.$buefy.snackbar.open(
+              {
+                message: message,
+                queue: false
+              },
+              500
+            )
+            this.formReset()
+          })
       }
       
       console.log(this.loggedIn)

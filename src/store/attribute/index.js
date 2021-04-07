@@ -53,6 +53,7 @@ const actions = {
       console.log('Se supone que deberia haber un id aca: ')
       console.log(rootState.user.id_player)
       console.log('Se supone que deberia haber un array de ids de dimensiones: ')
+      await dispatch('setDimensionsAndSubattributes');
       console.log(state.id_dimensions)
       let atts = {
         "id_attributes": state.id_dimensions

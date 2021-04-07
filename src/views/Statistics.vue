@@ -410,7 +410,7 @@ export default {
           }
         },
         title: {
-            text: `Composicion de la dimension ${selectedOption} en subatributos`,
+            text: `Composicion de la dimension ${selectedOption} en atributos`,
             align: 'center',
             floating: true
         },

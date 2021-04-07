@@ -8,6 +8,8 @@ const state = {
   userProfile: {},
   loggedIn: false,
   userCreatedAlready:false,
+  incorrectPassword:false,
+
   userURL: baseURL+ userPort,
   getURL: baseURL+ getPort,
   sensorCommunicationURL: baseURL + sensorCommunicationPort,
@@ -73,6 +75,8 @@ const getters = {
 
   loggedIn: ({loggedIn}) => loggedIn,
   userCreatedAlready: ({userCreatedAlready}) => userCreatedAlready,
+  incorrectPassword: ({incorrectPassword}) => incorrectPassword,
+
   id_player: ({id_player}) => id_player,
   userLevels: ({userLevels}) => userLevels,
   userDimensionLevels: ({userDimensionLevels}) => userDimensionLevels,
@@ -193,6 +197,7 @@ const mutations = {
   RESET_VARIABLES(state){
   
     state.userCreatedAlready = false 
+    state.incorrectPassword = false
     state.id_player = 0
     state.userLevels.splice(0)
     state.userDimensionLevels.splice(0)
@@ -281,6 +286,9 @@ const mutations = {
   USER_CREATED_ALREADY_TOGGLE(state) {
     state.userCreatedAlready = !state.userCreatedAlready;
   },
+  USER_INCORRECT_PASSWORD(state) {
+    state.incorrectPassword = !state.incorrectPassword;
+  },
   SET_RT_USER_LEVELS(state,payload){
     payload.id_attributes.forEach( (id_attribute,index) => {
       state.userLevels.forEach((level,index2) => {
@@ -310,7 +318,16 @@ const mutations = {
     console.log(state.userLevels)
   },
   SET_USER_LEVELS(state,levels) {
-    levels.forEach(level => {
+    console.log(levels)
+    let auxLevels;
+    if(levels.length === 0){
+      auxLevels = levels
+    }
+    else{
+      auxLevels = levels 
+    }
+    console.log()
+    auxLevels.forEach(level => {
       state.userLevels.push(level)
       state.userDimensionLevels.push(level.data)
     });  
@@ -391,15 +408,16 @@ const actions = {
     const userData = await Axios.get(MEDIUM_GET_URL);
     console.log(userData.data)
     if(JSON.parse(userData.data).type === 1){
-      //Si tiene permisos de administrador
-      await dispatch('setIdPlayer', JSON.parse(userData.data).id_players)
-      //setSensorsAndTemplatesAndEndpoints
-      await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
-      rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
-        console.log(sensor)
-      });
+      
       commit('TOGGLE_ADMIN_PERMISSION')
     }
+    //Si tiene permisos de administrador
+    await dispatch('setIdPlayer', JSON.parse(userData.data).id_players)
+    //setSensorsAndTemplatesAndEndpoints
+    await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
+    rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
+      console.log(sensor)
+    });
   },
   async settingSubattributesLevels({ dispatch, commit, state }){
     for (const level of state.userLevels) {      
@@ -469,8 +487,8 @@ const actions = {
           const PLAYER_GET_URL = state.userURL+'/player_by_email/'+profile.email
           const player = await Axios.get(PLAYER_GET_URL)
           console.log('El nuevo jugador es: ')
-          console.log(player)
-          const id_player = player.data.id_players
+          console.log(JSON.parse(player.data))
+          const id_player = JSON.parse(player.data).id_players
           console.log(id_player)
 
           commit('SET_ID_PLAYER', id_player)
@@ -496,7 +514,8 @@ const actions = {
         dispatch('settingData',{email:profile.email})
 
     } catch (error) {
-            console.log(error)
+        console.log(error)
+        commit('USER_INCORRECT_PASSWORD')
     }
   },
 
@@ -515,11 +534,19 @@ const actions = {
   },
   async register({ commit, state, dispatch }, profile_info) {
     try {
+      commit('TOGGLE_LOADING_LOGIN_DATA')
+
         const user = await firebase.auth().createUserWithEmailAndPassword(profile_info.email,profile_info.password)
-        console.log(user)
+        console.log("pase por aquii antes de cargar spinner")
+        console.log("Estado del spinner")
+        console.log(state.loadingLoginData)
+
+        console.log("Estado del spinner despues del commit")
+        console.log(state.loadingLoginData)
 
          if(user.additionalUserInfo.isNewUser){
           //Name of the user (before the @)
+
           console.log(user.user)
 
           const searchTerm = '@'
@@ -538,26 +565,48 @@ const actions = {
 
           try {
             const MEDIUM_POST_URL = state.userURL+'/player'
-            commit('TOGGLE_LOADING_LOGIN_DATA')
             const user = await Axios.post(MEDIUM_POST_URL, profile);
+            console.log("Estado del spinner despues de crear las relaciones del usuario nuevo a las dimensiones")
+            console.log(state.loadingLoginData)
+            commit('TOGGLE_LOADING_LOGIN_DATA')
+            console.log("Estado del spinner ULTIMO")
+            console.log(state.loadingLoginData)
+            const PLAYER_GET_URL = state.userURL+'/player_by_email/'+profile.email
+            const player = await Axios.get(PLAYER_GET_URL)
+            console.log('El nuevo jugador es: ')
+            console.log(JSON.parse(player.data))
+            const id_player = JSON.parse(player.data).id_players
+            console.log(id_player)
+  
+            commit('SET_ID_PLAYER', id_player)
+            await dispatch('attribute/createPlayerLevelRelations',null,{root:true})
             
           } catch (error) {
             console.log(error)
           }
         }
         else{
-           router.replace({name:'login'})
+          dispatch('userCreatedAlreadyToggle')
+          commit('TOGGLE_LOADING_LOGIN_DATA')
+
         }
+
         
     } catch (error) {
         console.log(error)
         dispatch('userCreatedAlreadyToggle')
+        commit('TOGGLE_LOADING_LOGIN_DATA')
+
     }
   },
   userCreatedAlreadyToggle({ commit, state }, payload) {
     commit('USER_CREATED_ALREADY_TOGGLE')
 
-   }
+  },
+  incorrectPasswordToggle({ commit, state }, payload) {
+       commit('USER_INCORRECT_PASSWORD')
+
+  }
 
 };
 

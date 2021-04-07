@@ -64,7 +64,6 @@ export default {
   },
   data () {
     return {
-      isLoading: false,
       form: {
         email: null,
         password: null
@@ -82,9 +81,7 @@ export default {
 
     async registerButton () {
       await this.register({email:this.form.email, password: this.form.password})
-      this.isLoading = true
       setTimeout(() => {
-        this.isLoading = false
         var message;
         console.log(this.userCreatedAlready)
         if(!this.userCreatedAlready){
@@ -99,7 +96,7 @@ export default {
             message: message,
             queue: false
           },
-          300
+          500
         )
         this.formReset()
       })
@@ -110,6 +107,8 @@ export default {
     formReset(){
       this.form.email = ''
       this.form.password = ''
+              this.isLoading = false
+
     }
     
      
