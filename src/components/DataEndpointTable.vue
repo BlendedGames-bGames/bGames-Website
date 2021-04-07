@@ -26,13 +26,13 @@
               <b-table-column label="Dimension" field="name_dimension" sortable v-slot="props">
                 {{ props.row.name_dimension }}
               </b-table-column>
-              <b-table-column label="Subatributo" field="name_subattributes" sortable v-slot="props">
+              <b-table-column label="Atributo" field="name_subattributes" sortable v-slot="props">
                 {{ props.row.name_subattributes }}
               </b-table-column>
-              <b-table-column label="Dato" field="data" sortable v-slot="props">
+              <b-table-column label="Puntaje" field="data" sortable v-slot="props">
                 {{ props.row.data }}
               </b-table-column>
-              <b-table-column label="Obtenido fecha" centered v-slot="props">
+              <b-table-column label="Fecha de obtencion" centered v-slot="props">
                 <span class="tag is-success">
                             {{ new Date(props.row.created_time).toLocaleString() }}
                 </span>
@@ -83,10 +83,10 @@
                 <b-table-column label="Dimension" field="name_dimension" sortable v-slot="props">
                   {{ props.row.name_dimension }}
                 </b-table-column>
-                <b-table-column label="Dato" field="data" sortable v-slot="props">
+                <b-table-column label="Puntaje" field="data" sortable v-slot="props">
                   {{ props.row.data }}
                 </b-table-column>
-                <b-table-column label="Fecha de gasto" centered v-slot="props">
+                <b-table-column label="Fecha de consumo" centered v-slot="props">
                   <span class="tag is-success">
                               {{ new Date(props.row.created_time).toLocaleString() }}
                   </span>

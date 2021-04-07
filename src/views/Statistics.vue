@@ -19,7 +19,7 @@
           </div>
           <div  class="chart-area  column is-6">
              <card-component
-              title="Sub-atributos"
+              title="Atributos"
               icon="finance"
               select
               placeholder="Selecciona una dimension"
@@ -34,7 +34,7 @@
 
       </div>
        <b-tabs type="is-boxed" v-model="activeTab">
-            <b-tab-item label="Registro de subatributos adquiridos">
+            <b-tab-item label="Registro de atributos adquiridos">
                 <card-component
                       class="has-table has-mobile-sort-spaced"
                       icon="account-multiple"
@@ -47,7 +47,7 @@
                 </card-component>
           </b-tab-item>
 
-            <b-tab-item label="Registro de atributos gastados">
+            <b-tab-item label="Registro de dimensiones gastadas">
                 <card-component
                 class="has-table has-mobile-sort-spaced"
                 icon="account-multiple"

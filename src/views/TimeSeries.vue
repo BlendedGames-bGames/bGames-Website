@@ -18,7 +18,7 @@
 
 
         <card-component
-        title="Evolucion de sub-atributos en el tiempo "
+        title="Evolucion de dimensiones en el tiempo "
         icon="finance"
         select
         placeholder="Selecciona una dimension"

@@ -306,7 +306,7 @@ export default {
       const MEDIUM_GET_URL = this.getURL+'/attributes/'+this.id_player.toString()+'/online_sensor/'+id_online_sensor.toString()
       const sensor_contribution = await Axios.get(MEDIUM_GET_URL);
       console.log(sensor_contribution)
-      this.chartTitle = `Contribucion del sensor ${option} a las dimensiones y subatributos asociados `
+      this.chartTitle = `Contribucion del sensor ${option} a las dimensiones y atributos asociados `
       this.renderZoomableCircles(sensor_contribution.data)
       //this.jsonData=sensor_contribution.data
      
@@ -324,7 +324,7 @@ export default {
       const MEDIUM_GET_URL = this.getURL+'/subattributes/'+this.id_player.toString()+'/online_sensor/'+this.chosen_sensor_option.toString()+'/sensor_endpoint/'+this.chosen_endpoint_option.toString()
       const sensor_contribution = await Axios.get(MEDIUM_GET_URL);
       console.log(sensor_contribution)
-      this.chartTitle = `Contribucion del punto de datos ${this.chosen_endpoint_name} del sensor ${option} a los subatributos `
+      this.chartTitle = `Contribucion del punto de datos ${this.chosen_endpoint_name} del sensor ${option} a los atributos `
       this.renderZoomableCircles(sensor_contribution.data)
       //this.jsonData=sensor_contribution.data
       //this.circleChartShow = true

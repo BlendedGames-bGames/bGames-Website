@@ -22,10 +22,10 @@
                                         @selected-option-click="treemapQueryDimensionAndSubatt"
                       >
                           <b-field  vertical
-                                    label="Subatributo" style="margin-bottom: 1em">
+                                    label="Atributo" style="margin-bottom: 1em">
                             <b-select
                                 v-model="selectedOption"
-                                placeholder="Selecciona un subatributo"
+                                placeholder="Selecciona un atributo"
                                 @input="selectedOptionClick"
                                 required
                               >
@@ -243,7 +243,7 @@ export default {
               type: 'treemap'
             },
             title: {
-              text: `Contribucion de los sensores y puntos de datos asociados al subatributo ${this.selectedOption}`,
+              text: `Contribucion de los sensores y puntos de datos asociados al atributo ${this.selectedOption}`,
               align: 'center'
             }
           }
