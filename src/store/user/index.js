@@ -530,22 +530,9 @@ const actions = {
           "external_type": user.additionalUserInfo.providerId,
           "external_id":user.user.uid
         }
-        try {
-          const MEDIUM_POST_URL = state.userURL+'/player'
-          await Axios.post(MEDIUM_POST_URL, profile);
-          const PLAYER_GET_URL = state.userURL+'/player_by_email/'+profile.email
-          const player = await Axios.get(PLAYER_GET_URL)
-          console.log('El nuevo jugador es: ')
-          console.log(JSON.parse(player.data))
-          const id_player = JSON.parse(player.data).id_players
-          console.log(id_player)
+        await dispatch('settingNewUserData', profile)
 
-          commit('SET_ID_PLAYER', id_player)
-          await dispatch('attribute/createPlayerLevelRelations',null,{root:true})
-
-        } catch (error) {
-          console.log(error)
-        }
+        
       }
       
       dispatch('settingData',{email:user.additionalUserInfo.profile.email})
@@ -581,6 +568,37 @@ const actions = {
       console.log(error);
     }
   },
+  async settingNewUserData({ commit, state, dispatch }, profile_info){
+
+    try {
+      const MEDIUM_POST_URL = state.userURL+'/player'
+      await Axios.post(MEDIUM_POST_URL, profile_info);
+      console.log("Estado del spinner despues de crear las relaciones del usuario nuevo a las dimensiones")
+      console.log(state.loadingLoginData)
+      commit('TOGGLE_LOADING_LOGIN_DATA')
+      console.log("Estado del spinner ULTIMO")
+      console.log(state.loadingLoginData)
+      try {
+        const PLAYER_GET_URL = state.userURL+'/player_by_email/'+profile_info.email
+        const player = await Axios.get(PLAYER_GET_URL)
+        console.log('El nuevo jugador es: ')
+        console.log(JSON.parse(player.data))
+        const id_player = JSON.parse(player.data).id_players
+        console.log(id_player)
+          
+        commit('SET_ID_PLAYER', id_player)
+        await dispatch('attribute/createPlayerLevelRelations',null,{root:true})
+        await dispatch('sensor/createPlayerDefaultSensors',null,{root:true})
+      } catch (error) {
+        console.log(error)
+      }
+    
+
+
+    } catch (error) {
+      console.log(error)
+    }
+  },
   async register({ commit, state, dispatch }, profile_info) {
     try {
       commit('TOGGLE_LOADING_LOGIN_DATA')
@@ -611,29 +629,8 @@ const actions = {
             "external_id":user.user.uid
           }
           console.log(profile)
+          dispatch('settingNewUserData', profile)
 
-          try {
-            const MEDIUM_POST_URL = state.userURL+'/player'
-            const user = await Axios.post(MEDIUM_POST_URL, profile);
-            console.log("Estado del spinner despues de crear las relaciones del usuario nuevo a las dimensiones")
-            console.log(state.loadingLoginData)
-            commit('TOGGLE_LOADING_LOGIN_DATA')
-            console.log("Estado del spinner ULTIMO")
-            console.log(state.loadingLoginData)
-            const PLAYER_GET_URL = state.userURL+'/player_by_email/'+profile.email
-            const player = await Axios.get(PLAYER_GET_URL)
-            console.log('El nuevo jugador es: ')
-            console.log(JSON.parse(player.data))
-            const id_player = JSON.parse(player.data).id_players
-            console.log(id_player)
-  
-            commit('SET_ID_PLAYER', id_player)
-            await dispatch('attribute/createPlayerLevelRelations',null,{root:true})
-            await dispatch('sensor/createPlayerDefaultSensors',null,{root:true})
-
-          } catch (error) {
-            console.log(error)
-          }
         }
         else{
           dispatch('userCreatedAlreadyToggle')
