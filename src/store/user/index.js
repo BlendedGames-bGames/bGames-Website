@@ -643,7 +643,7 @@ const actions = {
           'email':profile_info.email,
           'password':profile_info.password
         }
-        const MEDIUM_POST_URL = state.userURL+'/sendEmailConfirmation'
+        const MEDIUM_POST_URL = state.sensorCommunicationURL+'/sendEmailConfirmation'
         await Axios.post(MEDIUM_POST_URL, profile);
         console.log('Se envio un mail a '+profile_info.email+' para que se confirme el mail')
         commit('TOGGLE_LOADING_LOGIN_DATA')
