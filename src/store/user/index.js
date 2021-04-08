@@ -22,6 +22,7 @@ const state = {
   adminPermission: false,
   notAnAdmin:false,
   typeLogin: false,
+  subattAuxLevels: null,
   menu:  [
     'Dashboard',
     [
@@ -84,7 +85,9 @@ const getters = {
 
 
   adminPermission: ({adminPermission}) => adminPermission,
-  notAnAdmin: ({notAnAdmin}) => notAnAdmin
+  notAnAdmin: ({notAnAdmin}) => notAnAdmin,
+  
+  subattAuxLevels: ({subattAuxLevels}) => subattAuxLevels,
 
 };
 
@@ -207,10 +210,11 @@ const mutations = {
     state.dimensionSocket = null
     state.authenticationSocket = null
     state.loadingLoginData = false
+    state.subattAuxLevels = null
     
-    state.adminPermission = false,
-    state.notAnAdmin = false,
-    state.typeLogin = false,
+    state.adminPermission = false
+    state.notAnAdmin = false
+    state.typeLogin = false
     state.menu = [
       'Dashboard',
       [
@@ -424,17 +428,62 @@ const actions = {
       await dispatch('settingSingleSubattributeLevel', {id:level.id_attributes} )      
     }
   }, 
-  async settingSingleSubattributeLevel({ commit, state }, payload){
+  async settingSingleSubattributeLevel({ commit, state, dispatch }, payload){
 
     try {
       const MEDIUM_GET_URL = state.getURL+'/id_player/'+state.id_player.toString()+/attributes/+payload.id.toString()+'/subattributes_levels/'
       const reply = await Axios.get(MEDIUM_GET_URL);
       console.log(payload.id)
-      commit('SET_SUBATTRIBUTES_LEVELS', {subattributes: reply.data, id:payload.id})
+      console.log(reply.data)
+      let subattAux;
+      if(reply.data.length === 0){
+        dispatch('settingEmptySubattLevels', {id_dimension:payload.id})
+        subattAux = state.subattAuxLevels
+      }
+      else{
+        subattAux = reply.data 
+      }
+      console.log(subattAux)
+      commit('SET_SUBATTRIBUTES_LEVELS', {subattributes: subattAux, id:payload.id})
     } catch (error) {
         console.log(error)
     }
   }, 
+  settingEmptySubattLevels({ dispatch, commit, state, rootState }, payload){
+
+    let id_dimensions = rootState.attribute.id_dimensions
+    let name_dimensions = rootState.attribute.name_dimensions
+    let dimensionsAndSubattributes = rootState.attribute.dimensionsAndSubattributes
+    let subattLvlsAux = {}
+
+    let subattLvlsArray = []
+
+
+    console.log(id_dimensions)
+    for(let j = 0; j<id_dimensions.length; j++){
+      if(id_dimensions[j] === payload.id_dimension){
+        console.log(name_dimensions[j])
+        console.log(dimensionsAndSubattributes[j].subattributes)
+        for(let i = 0; i<dimensionsAndSubattributes[j].subattributes.length; i++){
+
+          subattLvlsAux['id_attributes'] = payload.id_dimension
+          subattLvlsAux['name_dimension'] = name_dimensions[j]
+          subattLvlsAux['id_subattributes'] = dimensionsAndSubattributes[j].subattributes[i].id_subattributes
+          subattLvlsAux['name_subattributes'] = dimensionsAndSubattributes[j].subattributes[i].name
+          subattLvlsAux['total'] = 0
+          console.log(subattLvlsAux)
+          subattLvlsArray.push(subattLvlsAux)
+
+          subattLvlsAux = {}
+          
+        }
+        //break;
+      }
+    }
+    state.subattAuxLevels = subattLvlsArray
+
+
+  },
   async settingDimensionsLevelsAndSubattributes({ dispatch, commit, state }){
       const MEDIUM_GET_URL = state.getURL+'/player_all_attributes/'+state.id_player.toString()
       const userData = await Axios.get(MEDIUM_GET_URL);

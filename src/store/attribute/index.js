@@ -5,7 +5,6 @@ const state = {
   dimensionsAndSubattributes: [],
   id_dimensions: [],
   name_dimensions: [],
-
   getURL: baseURL+ getPort,
   postURL: baseURL+ postPort
 
@@ -15,7 +14,6 @@ const getters = {
     dimensionsAndSubattributes: ({dimensionsAndSubattributes}) => dimensionsAndSubattributes,
     id_dimensions: ({id_dimensions}) => id_dimensions,
     name_dimensions: ({name_dimensions}) => name_dimensions
-
 
 };
 
@@ -41,6 +39,7 @@ const mutations = {
             index_dimn = index
         }
     });
+
     Vue.set(state.dimensionsAndSubattributes[index_dimn], 'subattributes',payload.subattributes)
   }
 };
