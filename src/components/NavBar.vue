@@ -53,7 +53,7 @@
     </div>
   </nav>
 
-    <b-modal  v-model="keyModal"  :on-cancel="restTime" :width="600" scroll="keep">
+    <b-modal  v-model="keyModal"  :on-cancel="restTime" :width="450" scroll="keep">
         <form action="">
                   <div class="modal-card" style="width: auto">
                       <header class="modal-card-head">
@@ -63,13 +63,16 @@
                               class="delete"
                               @click="restTime"/>
                       </header>
-                      <section class="modal-card-body">
-                          <b-field label="Llave">
+                      <section class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center modal-card-body">
+                        
+                          <b-field label="Llave" >
                               <b-input
                                   :value="key"
                                   v-model="key"
                                   required>
                               </b-input>
+                                 <b-button v-clipboard="() => key" type="is-info" v-clipboard:success="clipboardNotification"
+                                   icon-right="clipboard-list" />
                           </b-field>
                            <b-loading :is-full-page="false" v-model="isLoading" :can-cancel="false"></b-loading>
                            <div v-if="generatedKey" style="text-align:center">
@@ -252,6 +255,9 @@ export default {
               this.$buefy.toast.open('Hubo un error en la confirmacion de si esta ya autenticado en la aplicacion de escritorio, intente nuevamente')
         }
 
+    },
+    clipboardNotification(){
+        this.$buefy.toast.open('Texto copiado exitosamente')
     },
     async toggleKey(){
       console.log(this.keyModal)

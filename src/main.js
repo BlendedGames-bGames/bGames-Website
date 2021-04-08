@@ -5,7 +5,9 @@ import '@/scss/main.scss'
 import Vue from 'vue'
 import Buefy from 'buefy'
 import axios from 'axios'
+import Clipboard from 'v-clipboard'
 
+Vue.use(Clipboard)
 /*Firebase */
 import './auth'
 
