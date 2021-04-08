@@ -629,7 +629,8 @@ const actions = {
   
             commit('SET_ID_PLAYER', id_player)
             await dispatch('attribute/createPlayerLevelRelations',null,{root:true})
-            
+            await dispatch('sensor/createPlayerDefaultSensors',null,{root:true})
+
           } catch (error) {
             console.log(error)
           }

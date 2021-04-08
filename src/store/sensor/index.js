@@ -335,6 +335,81 @@ const actions = {
 
   },
   
+  async createPlayerDefaultSensors({ dispatch, commit, state,rootState }, profile) {
+    console.log('Se supone que deberia haber un id aca: ')
+    let id_player =rootState.user.id_player
+    let MEDIUM_POST_URL = state.sensorURL+'/sensor_relation/'+id_player+'/'
+    let ENDPOINTS_GET_URL = state.sensorURL+'/online_sensor/'
+    //:id_online_sensor/all_sensor_endpoints
+    let endpoint_data;
+    let UNIQUE_POST_URL = state.sensorURL+'/sensor_endpoint_batch/'+id_player
+    let id_default_sensors = []
+    let ids_sensor_endpoint = []
+    let specific_parameter_parameters_array = []
+    let reply
+    console.log('sensor')
+    console.log(state.sensorTemplates)
+    let allSensorTemplatesAux
+    try {
+      const MEDIUM_GET_URL = state.sensorURL+'/sensors_all'
+      reply = await Axios.get(MEDIUM_GET_URL);
+      console.log(reply.data)
+      allSensorTemplatesAux = reply.data
+    } catch (error) {
+      
+    }
+
+    try {
+      ///sensor_relation/:id_player/:id_online_sensor
+      console.log('voy a colocar los sensor templates')
+
+      console.log(allSensorTemplatesAux)
+
+      for (const sensor of allSensorTemplatesAux) {              
+        
+        if(sensor.base_url === null){
+          console.log(sensor)
+
+          MEDIUM_POST_URL+=sensor.id_online_sensor.toString()
+          id_default_sensors.push(sensor.id_online_sensor.toString())
+          await Axios.post(MEDIUM_POST_URL,{tokens:null});          
+          MEDIUM_POST_URL = state.sensorURL+'/sensor_relation/'+id_player+'/'  
+        }
+      }
+      try {
+        ///sensor_relation/:id_player/:id_online_sensor
+          console.log('estos son los id sensors')
+          console.log(id_default_sensors)
+          for (const id of id_default_sensors) {              
+            ENDPOINTS_GET_URL+=id+'/all_sensor_endpoints'
+            endpoint_data = await Axios.get(ENDPOINTS_GET_URL);   
+            for (const sensor_endpoint of endpoint_data.data) {
+              ids_sensor_endpoint.push(sensor_endpoint.id_sensor_endpoint)
+              specific_parameter_parameters_array.push(null)
+
+            }
+          
+            reply = await Axios.post(UNIQUE_POST_URL,{ids_sensor_endpoint:ids_sensor_endpoint,specific_parameter_parameters_array:specific_parameter_parameters_array });   
+            console.log(reply)
+            ids_sensor_endpoint.splice(0)
+            specific_parameter_parameters_array.splice(0)
+            ENDPOINTS_GET_URL = state.sensorURL+'/online_sensor/'
+
+          }
+      }catch(e){
+        console.log(e)
+      }
+
+    }catch(e){
+      console.log(e)
+    }
+
+    for (const sensor of state.sensorsAndEndpoints) {      
+      await dispatch('setSingleEndpoints', {id:sensor.id_online_sensor})      
+    }
+    
+  },
+  
 
   async setEndpoints({ dispatch, commit, state }, profile) {
     for (const sensor of state.sensorsAndEndpoints) {      
