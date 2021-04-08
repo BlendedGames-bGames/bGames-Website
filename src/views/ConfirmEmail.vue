@@ -11,7 +11,7 @@
 import CardComponent from '@/components/CardComponent'
 import HeroBar from '@/components/HeroBar'
 import LoginAndSignUpForm from '../components/LoginAndSignUpForm.vue'
-import { mapGetters,mapMutations } from 'vuex'
+import { mapGetters,mapActions } from 'vuex'
 
 export default {
   name: 'Login',
