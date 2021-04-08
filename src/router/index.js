@@ -12,6 +12,7 @@ import SensorAsociation from '../views/SensorAsociation.vue'
 import TimeSeries from '../views/TimeSeries.vue'
 import PrivacyPolicy from '../views/PrivacyPolicy.vue'
 import DeleteUserDataTemplate from '../views/DeleteUserDataTemplate.vue'
+import ConfirmEmail from '../views/ConfirmEmail.vue'
 
 
 import SensorCRUD from '../views_developers/SensorCRUD.vue'
@@ -20,6 +21,8 @@ import ConversionCRUD from '../views_developers/ConversionCRUD.vue'
 
 import DimensionCRUD from '../views_developers/DimensionCRUD.vue'
 import AttributeCRUD from '../views_developers/AttributeCRUD.vue'
+
+
 
 import firebase from 'firebase/app'
 import store from '../store/index'
@@ -43,6 +46,19 @@ const routes = [
       }
 
     }
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'confirmEmail',
+      requiresAuth: false
+
+    },
+    path: '/confirmEmail/:email/:password',
+    props:true,
+    name: 'confirmEmail',
+    component: ConfirmEmail
   },
 
   {

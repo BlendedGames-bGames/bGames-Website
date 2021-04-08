@@ -599,19 +599,64 @@ const actions = {
       console.log(error)
     }
   },
-  async register({ commit, state, dispatch }, profile_info) {
-    try {
+  async createEmailPassUser({ commit, state, dispatch }, profile_info){
+    const user = await firebase.auth().createUserWithEmailAndPassword(profile_info.email,profile_info.password)
+
+    console.log("pase por aquii antes de cargar spinner")
+    console.log("Estado del spinner")
+    console.log(state.loadingLoginData)
+
+    console.log("Estado del spinner despues del commit")
+    console.log(state.loadingLoginData)
+
+    if(user.additionalUserInfo.isNewUser){
+      //Name of the user (before the @)
+
+      console.log(user.user)
+
+      const searchTerm = '@'
+      const searchIndex = user.user.email.lastIndexOf(searchTerm)
+      const name = user.user.email.slice(0,searchIndex)
+      console.log(user.user.email)
+
+      let profile = {
+        "name": name,
+        "email": user.user.email,
+        "password": profile_info.password,
+        "external_type": 'firebase.com',
+        "external_id":user.user.uid
+      }
+      console.log(profile)
+      dispatch('settingNewUserData', profile)
+
+    }
+    else{
+      dispatch('userCreatedAlreadyToggle')
       commit('TOGGLE_LOADING_LOGIN_DATA')
 
-        const user = await firebase.auth().createUserWithEmailAndPassword(profile_info.email,profile_info.password)
+    }
+  },
+  async register({ commit, state, dispatch }, profile_info) {
+    try {
+        commit('TOGGLE_LOADING_LOGIN_DATA')
+        let profile = {
+          'email':profile_info.email,
+          'password':profile_info.password
+        }
+        const MEDIUM_POST_URL = state.userURL+'/sendEmailConfirmation'
+        await Axios.post(MEDIUM_POST_URL, profile);
+        console.log('Se envio un mail a '+profile_info.email+' para que se confirme el mail')
+        commit('TOGGLE_LOADING_LOGIN_DATA')
+
+        /*const user = await firebase.auth().createUserWithEmailAndPassword(profile_info.email,profile_info.password)
         console.log("pase por aquii antes de cargar spinner")
         console.log("Estado del spinner")
         console.log(state.loadingLoginData)
 
         console.log("Estado del spinner despues del commit")
         console.log(state.loadingLoginData)
-
-         if(user.additionalUserInfo.isNewUser){
+        
+        if(user.additionalUserInfo.isNewUser){
           //Name of the user (before the @)
 
           console.log(user.user)
@@ -637,14 +682,14 @@ const actions = {
           commit('TOGGLE_LOADING_LOGIN_DATA')
 
         }
-
+        */
         
     } catch (error) {
         console.log(error)
         dispatch('userCreatedAlreadyToggle')
         commit('TOGGLE_LOADING_LOGIN_DATA')
 
-    }
+    } 
   },
   userCreatedAlreadyToggle({ commit, state }, payload) {
     commit('USER_CREATED_ALREADY_TOGGLE')
