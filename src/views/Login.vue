@@ -74,6 +74,9 @@ export default {
   mounted(){
     window.localStorage.setItem('route','/login' )
     console.log(this.$route)
+    if(loadingLoginData){
+      this.TOGGLE_LOADING_LOGIN_DATA()
+    }
   },
   computed: {
     titleStack () {
@@ -91,7 +94,8 @@ export default {
     ...mapMutations('user',[
         'TOGGLE_NOT_AN_ADMIN', 
         'TOGGLE_MENU_ADMIN',
-        'TOGGLE_MENU_PLAYER'
+        'TOGGLE_MENU_PLAYER',
+        'TOGGLE_LOADING_LOGIN_DATA'
         
     ]),
     menuType(){
