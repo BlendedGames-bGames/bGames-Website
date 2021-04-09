@@ -85,7 +85,7 @@ export default {
         var message;
         console.log(this.userCreatedAlready)
         if(!this.userCreatedAlready){
-          message = 'Usuario creado exitosamente'
+          message = 'Se envio un mail a '+this.form.email+' para que se confirme el mail'
         }
         else{
           message = 'Un usuario con ese email ya existe, intente con otro email'

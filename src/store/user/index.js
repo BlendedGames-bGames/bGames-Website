@@ -637,17 +637,35 @@ const actions = {
     }
   },
   async register({ commit, state, dispatch }, profile_info) {
+    const MEDIUM_POST_URL = state.sensorCommunicationURL+'/sendEmailConfirmation'
     try {
         commit('TOGGLE_LOADING_LOGIN_DATA')
         let profile = {
           'email':profile_info.email,
           'password':profile_info.password
         }
-        const MEDIUM_POST_URL = state.sensorCommunicationURL+'/sendEmailConfirmation'
-        await Axios.post(MEDIUM_POST_URL, profile);
-        console.log('Se envio un mail a '+profile_info.email+' para que se confirme el mail')
-        commit('TOGGLE_LOADING_LOGIN_DATA')
+        firebase
+        .auth()
+        .fetchSignInMethodsForEmail(profile_info.email)
+        .then((result) => {
+          console.log('result', result);
 
+          if(result.length === 0){
+            //Usuario nuevo
+            
+            Axios.post(MEDIUM_POST_URL, profile);
+            console.log('Se envio un mail a '+profile_info.email+' para que se confirme el mail')
+            commit('TOGGLE_LOADING_LOGIN_DATA')
+          }
+          else{
+            dispatch('userCreatedAlreadyToggle')
+            commit('TOGGLE_LOADING_LOGIN_DATA')
+          }
+        });
+
+        /*
+       
+        */
         /*const user = await firebase.auth().createUserWithEmailAndPassword(profile_info.email,profile_info.password)
         console.log("pase por aquii antes de cargar spinner")
         console.log("Estado del spinner")
