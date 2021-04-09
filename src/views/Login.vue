@@ -74,9 +74,6 @@ export default {
   mounted(){
     window.localStorage.setItem('route','/login' )
     console.log(this.$route)
-    if(loadingLoginData){
-      this.TOGGLE_LOADING_LOGIN_DATA()
-    }
   },
   computed: {
     titleStack () {
