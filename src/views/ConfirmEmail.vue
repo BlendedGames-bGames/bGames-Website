@@ -31,6 +31,7 @@ import HeroBar from '@/components/HeroBar'
 import LoginAndSignUpForm from '../components/LoginAndSignUpForm.vue'
 import { mapGetters,mapActions } from 'vuex'
 import router from '../router/index';
+import firebase from '@/firebase';
 
 export default {
   name: 'Login',
