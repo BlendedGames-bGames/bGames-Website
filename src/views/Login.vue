@@ -73,6 +73,7 @@ export default {
   },
   mounted(){
     window.localStorage.setItem('route','/login' )
+    console.log(this.$route)
   },
   computed: {
     titleStack () {

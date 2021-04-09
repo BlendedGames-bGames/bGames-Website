@@ -31,7 +31,7 @@ export default {
   },
   async created(){
     this.isLoading = true
-    console.log($route.params)
+    console.log(this.$route.params)
     this.form.email = this.$route.params.email
     this.form.password = this.$route.params.password
     await this.callCreateEmailPassUser()
