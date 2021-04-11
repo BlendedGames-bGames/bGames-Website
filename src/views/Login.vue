@@ -77,6 +77,7 @@ export default {
     if(this.loadingLoginData){
       this.TOGGLE_LOADING_LOGIN_DATA()
     }
+    window.localStorage.clear()
   },
   computed: {
     titleStack () {
