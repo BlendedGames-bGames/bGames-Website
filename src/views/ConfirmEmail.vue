@@ -52,6 +52,9 @@ export default {
     }
   },
   async created(){
+    
+    this.SET_CURRENT_ROUTE('/confirmEmail/:email/:password')
+    window.localStorage.setItem('route','/confirmEmail/:email/:password' )
     this.isLoading = true
     this.confirmEmailBool = true
     console.log(this.$route.params)
@@ -73,6 +76,7 @@ export default {
         this.modalMessage = "El link ha expirado debido a que este usuario ya existe"
         setInterval(() => {
           this.confirmEmailBool = false
+          router.push({path:'/login'})
         }, 1000);
       }
     });
@@ -97,6 +101,7 @@ export default {
         this.modalMessage = "Usuario "+this.form.email+" ha sido confirmado!"
         setInterval(() => {
           this.confirmEmailBool = false
+          router.push({path:'/login'})
         }, 1000);
     }
   }
