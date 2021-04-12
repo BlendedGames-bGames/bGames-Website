@@ -62,6 +62,7 @@ const actions = {
       const reply = await Axios.post(MEDIUM_POST_URL,atts);
       console.log(reply)
 
+      commit('RESET_VARIABLES')
     } catch (error) {
         console.log(error)
     }

@@ -396,6 +396,7 @@ const actions = {
             ENDPOINTS_GET_URL = state.sensorURL+'/online_sensor/'
 
           }
+          commit('RESET_VARIABLES')
       }catch(e){
         console.log(e)
       }
