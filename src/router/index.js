@@ -36,10 +36,10 @@ const routes = [
     path: '/',
     beforeEnter: (to, from, next) => {
       // ...
-      console.log("vengo de ",from)
-      console.log("voy a ", to)
-      console.log('tengo lo siguiente en la ruta: ')
-      console.log(window.localStorage.getItem('route'))
+      //console.log("vengo de ",from)
+      //console.log("voy a ", to)
+      //console.log('tengo lo siguiente en la ruta: ')
+      //console.log(window.localStorage.getItem('route'))
       let route = window.localStorage.getItem('route')
       if(route){
         next(route)
@@ -252,9 +252,9 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   let currentUser = window.localStorage.getItem('user')
-  console.log(requiresAuth)
-  console.log(currentUser)
-  console.log(currentUser === 'null')
+  //console.log(requiresAuth)
+  //console.log(currentUser)
+  //console.log(currentUser === 'null')
 
   if (requiresAuth && currentUser === 'null') {
     next( '/' )
