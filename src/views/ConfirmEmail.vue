@@ -89,6 +89,9 @@ export default {
     ...mapGetters('user',{
         loadingLoginData:'loadingLoginData',
         notAnAdmin: 'notAnAdmin'
+    }),
+    ...mapMutations({
+      SET_CURRENT_ROUTE:'SET_CURRENT_ROUTE'
     })
   },
   methods: {
