@@ -29,7 +29,7 @@
 import CardComponent from '@/components/CardComponent'
 import HeroBar from '@/components/HeroBar'
 import LoginAndSignUpForm from '../components/LoginAndSignUpForm.vue'
-import { mapGetters,mapActions, mapMutations } from 'vuex'
+import { mapGetters,mapActions } from 'vuex'
 import router from '../router/index';
 import firebase from '@/firebase';
 
@@ -53,7 +53,6 @@ export default {
   },
   async created(){
     
-    this.SET_CURRENT_ROUTE('/confirmEmail/:email/:password')
     window.localStorage.setItem('route','/confirmEmail/:email/:password' )
     this.isLoading = true
     this.confirmEmailBool = true
@@ -89,9 +88,6 @@ export default {
     ...mapGetters('user',{
         loadingLoginData:'loadingLoginData',
         notAnAdmin: 'notAnAdmin'
-    }),
-    ...mapMutations({
-      SET_CURRENT_ROUTE:'SET_CURRENT_ROUTE'
     })
   },
   methods: {
