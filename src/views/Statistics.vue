@@ -279,29 +279,18 @@ export default {
       console.log(changedDimensions)
       if(changedDimensions.includes(this.id_actualChosenDimensionBar)){
         //Se actualizo uno o mas subatributo que estan en pantalla en el chart de barras
-        let boolArray = []
-        for (const possibleDimension of changedDimensions) {
-          if(possibleDimension === this.id_actualChosenDimensionBar){
-            boolArray.push(1)
-          }
-          else{
-            boolArray.push(0)
-          }
+        let new_data_objects = null
+        for (const userLevel of this.userLevels) {
+          if(userLevel.id_attributes === this.id_actualChosenDimensionBar ){
+            new_data_objects = userLevel.subattribute_levels
+          }       
         }
-        let actualSubattributes = this.series2[0].data
-        console.log(actualSubattributes)
-        console.log(boolArray)
-        console.log(id_subattributes_data.data)
-
-        let indexAux = 0 
-        boolArray.forEach((bool,index) => {
-          if(bool){
-            actualSubattributes[indexAux] += id_subattributes_data.data[index]
-            indexAux++
-          }
-        });
-        console.log(actualSubattributes)
-        this.series2 = [{ data:actualSubattributes }]
+        let new_data_array = []
+        for (const subatt_object of new_data_objects) {
+          new_data_array.push(subatt_object.total)     
+        }
+        console.log(new_data_array)
+        this.series2 = [{ data:new_data_array }]
       }
     },
 		listen: function () {		
@@ -323,15 +312,15 @@ export default {
         console.log(subattribute)
         this.adquired_subattribute_rt = subattribute
         console.log(this.id_actualChosenDimensionBar)
-        if(this.id_actualChosenDimensionBar){
-          this.settingNewSubattributes(subattribute)
-        }
+        
         console.log("Segunda ves: ",subattribute)
         let id_subattributes_data = this.actualIdSubattributesData(subattribute)
         console.log("Estos son los ids y los datos", id_subattributes_data)
 
         this.setRealTimeSubattributeLevels(id_subattributes_data)
-        
+        if(this.id_actualChosenDimensionBar){
+          this.settingNewSubattributes(subattribute)
+        }
       });
 		},
     selectedOptionBarChartClick(selectedOption){
