@@ -75,7 +75,7 @@ export default {
         this.modalMessage = "El link ha expirado debido a que este usuario ya existe"
         setInterval(() => {
           this.confirmEmailBool = false
-          router.push({path:'/'})
+          router.push({path:'/'}).catch(() => {})
         }, 1000);
       }
     });
@@ -100,7 +100,7 @@ export default {
         this.modalMessage = "Usuario "+this.form.email+" ha sido confirmado!"
         setInterval(() => {
           this.confirmEmailBool = false
-          router.push({path:'/'})
+          router.push({path:'/'}).catch(() => {})
         }, 1000);
     }
   }
