@@ -29,7 +29,7 @@
 import CardComponent from '@/components/CardComponent'
 import HeroBar from '@/components/HeroBar'
 import LoginAndSignUpForm from '../components/LoginAndSignUpForm.vue'
-import { mapGetters,mapActions } from 'vuex'
+import { mapGetters,mapActions, mapMutations } from 'vuex'
 import router from '../router/index';
 import firebase from '@/firebase';
 
