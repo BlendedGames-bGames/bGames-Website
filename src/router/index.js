@@ -36,6 +36,9 @@ const routes = [
     path: '/',
     beforeEnter: (to, from, next) => {
       // ...
+      console.log("vengo de ",from)
+      console.log("voy a ", to)
+      console.log('tengo lo siguiente en la ruta: ')
       console.log(window.localStorage.getItem('route'))
       let route = window.localStorage.getItem('route')
       if(route){
