@@ -1,21 +1,14 @@
-# [Admin One  — Free Vue Bulma Dashboard](https://justboil.me/bulma-admin-template/one)
+# bGames-Website
 
-[![version](https://img.shields.io/github/v/release/vikdiesel/admin-one-vue-bulma-dashboard)](https://justboil.me/bulma-admin-template/one)  [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://justboil.me/bulma-admin-template/one)
-
-[![Vue.js Bulma free admin dashboard](https://justboil.me/images/one/repository-preview-hi-res.png)](https://vikdiesel.github.io/admin-one-vue-bulma-dashboard/)
-
-**Admin One** is simple, beautiful and free Vue.js Buefy Bulma admin dashboard (SPA/PWA).
+Made using a free Vue.js [Buefy Bulma admin dashboard (SPA/PWA)](https://justboil.me/bulma-admin-template/one) 
 
 * Free under MIT License
 * PWA/SPA — Single page app
 * Built with Bulma, Vue.js, Buefy & Vue CLI
 * SCSS sources with variables
-* [Premium version](https://justboil.me/bulma-admin-template/one) available
 
 ## Table of Contents
 
-* [Other versions](#other-versions)
-* [Description & Demo](#description--demo)
 * [Quick Start](#quick-start)
 * [Browser Support](#browser-support)
 * [Reporting Issues](#reporting-issues)
@@ -42,20 +35,6 @@ More info on free & premium versions of Admin One Dashboard: https://justboil.me
         <td align="center">Bulma admin dashboard<br/>Laravel<br/><br/><a href="https://github.com/vikdiesel/admin-one-laravel-dashboard" title="Free Bulma Laravel admin dashboard">Free</a> | <a href="https://justboil.me/bulma-admin-template/one-laravel" title="Free Bulma Laravel admin dashboard">Premium</a></td>
     </tr>
 </table>
-
-## Description & Demo
-
-#### Description
-
-https://justboil.me/bulma-admin-template/one
-
-#### Free Dashboard Demo
-
-https://vikdiesel.github.io/admin-one-vue-bulma-dashboard/
-
-#### Premium Dashboard Demo
-
-https://admin-one.justboil.me
 
 ## Quick Start
 
