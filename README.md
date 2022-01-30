@@ -17,8 +17,6 @@ Made using a free Vue.js [Buefy Bulma admin dashboard (SPA/PWA)](https://justboi
 
 ## Other versions
 
-This is Bulma Vue.js Buefy dashboard version.
-
 More info on free & premium versions of Admin One Dashboard: https://justboil.me/bulma-admin-template/one
 
 <table>
