@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Axios from 'axios';
-import { baseURL, sensorPort } from '../urls'
+import { sensorPort } from '../urls'
+
+let baseURL = "http://localhost:"
+
 const state = {
   sensorsAndEndpoints: [],
   sensorTemplates: [],
@@ -153,6 +156,7 @@ const actions = {
         
         await dispatch('setSensorsAndEndpoints')
         console.log(state.sensorsAndEndpoints)
+        state.sensorURL = "http://localhost:3007"
         const MEDIUM_GET_URL = state.sensorURL+'/sensors_all'
         const reply = await Axios.get(MEDIUM_GET_URL);
         console.log(reply.data)
@@ -421,9 +425,9 @@ const actions = {
   async setSingleEndpoints({ commit, state, rootState }, payload) {
     try {
       ///sensor_endpoints_activated/:id_player/:id_online_sensor
+        state.sensorURL = "http://localhost:3007"
         const MEDIUM_GET_URL = state.sensorURL+'/sensor_endpoints/'+rootState.user.id_player.toString()+'/'+payload.id.toString()
         const reply = await Axios.get(MEDIUM_GET_URL);
-
         commit('SET_ENDPOINTS', {endpoints: reply.data, id:payload.id})
 
     } catch (error) {

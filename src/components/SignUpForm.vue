@@ -54,8 +54,8 @@
 import CardComponent from '@/components/CardComponent'
 import HeroBar from './HeroBar'
 import { mapMutations, mapActions, mapGetters } from 'vuex'
-import firebase from 'firebase/app'
-import "firebase/auth"
+import firebase from 'firebase/compat/app'
+import "firebase/compat/auth"
 export default {
   name: 'SignUpForm',
   components: {
@@ -79,8 +79,25 @@ export default {
         userCreatedAlreadyToggle: 'userCreatedAlreadyToggle'
     }),
 
-    async registerButton () {
-      await this.register({email:this.form.email, password: this.form.password})
+    registerButton () {
+      var email = this.form.email;
+      var pass = this.form.password;
+      firebase.auth().createUserWithEmailAndPassword(email, pass)
+      .catch(function(error) {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          alert(errorMessage);
+      })
+      .then(function(){
+        var user = firebase.auth().currentUser;
+        user.sendEmailVerification().then(function() {
+        // Email sent.
+        }).catch(function(error) {
+        // An error happened.
+        });
+      });
+      
+      
       setTimeout(() => {
         var message;
         console.log(this.userCreatedAlready)

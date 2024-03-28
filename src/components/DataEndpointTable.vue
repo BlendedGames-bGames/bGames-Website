@@ -184,6 +184,7 @@ export default {
         //videogamesAndModifiableMechanics
         console.log('no hay error 0')
         console.log(this.videogamesAndModifiableMechanics)
+        console.log("este es el singledata", singleData.id_videogame)
         for (const videogame of this.videogamesAndModifiableMechanics) {
             if(videogame.id_videogame === singleData.id_videogame){
               let videogame_variable = this.searchOnArrayOption(videogame.modifiable_mechanics,'id_modifiable_mechanic',singleData.id_modifiable_mechanic,['name_videogame','name_modifiable_mechanic','description'])
@@ -206,7 +207,6 @@ export default {
         console.log(dimension_variables)           
         console.log('no hay error x2')
 
-        
       });
       console.log('resultado')
       console.log(videogame_data)
@@ -229,6 +229,7 @@ export default {
         name_subattributes: (...) 
       */    
       let auxSubatt = []
+      console.log(subatts)
       subatts.forEach(subatt => {
         let aux = subatt
         aux.id_subattributes = parseInt(aux.id_subattributes)
@@ -244,6 +245,9 @@ export default {
               }
             }
           });
+          if(this.sensorsAndEndpoints[0].endpoints === undefined){
+            return auxSubatt
+          }
           this.sensorsAndEndpoints.forEach(sensor => {
             let sensor_variables = this.searchOnArrayOption(sensor.endpoints,'id_sensor_endpoint',subatt.id_sensor_endpoint,['name_sensor_endpoint','id_online_sensor','description','name_online_sensor'])
             if(sensor_variables !== undefined && sensor_variables.length !== 0){
@@ -265,16 +269,16 @@ export default {
           if(element[attArray] === option){       
             if(Array.isArray(attSingle)){
                 for (const variable of attSingle) {
-                  result.push({name:variable,data:element[variable]})
+                  result.push({name:variable,data:element[variable]});
                 }
             }
             else{
-              result = element[attSingle]             
+              result = element[attSingle];     
 
             }
           }
       });
-      return result
+      return result;
     },
 
     async loadingData(){

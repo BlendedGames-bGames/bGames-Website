@@ -1,4 +1,4 @@
-const baseURL = 'http://144.126.216.255:'
+const baseURL = 'http://localhost:'
 const sensorPort = '3007'
 const getPort = '3001' 
 const postPort = '3002' 

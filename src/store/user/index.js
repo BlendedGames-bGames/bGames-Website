@@ -4,14 +4,15 @@ import router from '../../router/index';
 import Vue from 'vue';
 import io from 'socket.io-client';
 import { baseURL, userPort, getPort, postPort, sensorCommunicationPort} from '../urls'
+
 const state = {
   userProfile: {},
   loggedIn: false,
   userCreatedAlready:false,
   incorrectPassword:false,
 
-  userURL: baseURL+ userPort,
-  getURL: baseURL+ getPort,
+  userURL: baseURL + userPort,
+  getURL: baseURL + getPort,
   sensorCommunicationURL: baseURL + sensorCommunicationPort,
   id_player:0,
   userLevels: [],
@@ -408,15 +409,16 @@ const actions = {
   },
   
   async settingSensorsAndEndpoints({ dispatch, commit, state, rootState  }, email){
+    state.userURL = 'http://localhost:3010'
     const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+email
     const userData = await Axios.get(MEDIUM_GET_URL);
     console.log(userData.data)
-    if(JSON.parse(userData.data).type === 1){
+    if(userData.data.type === 1){
       
       commit('TOGGLE_ADMIN_PERMISSION')
     }
     //Si tiene permisos de administrador
-    await dispatch('setIdPlayer', JSON.parse(userData.data).id_players)
+    await dispatch('setIdPlayer', userData.data.id_players)
     //setSensorsAndTemplatesAndEndpoints
     await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
     rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
@@ -569,8 +571,8 @@ const actions = {
     }
   },
   async settingNewUserData({ commit, state, dispatch }, profile_info){
-
     try {
+      console.log('linea 576')
       const MEDIUM_POST_URL = state.userURL+'/player'
       await Axios.post(MEDIUM_POST_URL, profile_info);
       console.log("Estado del spinner despues de crear las relaciones del usuario nuevo a las dimensiones")
@@ -579,6 +581,7 @@ const actions = {
       console.log("Estado del spinner ULTIMO")
       console.log(state.loadingLoginData)
       try {
+        console.log('es esta tontera la que manda el url malo !?')
         const PLAYER_GET_URL = state.userURL+'/player_by_email/'+profile_info.email
         const player = await Axios.get(PLAYER_GET_URL)
         console.log('El nuevo jugador es: ')
@@ -637,7 +640,7 @@ const actions = {
     }
   },
   async register({ commit, state, dispatch }, profile_info) {
-    const MEDIUM_POST_URL = state.sensorCommunicationURL+'/sendEmailConfirmation'
+    const MEDIUM_POST_URL = "http://localhost:3006"+'/sendEmailConfirmation'
     try {
         commit('TOGGLE_LOADING_LOGIN_DATA')
         let profile = {

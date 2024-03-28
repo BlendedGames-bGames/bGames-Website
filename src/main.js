@@ -6,12 +6,10 @@ import Vue from 'vue'
 import Buefy from 'buefy'
 import axios from 'axios'
 import Clipboard from 'v-clipboard'
-
-Vue.use(Clipboard)
-/*Firebase */
+/* Firebase */
 import './auth'
 
-/*ApexCharts (Treemap) */
+/* ApexCharts (Treemap) */
 import VueApexCharts from 'vue-apexcharts'
 
 /* Router & Store */
@@ -20,6 +18,8 @@ import store from './store'
 
 /* Vue. Main component */
 import App from './App.vue'
+
+Vue.use(Clipboard)
 
 /* Default title tag */
 const defaultDocumentTitle = 'Blended Games'
@@ -49,4 +49,3 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
-    

@@ -1,20 +1,22 @@
-import firebase from '@firebase/app';
-import '@firebase/auth';
-import '@firebase/firestore';
+import firebase from 'firebase/compat/app';  // 'compat' es necesario para versiones que admiten compatibilidad con versiones anteriores
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 // Your web app's Firebase configuration
-var firebaseConfig = {
-    apiKey: "AIzaSyAm38vm2k27gMXPSLjH_PNQ-8QoHsxjWng",
-    authDomain: "blended-games-cc73b.firebaseapp.com",
-    projectId: "blended-games-cc73b",
-    storageBucket: "blended-games-cc73b.appspot.com",
-    messagingSenderId: "681561900800",
-    appId: "1:681561900800:web:caf3e8fe64b7759fd6d5e5",
-    measurementId: "G-JPLNHQZ6M2"
+const firebaseConfig = {
+  apiKey: "AIzaSyALPCI-JMF4r_03rCfCI27NX6OQoKdoLYg",
+  authDomain: "bgames-b350b.firebaseapp.com",
+  databaseURL: "https://bgames-b350b-default-rtdb.firebaseio.com",
+  projectId: "bgames-b350b",
+  storageBucket: "bgames-b350b.appspot.com",
+  messagingSenderId: "177045556100",
+  appId: "1:177045556100:web:11cb02ffacf7af743febd1",
+  measurementId: "G-F0JLD1DH63"
 };
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-  
-export default firebase;
 
-//https://firebase.google.com/docs/firestore/security/get-started#auth-required
+firebase.auth();
+
+export default firebase;
