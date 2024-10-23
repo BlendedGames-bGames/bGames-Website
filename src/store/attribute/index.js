@@ -57,7 +57,7 @@ const actions = {
       let atts = {
         "id_attributes": state.id_dimensions
       }
-      const MEDIUM_POST_URL = state.postURL+'/player_all_attributes/'+rootState.user.id_player.toString()
+      const MEDIUM_POST_URL = state.postURL+'/player_all_attributes/'+rootState.user.id_player
       console.log(MEDIUM_POST_URL)
       const reply = await Axios.post(MEDIUM_POST_URL,atts);
       console.log(reply)

@@ -54,8 +54,8 @@
 import CardComponent from '@/components/CardComponent'
 import HeroBar from './HeroBar'
 import { mapMutations, mapActions, mapGetters } from 'vuex'
-import firebase from 'firebase/app'
-import "firebase/auth"
+import firebase from 'firebase/compat/app'
+import "firebase/compat/auth"
 export default {
   name: 'SignUpForm',
   components: {
@@ -79,27 +79,75 @@ export default {
         userCreatedAlreadyToggle: 'userCreatedAlreadyToggle'
     }),
 
-    async registerButton () {
-      await this.register({email:this.form.email, password: this.form.password})
-      setTimeout(() => {
-        var message;
-        console.log(this.userCreatedAlready)
-        if(!this.userCreatedAlready){
-          message = 'Se envio un mail a '+this.form.email+' para que se confirme el mail'
-        }
-        else{
-          message = 'Un usuario con ese email ya existe, intente con otro email'
-          this.userCreatedAlreadyToggle()
-        }
-        this.$buefy.snackbar.open(
-          {
-            message: message,
+    registerButton() {
+      var email = this.form.email;
+      var pass = this.form.password;
+      
+      firebase.auth().createUserWithEmailAndPassword(email, pass)
+        .then(userCredential => {
+          fetch('http://localhost:3010/player', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: email,
+              password: pass, // Asegúrate de hashear la contraseña en tu backend antes de guardarla en la base de datos
+              name: "user",
+              age: 25,
+              external_type: "none",
+              external_id: "none"
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            // Manejar la respuesta del servidor si es necesario
+            console.log('Usuario guardado en la base de datos SQL local:', data);
+            return this.addAttributesToNewUser(email);
+          })
+          .catch((error) => {
+            console.error('Error al guardar el usuario en la base de datos SQL local:', error);
+          });
+
+          // Mostrar mensaje de éxito
+          this.$buefy.snackbar.open({
+            message: 'Usuario registrado exitosamente',
             queue: false
-          },
-          500
-        )
-        this.formReset()
+          });
+
+          this.formReset();
+        })
+        .catch((error) => {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          alert(errorMessage);
+        });
+    },
+    addAttributesToNewUser(email){
+      fetch('http://localhost:3010/player_by_email/'+email)
+      .then(response => response.json())
+      .then(data => {
+        // Manejar la respuesta del servidor para el GET
+        console.log('Datos obtenidos con el GET:', data);
+        var id = data.id_players;
+        fetch('http://localhost:3002/player_all_attributes/'+id, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Manejar la respuesta del servidor
+          console.log('Datos obtenidos:', data);
+        })
+        .catch((error) => {
+          console.error('Error en la solicitud POST:', error);
+        });
       })
+      .catch((error) => {
+        console.error('Error al obtener los datos con el GET:', error);
+      });
     },
     backToLogin(){
       this.loginToggle()

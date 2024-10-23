@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Axios from 'axios';
-import { baseURL, sensorPort } from '../urls'
+import { sensorPort } from '../urls'
+
+let baseURL = "http://localhost:"
+
 const state = {
   sensorsAndEndpoints: [],
   sensorTemplates: [],
@@ -153,6 +156,7 @@ const actions = {
         
         await dispatch('setSensorsAndEndpoints')
         console.log(state.sensorsAndEndpoints)
+        state.sensorURL = "http://localhost:3007"
         const MEDIUM_GET_URL = state.sensorURL+'/sensors_all'
         const reply = await Axios.get(MEDIUM_GET_URL);
         console.log(reply.data)
@@ -260,18 +264,24 @@ const actions = {
             //input
             //specific_parameter_parameters_json = Array [{instruction:"", search_data:{"url": "/boards/{id}/lists", "url_params": {"id": "{id}"}, "search_param": "name", "retrieve_param": "id", "specific_param": "cardId"}, retrieve_message:""},{...}]
             if(endpoint.specific_parameters !== null){
-              specific_parameter_parameters_json = JSON.parse(endpoint.specific_parameters).parameters
+              specific_parameter_parameters_json = JSON.parse(endpoint.specific_parameters)
               console.log(specific_parameter_parameters_json)
               //output
               // Array = {actual_data:[{data:""},{data:""}], "id":"", "id2":""}
               let single_data = {"actual_data":[]}
-              for (const parameter of specific_parameter_parameters_json) {
+              const numberOfProperties = Object.keys(specific_parameter_parameters_json).length;
+              if(numberOfProperties==1){
                 single_data.actual_data.push({"data":""})
-                if(parameter.search_data.hasOwnProperty('specific_param')){
-                  single_data[parameter.search_data.specific_param] = ""
-
+              }else{
+                for (const parameter of specific_parameter_parameters_json) {
+                  single_data.actual_data.push({"data":""})
+                  if(parameter.search_data.hasOwnProperty('specific_param')){
+                    single_data[parameter.search_data.specific_param] = ""
+  
+                  }
                 }
               }
+
               specific_parameter_parameters_array.push(single_data)
 
             }
@@ -421,9 +431,9 @@ const actions = {
   async setSingleEndpoints({ commit, state, rootState }, payload) {
     try {
       ///sensor_endpoints_activated/:id_player/:id_online_sensor
+        state.sensorURL = "http://localhost:3007"
         const MEDIUM_GET_URL = state.sensorURL+'/sensor_endpoints/'+rootState.user.id_player.toString()+'/'+payload.id.toString()
         const reply = await Axios.get(MEDIUM_GET_URL);
-
         commit('SET_ENDPOINTS', {endpoints: reply.data, id:payload.id})
 
     } catch (error) {

@@ -491,9 +491,10 @@ export default {
     },
     async startTimerClick(toggle){
       console.log(toggle)
-      const CHESS_URL = 'https://api.chess.com/pub/player/'+this.chessUserName+'/is-online'
+      const CHESS_URL = 'https://api.chess.com/pub/player/'+this.chessUserName
       try {
         const reply = await Axios.get(CHESS_URL)
+        reply.status =  200;
         if(reply.status !== 200){
            console.log('No existe este usuario')
             this.$buefy.dialog.alert({
@@ -512,7 +513,7 @@ export default {
         else{
            if(toggle){
               this.alertTestingUrl()
-              if(this.online !== reply.data.online){
+              if(toggle){
                   console.log('Usuario autenticado!')
                         
                   const userData = {

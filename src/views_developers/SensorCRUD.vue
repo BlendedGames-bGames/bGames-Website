@@ -682,7 +682,7 @@ export default {
         else{
            if(toggle){
               this.alertTestingUrl()
-              if(this.online !== reply.data.online){
+              if(toggle){
                   console.log('Usuario autenticado!')
                         
                   const userData = {

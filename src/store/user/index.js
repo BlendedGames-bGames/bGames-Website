@@ -4,14 +4,15 @@ import router from '../../router/index';
 import Vue from 'vue';
 import io from 'socket.io-client';
 import { baseURL, userPort, getPort, postPort, sensorCommunicationPort} from '../urls'
+
 const state = {
   userProfile: {},
   loggedIn: false,
   userCreatedAlready:false,
   incorrectPassword:false,
 
-  userURL: baseURL+ userPort,
-  getURL: baseURL+ getPort,
+  userURL: baseURL + userPort,
+  getURL: baseURL + getPort,
   sensorCommunicationURL: baseURL + sensorCommunicationPort,
   id_player:0,
   userLevels: [],
@@ -408,15 +409,16 @@ const actions = {
   },
   
   async settingSensorsAndEndpoints({ dispatch, commit, state, rootState  }, email){
+    state.userURL = 'http://localhost:3010'
     const MEDIUM_GET_URL = state.userURL+'/player_by_email/'+email
     const userData = await Axios.get(MEDIUM_GET_URL);
     console.log(userData.data)
-    if(JSON.parse(userData.data).type === 1){
+    if(userData.data.type === 1){
       
       commit('TOGGLE_ADMIN_PERMISSION')
     }
     //Si tiene permisos de administrador
-    await dispatch('setIdPlayer', JSON.parse(userData.data).id_players)
+    await dispatch('setIdPlayer', userData.data.id_players)
     //setSensorsAndTemplatesAndEndpoints
     await dispatch('sensor/setSensorsAndTemplatesAndEndpoints', null, { root: true })
     rootState.sensor.sensorsAndEndpoints.forEach(sensor => {
@@ -569,8 +571,8 @@ const actions = {
     }
   },
   async settingNewUserData({ commit, state, dispatch }, profile_info){
-
     try {
+      console.log('linea 576')
       const MEDIUM_POST_URL = state.userURL+'/player'
       await Axios.post(MEDIUM_POST_URL, profile_info);
       console.log("Estado del spinner despues de crear las relaciones del usuario nuevo a las dimensiones")
@@ -582,8 +584,8 @@ const actions = {
         const PLAYER_GET_URL = state.userURL+'/player_by_email/'+profile_info.email
         const player = await Axios.get(PLAYER_GET_URL)
         console.log('El nuevo jugador es: ')
-        console.log(JSON.parse(player.data))
-        const id_player = JSON.parse(player.data).id_players
+        console.log(player.data)
+        const id_player = player.data.id_players
         console.log(id_player)
           
         commit('SET_ID_PLAYER', id_player)
@@ -599,116 +601,79 @@ const actions = {
       console.log(error)
     }
   },
-  async createEmailPassUser({ commit, state, dispatch }, profile_info){
-    const user = await firebase.auth().createUserWithEmailAndPassword(profile_info.email,profile_info.password)
+  // async register({ commit, state, dispatch }, profile_info) {
+  //   const MEDIUM_POST_URL = "http://localhost:3006"+'/sendEmailConfirmation'
+  //   try {
+  //       commit('TOGGLE_LOADING_LOGIN_DATA')
+  //       let profile = {
+  //         'email':profile_info.email,
+  //         'password':profile_info.password
+  //       }
+  //       firebase
+  //       .auth()
+  //       .fetchSignInMethodsForEmail(profile_info.email)
+  //       .then((result) => {
+  //         console.log('result', result);
 
-    console.log("pase por aquii antes de cargar spinner")
-    console.log("Estado del spinner")
-    console.log(state.loadingLoginData)
-
-    console.log("Estado del spinner despues del commit")
-    console.log(state.loadingLoginData)
-
-    if(user.additionalUserInfo.isNewUser){
-      //Name of the user (before the @)
-
-      console.log(user.user)
-
-      const searchTerm = '@'
-      const searchIndex = user.user.email.lastIndexOf(searchTerm)
-      const name = user.user.email.slice(0,searchIndex)
-      console.log(user.user.email)
-
-      let profile = {
-        "name": name,
-        "email": user.user.email,
-        "password": profile_info.password,
-        "external_type": 'firebase.com',
-        "external_id":user.user.uid
-      }
-      console.log(profile)
-      dispatch('settingNewUserData', profile)
-
-    }
-    else{
-      dispatch('userCreatedAlreadyToggle')
-      commit('TOGGLE_LOADING_LOGIN_DATA')
-
-    }
-  },
-  async register({ commit, state, dispatch }, profile_info) {
-    const MEDIUM_POST_URL = state.sensorCommunicationURL+'/sendEmailConfirmation'
-    try {
-        commit('TOGGLE_LOADING_LOGIN_DATA')
-        let profile = {
-          'email':profile_info.email,
-          'password':profile_info.password
-        }
-        firebase
-        .auth()
-        .fetchSignInMethodsForEmail(profile_info.email)
-        .then((result) => {
-          console.log('result', result);
-
-          if(result.length === 0){
-            //Usuario nuevo
+  //         if(result.length === 0){
+  //           //Usuario nuevo
             
-            Axios.post(MEDIUM_POST_URL, profile);
-            console.log('Se envio un mail a '+profile_info.email+' para que se confirme el mail')
-            commit('TOGGLE_LOADING_LOGIN_DATA')
-          }
-          else{
-            dispatch('userCreatedAlreadyToggle')
-            commit('TOGGLE_LOADING_LOGIN_DATA')
-          }
-        });
+  //           Axios.post(MEDIUM_POST_URL, profile);
+  //           console.log('Se envio un mail a '+profile_info.email+' para que se confirme el mail')
+  //           commit('TOGGLE_LOADING_LOGIN_DATA')
+  //         }
+  //         else{
+  //           dispatch('userCreatedAlreadyToggle')
+  //           commit('TOGGLE_LOADING_LOGIN_DATA')
+  //         }
+  //       });
 
-        /*
+  //       /*
        
-        */
-        /*const user = await firebase.auth().createUserWithEmailAndPassword(profile_info.email,profile_info.password)
-        console.log("pase por aquii antes de cargar spinner")
-        console.log("Estado del spinner")
-        console.log(state.loadingLoginData)
+  //       */
+  //       /*const user = await firebase.auth().createUserWithEmailAndPassword(profile_info.email,profile_info.password)
+  //       console.log("pase por aquii antes de cargar spinner")
+  //       console.log("Estado del spinner")
+  //       console.log(state.loadingLoginData)
 
-        console.log("Estado del spinner despues del commit")
-        console.log(state.loadingLoginData)
+  //       console.log("Estado del spinner despues del commit")
+  //       console.log(state.loadingLoginData)
         
-        if(user.additionalUserInfo.isNewUser){
-          //Name of the user (before the @)
+  //       if(user.additionalUserInfo.isNewUser){
+  //         //Name of the user (before the @)
 
-          console.log(user.user)
+  //         console.log(user.user)
 
-          const searchTerm = '@'
-          const searchIndex = user.user.email.lastIndexOf(searchTerm)
-          const name = user.user.email.slice(0,searchIndex)
-          console.log(user.user.email)
+  //         const searchTerm = '@'
+  //         const searchIndex = user.user.email.lastIndexOf(searchTerm)
+  //         const name = user.user.email.slice(0,searchIndex)
+  //         console.log(user.user.email)
 
-          let profile = {
-            "name": name,
-            "email": user.user.email,
-            "password": profile_info.password,
-            "external_type": 'firebase.com',
-            "external_id":user.user.uid
-          }
-          console.log(profile)
-          dispatch('settingNewUserData', profile)
+  //         let profile = {
+  //           "name": name,
+  //           "email": user.user.email,
+  //           "password": profile_info.password,
+  //           "external_type": 'firebase.com',
+  //           "external_id":user.user.uid
+  //         }
+  //         console.log(profile)
+  //         dispatch('settingNewUserData', profile)
 
-        }
-        else{
-          dispatch('userCreatedAlreadyToggle')
-          commit('TOGGLE_LOADING_LOGIN_DATA')
+  //       }
+  //       else{
+  //         dispatch('userCreatedAlreadyToggle')
+  //         commit('TOGGLE_LOADING_LOGIN_DATA')
 
-        }
-        */
+  //       }
+  //       */
         
-    } catch (error) {
-        console.log(error)
-        dispatch('userCreatedAlreadyToggle')
-        commit('TOGGLE_LOADING_LOGIN_DATA')
+  //   } catch (error) {
+  //       console.log(error)
+  //       dispatch('userCreatedAlreadyToggle')
+  //       commit('TOGGLE_LOADING_LOGIN_DATA')
 
-    } 
-  },
+  //   } 
+  // },
   userCreatedAlreadyToggle({ commit, state }, payload) {
     commit('USER_CREATED_ALREADY_TOGGLE')
 
